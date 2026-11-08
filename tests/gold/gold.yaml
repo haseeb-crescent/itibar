@@ -1,0 +1,259 @@
+# Gold set: hadith whose isnad structure is classically documented.
+#
+# Each entry states a structural expectation, the classical source for it, and
+# the scope it is evaluated on. A scope selects chains of the meaning group
+# (never edits them):
+#   companion: rawi id   keep chains whose last narrator is this companion
+#   threshold: name      evaluate kappa / cut vertices on that threshold subgraph
+#
+# known_deviations lists, chain by chain, every in-scope chain that contradicts
+# the documented structure (it misses one of `deviation_key`'s narrators), with
+# the reason found on inspection. The test asserts that this list is EXACTLY the
+# set of contradicting chains in the data, then evaluates `expect` on the scope
+# with those chains removed. So the test fails if the machinery changes the
+# structure, if the data gains or loses a contradicting chain, or if the
+# documented structure does not hold on the remaining chains.
+#
+# Node ids: r<rawi_id>. Narrator names are given for the reader; ids are what
+# the test checks. Source attributions name the work; `confidence` says how
+# sure the editor is that the cited work makes this exact claim (medium =
+# verify against the printed text before citing in the paper).
+#
+# Mutawatir entries (al-Kattani, Nazm al-Mutanathir min al-Hadith al-Mutawatir)
+# assert only kappa_all > 1 and at least ten companions on path (al-Suyuti's
+# ten-companion criterion in al-Azhar al-Mutanathira); `companions` counts
+# companions narrating directly from the Prophet on an unbroken route to a book.; the kappa at every
+# threshold is recorded by `make gold` in reports/gold.md, not asserted.
+
+entries:
+
+# ---------------------------------------------------------------- gharib / fard
+
+- id: innama-al-amal
+  group_id: 319
+  title: "إنما الأعمال بالنيات — through 'Umar"
+  class: gharib
+  source:
+    - {work: "Nuzhat al-Nazar fi Tawdih Nukhbat al-Fikar", author: "Ibn Hajar al-'Asqalani", confidence: high,
+       claim: "gharib: 'Umar alone from the Prophet, 'Alqama alone from 'Umar, Muhammad b. Ibrahim al-Taymi alone from 'Alqama, Yahya b. Sa'id al-Ansari alone from al-Taymi; many from Yahya"}
+    - {work: "Muqaddimat Ibn al-Salah (naw' 13, al-shadh; naw' 31, al-gharib)", author: "Ibn al-Salah", confidence: high,
+       claim: "cited as the standard sound fard"}
+  scope: {companion: 5913, threshold: all}
+  deviation_key: [r5913, r5719, r6796, r8272]
+  known_deviations:
+    - reason: "homonym misresolution: 'Yahya b. Sa'id' under al-Taymi (d. 120) resolved to al-Qattan (r8271, b. 120, layer 9); the student of al-Taymi is al-Ansari"
+      sanad_ids: [320050, 320051, 320052, 320053, 320054, 320055]
+    - reason: "dropped link: 'Alqama missing between 'Umar and al-Taymi (al-Humaydi's chain; al-Humaydi's own Musnad has 'Alqama)"
+      sanad_ids: [349231, 349232]
+    - reason: "route from al-Taymi via Muhammad b. 'Amr b. 'Alqama al-Laythi (r7225, Taqrib level 5), against the documented tafarrud of Yahya; absent at saduq_up and above"
+      sanad_ids: [469869, 483205, 523109, 523110, 540745]
+    - reason: "route from 'Alqama via Muhammad b. Sulayman b. Abi Hathma (r7002, Taqrib level 6, Tarikh Dimashq), against the documented tafarrud of al-Taymi; absent at saduq_up and above"
+      sanad_ids: [519989]
+  expect:
+    kappa_eq: {all: 1, thiqa_up: 1}
+    cut_vertices_eq: {all: [r5913, r5719, r6796, r8272], thiqa_up: [r5913, r5719, r6796, r8272]}
+    single_strand_include: [r5913, r5719, r6796]        # P -> 'Umar -> 'Alqama -> al-Taymi -> Yahya: four links, one strand
+    min_students: {r8272: 25}                            # "a wide fan below him"
+    death_year: {r8272: 143}                             # terminus of the cut vertex Yahya b. Sa'id al-Ansari
+  notes: >
+    Whole group 319 also carries routes via Abu Sa'id al-Khudri, Anas and Ibn 'Abbas that the
+    classical sources do not count; its whole-group kappa is recorded in reports/gold.md.
+
+- id: bay-al-wala
+  group_id: 276
+  title: "نهى عن بيع الولاء وعن هبته — through Ibn 'Umar"
+  class: gharib
+  source:
+    - {work: "Muqaddimat Ibn al-Salah (naw' 13 and naw' 31)", author: "Ibn al-Salah", confidence: high,
+       claim: "'Abdullah b. Dinar alone from Ibn 'Umar"}
+    - {work: "Sahih Muslim, after hadith 1506", author: "Muslim", confidence: medium,
+       claim: "the people all depend on 'Abdullah b. Dinar for this hadith"}
+    - {work: "Jami' al-Tirmidhi (bab karahiyat bay' al-wala')", author: "al-Tirmidhi", confidence: medium,
+       claim: "the route Yahya b. Sulaym <- 'Ubaydullah b. 'Umar <- Nafi' <- Ibn 'Umar is Yahya b. Sulaym's error"}
+  scope: {companion: 4967, threshold: all}
+  deviation_key: [r4967, r4797]
+  known_deviations:
+    - reason: "route via Nafi' (r7863), mostly through 'Ubaydullah b. 'Umar and Yahya b. Sulaym al-Ta'ifi (r8274) — the route al-Tirmidhi names as an error"
+      sanad_ids: [23860, 25097, 43994, 102306, 110942, 110946, 179776, 179778, 206562, 206564, 258323, 272060, 272061,
+                  311188, 311762, 312116, 312117, 416876, 483195, 483196, 486213, 530179, 537458, 537476, 537477,
+                  537478, 537479]
+    - reason: "'Ubaydullah b. 'Umar directly from Ibn 'Umar (Nafi' absent: dropped link)"
+      sanad_ids: [537473]
+    - reason: "route via 'Amr b. Dinar (r6123) in place of 'Abdullah b. Dinar"
+      sanad_ids: [247434, 247435, 270696, 294947, 294949, 469954, 506092, 506095]
+    - reason: "'Abdullah b. Dinar resolved to al-Bahrani (r4796, layer 6) instead of al-Qurashi (r4797): homonym misresolution"
+      sanad_ids: [494475, 494476]
+    - reason: "other single routes: 'Ata' b. Yasar (Musnad Abi Hanifa), Hamza b. Waqid (r41818, Taqrib level 9), Hisham b. 'Urwa (Tarikh Dimashq)"
+      sanad_ids: [240476, 506093, 506094, 519732, 519733]
+  expect:
+    kappa_eq: {all: 1}
+    cut_vertices_eq: {all: [r4967, r4797]}
+    min_students: {r4797: 20}
+
+- id: al-din-al-nasiha
+  group_id: 397
+  title: "الدين النصيحة — through Tamim al-Dari"
+  class: gharib
+  source:
+    - {work: "Sahih Muslim, hadith 55", author: "Muslim", confidence: high,
+       claim: "Suhayl <- 'Ata' b. Yazid <- Tamim; and (via 'Amr b. Dinar) al-Qa'qa' <- Abu Salih <- 'Ata' b. Yazid <- Tamim — 'Ata' b. Yazid alone from Tamim"}
+    - {work: "Jami' al-'Ulum wa al-Hikam, hadith 7", author: "Ibn Rajab", confidence: medium,
+       claim: "the hadith is known through Tamim by 'Ata' b. Yazid; other companions' versions are not established"}
+  scope: {companion: 1994, threshold: all}
+  deviation_key: [r1994, r5639]
+  known_deviations:
+    - reason: "dropped links: Sufyan b. 'Uyayna directly from Tamim (al-Humaydi's chain in a later book; Suhayl and 'Ata' missing)"
+      sanad_ids: [345012]
+  expect:
+    kappa_eq: {all: 1, thiqa_up: 1}
+    cut_vertices_eq: {all: [r1994, r5639]}
+    students_include: {r5639: [r3687, r2840]}            # Suhayl and his father Abu Salih, as in Muslim
+
+- id: kalimatan-khafifatan
+  group_id: 2852
+  title: "كلمتان خفيفتان على اللسان — the last hadith of al-Bukhari"
+  class: gharib
+  source:
+    - {work: "Fath al-Bari, end of Kitab al-Tawhid", author: "Ibn Hajar al-'Asqalani", confidence: medium,
+       claim: "fard at four levels: Abu Hurayra, Abu Zur'a, 'Umara b. al-Qa'qa', Muhammad b. Fudayl; widespread after Ibn Fudayl"}
+  scope: {threshold: all}
+  deviation_key: [r4396, r181, r5866, r7237]
+  known_deviations:
+    - reason: "'Umara b. al-Qa'qa' resolved to 'Umara b. 'Umayr al-Taymi (r5885): homonym misresolution"
+      sanad_ids: [145572, 145573]
+    - reason: "ta'liq: compiler omitted the chain below 'Umara (break marker)"
+      sanad_ids: [351326]
+    - reason: "al-'Abbas b. Yazid al-Bahrani from 'Umara in place of Ibn Fudayl (a late single chain)"
+      sanad_ids: [445313]
+  expect:
+    kappa_eq: {all: 1}
+    cut_vertices_eq: {all: [r4396, r181, r5866, r7237]}
+    single_strand_include: [r4396, r181, r5866]
+    min_students: {r7237: 5}
+  notes: >
+    Ibn Fudayl is Taqrib level 5 in the source and also compiles his own Kitab al-Du'a; at
+    saduq_up and thiqa_up only his own book's record survives (compiler role), so the
+    Bukhari/Muslim routes through him drop out there. Recorded in reports/gold.md, not asserted.
+
+# ---------------------------------------------------------------- 'aziz / mashhur / mutaba'at
+
+- id: la-yuminu-ahadukum
+  group_id: 1581
+  title: "لا يؤمن أحدكم حتى أكون أحب إليه من والده وولده"
+  class: aziz
+  source:
+    - {work: "Nuzhat al-Nazar (the example of al-'aziz)", author: "Ibn Hajar al-'Asqalani", confidence: high,
+       claim: "from Anas and Abu Hurayra; from Anas Qatada and 'Abd al-'Aziz b. Suhayb; from Qatada Shu'ba and Sa'id; from 'Abd al-'Aziz Isma'il b. 'Ulayya and 'Abd al-Warith"}
+  scope: {threshold: all}
+  expect:
+    kappa_ge: {all: 2}
+    companions_include: [r720, r4396]
+    students_include:
+      r720: [r6458, r4574]          # Anas -> Qatada, 'Abd al-'Aziz b. Suhayb
+      r6458: [r3795]                # Qatada -> Shu'ba
+      r4574: [r1003, r5270]         # 'Abd al-'Aziz -> Isma'il b. 'Ulayya, 'Abd al-Warith
+    min_students: {r720: 2, r6458: 2, r4574: 2}
+  notes: >
+    The data's second student of Qatada is Sa'id b. Bashir (r3306), not Sa'id b. Abi 'Aruba;
+    the group also folds in the 'Umar/'Abdullah b. Hisham report and others (7 companions on path).
+
+- id: buniya-al-islam
+  group_id: 523
+  title: "بني الإسلام على خمس — through Ibn 'Umar"
+  class: mashhur
+  source:
+    - {work: "Sahih al-Bukhari 8; Sahih Muslim 16", author: "al-Bukhari; Muslim", confidence: high,
+       claim: "from Ibn 'Umar by 'Ikrima b. Khalid (Bukhari, Muslim), Sa'd b. 'Ubayda and Muhammad b. Zayd (Muslim)"}
+    - {work: "Nuzhat al-Nazar (definition of al-mashhur: more than two routes at every layer, short of tawatur)",
+       author: "Ibn Hajar al-'Asqalani", confidence: high, claim: "definition"}
+  scope: {companion: 4967, threshold: all}
+  expect:
+    pcl_include: {3: [r4967]}
+    students_include: {r4967: [r5699, r3256, r6977]}
+    min_students: {r4967: 3}
+
+- id: mighfar-mutabaat
+  group_id: 376
+  title: "دخل مكة وعلى رأسه المغفر — Malik's tafarrud from al-Zuhri, and its mutaba'at"
+  class: gharib-with-mutabaat
+  source:
+    - {work: "Muqaddimat Ibn al-Salah (naw' 13)", author: "Ibn al-Salah", confidence: high,
+       claim: "Malik alone from al-Zuhri"}
+    - {work: "al-Taqyid wa al-Idah; al-Nukat 'ala Kitab Ibn al-Salah", author: "al-'Iraqi; Ibn Hajar", confidence: medium,
+       claim: "followed (mutaba'a) by Ibn Akhi al-Zuhri, Abu Uways, Ma'mar and al-Awza'i, among others"}
+  scope: {companion: 720, threshold: all}
+  expect:
+    students_include: {r7272: [r6659, r7133, r4916, r7633]}   # al-Zuhri -> Malik, Ibn Akhi al-Zuhri, Abu Uways, Ma'mar
+    not_cut_vertex: {all: [r6659]}
+
+# ---------------------------------------------------------------- mutawatir (al-Kattani)
+
+- id: man-kadhaba
+  group_id: 1
+  title: "من كذب علي متعمدا"
+  class: mutawatir
+  source:
+    - {work: "Muqaddimat Ibn al-Salah (naw' 30)", author: "Ibn al-Salah", confidence: high,
+       claim: "the example of mutawatir; narrated by more than sixty companions"}
+    - {work: "Nazm al-Mutanathir", author: "al-Kattani", confidence: high, claim: "listed"}
+  scope: {threshold: all}
+  expect:
+    kappa_gt: {all: 1}
+    kappa_ge: {all: 20, thiqa_up: 10}
+    companions_ge: 50
+
+- {id: mash-alal-khuffayn, group_id: 3, title: "المسح على الخفين (wudu' descriptions with mash)", class: mutawatir,
+   source: [{work: "Nazm al-Mutanathir", author: "al-Kattani", confidence: high, claim: "listed"}],
+   scope: {threshold: all}, expect: {kappa_gt: {all: 1}, companions_ge: 10}}
+
+- {id: raf-al-yadayn, group_id: 31, title: "رفع اليدين (in du'a; the prayer reports are folded into group 4)", class: mutawatir,
+   source: [{work: "Nazm al-Mutanathir", author: "al-Kattani", confidence: medium, claim: "raf' al-yadayn listed, in prayer and in du'a"}],
+   scope: {threshold: all}, expect: {kappa_gt: {all: 1}, companions_ge: 10}}
+
+- {id: al-hawd, group_id: 55, title: "الحوض (إني فرط لكم ... أنظر إلى حوضي)", class: mutawatir,
+   source: [{work: "Nazm al-Mutanathir", author: "al-Kattani", confidence: high, claim: "listed"}],
+   scope: {threshold: all}, expect: {kappa_gt: {all: 1}, companions_ge: 10}}
+
+- {id: al-shafaa, group_id: 145, title: "الشفاعة (يخرج من النار بالشفاعة)", class: mutawatir,
+   source: [{work: "Nazm al-Mutanathir", author: "al-Kattani", confidence: high, claim: "listed"}],
+   scope: {threshold: all}, expect: {kappa_gt: {all: 1}, companions_ge: 10}}
+
+- {id: ruyat-allah, group_id: 771, title: "رؤية الله (هل تضارون في رؤية الشمس)", class: mutawatir,
+   source: [{work: "Nazm al-Mutanathir", author: "al-Kattani", confidence: high, claim: "listed"}],
+   scope: {threshold: all}, expect: {kappa_gt: {all: 1}, companions_ge: 10}}
+
+- {id: sabat-ahruf, group_id: 162, title: "أنزل القرآن على سبعة أحرف", class: mutawatir,
+   source: [{work: "Nazm al-Mutanathir", author: "al-Kattani", confidence: high, claim: "listed"}],
+   scope: {threshold: all}, expect: {kappa_gt: {all: 1}, companions_ge: 10}}
+
+- {id: man-bana-masjidan, group_id: 338, title: "من بنى مسجدا", class: mutawatir,
+   source: [{work: "Nazm al-Mutanathir", author: "al-Kattani", confidence: high, claim: "listed"}],
+   scope: {threshold: all}, expect: {kappa_gt: {all: 1}, companions_ge: 10}}
+
+- {id: nadara-allah, group_id: 206, title: "نضر الله امرأ سمع منا حديثا", class: mutawatir,
+   source: [{work: "Nazm al-Mutanathir", author: "al-Kattani", confidence: high, claim: "listed"}],
+   scope: {threshold: all}, expect: {kappa_gt: {all: 1}, companions_ge: 10}}
+
+- {id: al-mar-maa-man-ahabba, group_id: 78, title: "المرء مع من أحب (أنت مع من أحببت)", class: mutawatir,
+   source: [{work: "Nazm al-Mutanathir", author: "al-Kattani", confidence: medium, claim: "listed"}],
+   scope: {threshold: all}, expect: {kappa_gt: {all: 1}, companions_ge: 10}}
+
+- {id: al-dajjal, group_id: 28, title: "ما من نبي إلا قد أنذر قومه الدجال", class: mutawatir,
+   source: [{work: "Nazm al-Mutanathir", author: "al-Kattani", confidence: high, claim: "reports of the Dajjal listed"}],
+   scope: {threshold: all}, expect: {kappa_gt: {all: 1}, companions_ge: 10}}
+
+- {id: adhab-al-qabr, group_id: 189, title: "الاستعاذة من عذاب القبر", class: mutawatir,
+   source: [{work: "Nazm al-Mutanathir", author: "al-Kattani", confidence: high, claim: "'adhab al-qabr listed"}],
+   scope: {threshold: all}, expect: {kappa_gt: {all: 1}, companions_ge: 10}}
+
+- {id: al-walad-lil-firash, group_id: 185, title: "الولد للفراش وللعاهر الحجر", class: mutawatir,
+   source: [{work: "Nazm al-Mutanathir", author: "al-Kattani", confidence: high, claim: "listed"}],
+   scope: {threshold: all}, expect: {kappa_gt: {all: 1}, companions_ge: 10}}
+
+- {id: man-hamala-alayna-al-silah, group_id: 588, title: "من حمل علينا السلاح فليس منا", class: mutawatir,
+   source: [{work: "Nazm al-Mutanathir", author: "al-Kattani", confidence: medium, claim: "listed"}],
+   scope: {threshold: all}, expect: {kappa_gt: {all: 1}, companions_ge: 10}}
+
+- {id: bada-al-islam-gharib, group_id: 497, title: "بدأ الإسلام غريبا", class: mutawatir,
+   source: [{work: "Nazm al-Mutanathir", author: "al-Kattani", confidence: medium, claim: "listed"}],
+   scope: {threshold: all}, expect: {kappa_gt: {all: 1}, companions_ge: 10}}

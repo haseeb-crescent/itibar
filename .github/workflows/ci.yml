@@ -1,0 +1,25 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - name: Install Graphviz
+        run: sudo apt-get update && sudo apt-get install -y graphviz
+      - name: Install dependencies
+        run: uv sync --frozen
+      - name: Pipeline and tests on the committed fixture
+        run: make ci
+      - name: Render a gold bundle
+        run: |
+          ITIBAR_PARQUET_DIR=$PWD/tests/fixture/parquet ITIBAR_OUT_DIR=$PWD/.ci-out ITIBAR_FIGURES_DIR=$PWD/.ci-out/figures \
+            uv run itibar render 319
+          ITIBAR_PARQUET_DIR=$PWD/tests/fixture/parquet ITIBAR_OUT_DIR=$PWD/.ci-out \
+            uv run itibar show 319 > /dev/null
