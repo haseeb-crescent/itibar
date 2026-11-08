@@ -184,3 +184,96 @@ def test_compiler_excluded_from_chain_grade():
     assert c["chain_ordinal"] == 10
     assert c["agree_full"] and not c["agree_derived"]
     assert c["disagreement_class"] == "compiler_strictly_weakest"
+
+
+def test_continuity_years_need_an_age_of_hearing():
+    # death(teacher) - birth(student) must reach min_hearing_age (5); basis recorded
+    C, t, s1, s2, s3, a = 1, 3, 4, 5, 6, 11
+    people = {C: COMPANION, t: {"rank_no": 3, "tabaka": 2, "death": 100},
+              s1: {"rank_no": 3, "tabaka": 3, "birth": 96}, s2: {"rank_no": 3, "tabaka": 3, "birth": 95},
+              s3: {"rank_no": 3, "tabaka": 3, "birth": 100}, a: {"rank_no": 3, "tabaka": 4}}
+    books = {1: {"author_no": 1, "compiler_rawi": a}}
+    out = run([chain(1, a, s1, t, C), chain(1, a, s2, t, C), chain(1, a, s3, t, C)], people, books)
+    e = {(x["u"], x["v"]): (x["continuity"], x["continuity_basis"]) for x in out["edges"]}
+    assert e[("r3", "r4")] == ("incompatible", "years")   # 4 years
+    assert e[("r3", "r5")] == ("compatible", "years")     # 5 years
+    assert e[("r3", "r6")] == ("incompatible", "years")   # born the year the teacher died
+    assert e[("r4", "r11")] == ("compatible", "tabaka")
+    assert e[("r1", "r3")] == ("compatible", "tabaka")
+    r = out["record"]
+    assert r["n_edges_incompatible"] == 2 and r["n_edges_incompatible_years"] == 2
+    assert r["n_edges_incompatible_tabaka"] == 0
+
+
+def test_continuity_seniors_from_juniors():
+    # a gap of -1 (riwayat al-akabir 'an al-asaghir) is compatible; -2 is not
+    C, t, s1, s2, a = 1, 3, 4, 5, 11
+    people = {C: COMPANION, t: {"rank_no": 3, "tabaka": 5}, s1: {"rank_no": 3, "tabaka": 4},
+              s2: {"rank_no": 3, "tabaka": 3}, a: {"rank_no": 3, "tabaka": 6}, 12: {"rank_no": 3, "tabaka": 0}}
+    books = {1: {"author_no": 1, "compiler_rawi": a}}
+    out = run([chain(1, a, s1, t, C), chain(1, a, s2, t, C), chain(1, a, 12, t, C)], people, books)
+    e = {(x["u"], x["v"]): (x["continuity"], x["continuity_basis"]) for x in out["edges"]}
+    assert e[("r3", "r4")] == ("compatible", "tabaka")
+    assert e[("r3", "r5")] == ("incompatible", "tabaka")
+    assert e[("r3", "r12")] == ("unknown", "unknown")
+
+
+def test_kappa_lower_nocompat_drops_incompatible_links():
+    # route 2 reaches its companion through a narrator born after the companion died
+    # (a cross-name misresolution): kappa 2, nocompat 1
+    C1, C2, x1, x2, a1, a2 = 1, 2, 3, 4, 11, 12
+    people = {C1: COMPANION, C2: {**COMPANION, "death": 50}, x1: {**THIQA, "tabaka": 3},
+              x2: {**THIQA, "tabaka": 3, "birth": 60}, a1: {**THIQA, "tabaka": 4}, a2: {**THIQA, "tabaka": 4}}
+    books = {1: {"author_no": 1, "compiler_rawi": a1}, 2: {"author_no": 2, "compiler_rawi": a2}}
+    r = run([chain(1, a1, x1, C1), chain(2, a2, x2, C2)], people, books)["record"]
+    for th in ("all", "thiqa_up"):
+        assert r[f"kappa_{th}"] == 2
+        assert r[f"kappa_nocompat_{th}"] == 1
+        assert r[f"kappa_lower_{th}"] == 1
+        assert r[f"kappa_lower_source_{th}"] == "nocompat"
+    # nothing incompatible: the bound is attained by the first hypothesis
+    people[x2] = {**THIQA, "tabaka": 3}
+    r = run([chain(1, a1, x1, C1), chain(2, a2, x2, C2)], people, books)["record"]
+    assert r["kappa_lower_all"] == r["kappa_nocompat_all"] == 2
+    assert r["kappa_lower_source_all"] == "unmerged"
+
+
+def test_kappa_zero_reasons():
+    C, n, a = 1, 3, 11
+    people = {C: COMPANION, n: THIQA, a: THIQA}
+    books = {1: {"author_no": 1, "compiler_rawi": a}}
+    r = run([], people, books)["record"]
+    assert r["kappa_zero_reason"] == "no_chains" and r["n_chains_connected"] == 0
+    r = run([chain(1, a, n), chain(1, a, n, 30002)], people, books)["record"]   # non-companion, irsal marker
+    assert r["kappa_all"] == 0 and r["kappa_zero_reason"] == "no_companion_end"
+    assert r["n_chains_companion_end"] == 0 and r["n_chains_broken"] == 1
+    r = run([chain(1, a, 30000, C)], people, books)["record"]                  # inqita' inside
+    assert r["kappa_all"] == 0 and r["kappa_zero_reason"] == "broken_only"
+    assert (r["n_chains_companion_end"], r["n_chains_broken"], r["n_chains_connected"]) == (1, 1, 0)
+    r = run([chain(1, a, n, C), chain(1, a, 30000, C)], people, books)["record"]
+    assert r["kappa_all"] == 1 and r["kappa_zero_reason"] is None
+    assert r["n_chains_connected"] == 1
+
+
+def test_companion_label_overrides():
+    # young companions at rank_no 3-4 connect to PROPHET; disputed companionship follows rank_no
+    young, disputed, a = 1, 2, 11
+    people = {young: {"rank_no": 4, "tabaka": 1, "label": "صحابي صغير"},
+              disputed: {"rank_no": 3, "tabaka": 1, "label": "مختلف في صحبته"}, a: THIQA}
+    books = {1: {"author_no": 1, "compiler_rawi": a}}
+    r = run([chain(1, a, young)], people, books)["record"]
+    assert r["kappa_all"] == 1 and r["companions"] == 1
+    assert r["kappa_thiqa_up"] == 0          # companionship only: the ordinal still follows rank_no 4
+    r = run([chain(1, a, disputed)], people, books)["record"]
+    assert r["kappa_all"] == 0 and r["kappa_zero_reason"] == "no_companion_end"
+
+
+def test_width_taqrib_keeps_layers_1_to_12():
+    C, t, q, a = 1, 3, 4, 11
+    people = {C: COMPANION, t: {"rank_no": 3, "tabaka": 3}, q: {"rank_no": 3, "tabaka": 14},
+              a: {"rank_no": 3, "tabaka": 16}}
+    books = {1: {"author_no": 1, "compiler_rawi": a}}
+    r = run([chain(1, a, q, t, C)], people, books)["record"]
+    assert [w["layer"] for w in r["width_profile"]] == [1, 3, 14, 16]
+    assert [w["layer"] for w in r["width_taqrib"]] == [1, 3]
+    assert r["structure_version"] == 2

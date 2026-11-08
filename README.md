@@ -12,8 +12,10 @@ classical narrator verdicts, with a receipt for every number. It never issues a 
 own, uses no ML, and its own outputs never use verdict words. Source labels (صحيح, ضعيف …) are
 quoted in Arabic as the source's.
 
-The current build brief is [docs/prompts/bucket-1.md](docs/prompts/bucket-1.md). Every choice the
-data forced that the brief did not settle is in [DECISIONS.md](DECISIONS.md); the source audit is
+The build briefs are [docs/prompts/bucket-1.md](docs/prompts/bucket-1.md) and its corrections in
+[docs/prompts/pr-2.md](docs/prompts/pr-2.md); records carry `structure_version` (now 2,
+`config/structure.yaml: structure.version`). Every choice the data forced that the briefs did not
+settle is in [DECISIONS.md](DECISIONS.md); the source audit is
 [reports/audit.md](reports/audit.md); gold-set results are [reports/gold.md](reports/gold.md).
 
 ## Reproduce from scratch
@@ -72,7 +74,10 @@ its count and ordinal under `labels:`. Each level also carries a **code** on the
 grade scale (0 صحيح, 1 حسن, 2 ضعيف, 3 شديد الضعف, 4 متهم بالوضع, 5 موضوع): levels 1–3 → 0, 4 → 1,
 5–9 → 2, 10 → 3, 11 → 4, 12 → 5; unknown → 2.
 
-**Companion** = rank_no 1, minus the labels that deny companionship (`لم تثبت له صحبة`, `له إدراك`, `لها إدراك`).
+**Companion** = rank_no 1, minus the labels that deny companionship (`لم تثبت له صحبة`, `له إدراك`, `لها إدراك`),
+plus any narrator carrying a label in `companion.label_overrides` (`صحابي صغير`, `صحابية صغيرة`) whatever
+its rank_no — 11 young companions the source puts at rank_no 3–4. Companionship only: their ordinal
+still follows rank_no. Disputed companionship (`مختلف في صحبته`) follows rank_no (DECISIONS D33).
 
 ### Bundle B(g) — `itibar.bundle`
 For meaning group *g*, every chain (`sanads`) of every hadith with `hadiths.group_id = g`.
@@ -105,6 +110,10 @@ to a book, at threshold *everyone*).
 
     width(L) = |{ narrators v on path : layer(v) = L }|
 
+`width_profile` keeps every layer; `width_taqrib` keeps layers 1–12 only (`layers.taqrib_max_layer`).
+Layers 13–38 are later compilers and quoters: their width counts how many books carry a report,
+not how it was transmitted (DECISIONS D34).
+
 ### κ (kappa) and thresholds
 Node-split max flow from P to a super-sink T joined to every book; every narrator, unnamed person
 and compiler node has capacity 1; P, books and T are never cut. By Menger's theorem
@@ -126,16 +135,40 @@ A compiler is kept at every threshold *in his compiler role only*: if he fails �
 his books survive and his edges as a teacher in other chains are removed.
 
 ### κ_lower
-The pessimistic bound every headline number must survive:
+κ_lower is the minimum of κ over three stated hypotheses — same-name clusters merged, unmerged,
+and continuity-incompatible links removed. It is a lower bound under those hypotheses, not a
+guarantee. Cross-name misresolution that the continuity rule does not catch remains an
+unquantified upward bias on κ; `tests/gold/gold.yaml` lists the instances found.
 
-    κ_lower_θ = min( κ_θ on the graph with stubs dropped and each same-name cluster
-                       (same name + nickname, the 421 clusters) merged into one node
-                       of min ordinal, unnamed persons merged per student,
-                     κ_θ on the graph with stubs dropped )
+    κ_unmerged_θ = κ_θ on the bundle with stubs dropped
+    κ_merged_θ   = κ_θ with stubs dropped, each same-name cluster (same name + nickname, the 421
+                   clusters) merged into one node of min ordinal, unnamed persons merged per student
+    κ_nocompat_θ = κ_θ with stubs dropped and every edge the continuity rule marks incompatible removed
+    κ_lower_θ    = min(κ_unmerged_θ, κ_merged_θ, κ_nocompat_θ)
 
-The second term is needed because merging is not monotone: it can splice a dead-end half-route
-of one person onto a half-route of another and create a route. `kappa_lower_splice` names the
-thresholds where that happened (none in the current data). κ_lower < κ in 5 groups at *everyone*.
+`kappa_nocompat_θ` is stored as its own column; `kappa_lower_source_θ` ∈ {unmerged, merged,
+nocompat} names the first hypothesis attaining the minimum in that order. Removing edges never
+raises κ, so `nocompat` there means removing incompatible links lowered κ below both other graphs.
+Merging is not monotone — it can splice a dead-end half-route of one person onto a half-route of
+another — which is why the unmerged graph is in the minimum; `kappa_lower_splice` names thresholds
+where merging raised κ (none in the current data). At *everyone*, κ_lower < κ in 2,436 groups
+(nocompat in 2,432 of them, merging in 1); 1,020 groups with κ ≥ 1 have κ_lower = 0.
+
+### κ = 0 and `kappa_zero_reason`
+κ = 0 means **no unbroken companion-ending route in this data**, not no support. Every group with
+κ_everyone = 0 (or no chains) gets one reason, by precedence:
+
+| `kappa_zero_reason` | meaning | groups |
+|---|---|---|
+| `no_chains` | the group has no chains | 463 |
+| `no_companion_end` | no chain ends in a companion (irsal marker, unnamed person, non-companion, stub) | 2,531 |
+| `broken_only` | companion-ending chains exist, every one containing a break marker | 427 |
+| `other` | a continuous chain exists yet no P → book route survived (gated at 0) | 0 |
+
+Per group: `n_chains_companion_end`, `n_chains_broken` (any break marker), `n_chains_connected`
+(companion end, no break marker). A route can exist without a continuous chain when chains broken
+at different places cover each other (13 groups; DECISIONS D31). The audit (§9) lists the books
+behind each reason and cross-tabulates reasons against the source's recorded group grade.
 
 ### Cut vertices
 Narrator (or compiler) nodes on **every** P → book route: the dominators of T in the on-path graph,
@@ -162,14 +195,19 @@ counts attested continuous chains avoiding them; `paths_total` is the unrestrict
 `death_year` of each common link and each cut vertex, with `death_year_raw` beside it (ranges such
 as `130 - 121` are kept raw, never parsed by us).
 
-### Continuity (per edge u teacher → v student)
-    compatible    if death(u) ≥ birth(v), when both years are known
-    incompatible  if both years are known and death(u) < birth(v)
-    otherwise, if both tabakas are known: compatible iff tabaka(v) − tabaka(u) ∈ {0,1,2,3,4}, else incompatible
-    unknown       otherwise
-The window is `config/structure.yaml: continuity.tabaka_window`; the brief's {0,1,2} is reported
-in the audit (it flags 36% of all links, including canonical ones — DECISIONS.md D9).
-Continuity is reported, never used in κ or the derived grade.
+### Continuity (per edge u teacher → v student) — `structure.link_continuity`
+    years    when death(u) and birth(v) are both known:
+             compatible iff death(u) − birth(v) ≥ min_hearing_age (5), else incompatible
+    tabaka   otherwise, when both tabakas are known:
+             compatible iff tabaka(v) − tabaka(u) ∈ {−1, 0, 1, 2, 3, 4}, else incompatible
+    unknown  otherwise
+The basis is stored beside the verdict (`continuity_basis` per edge; `n_edges_incompatible_years`,
+`n_edges_incompatible_tabaka` per group). −1 is a senior narrating from a junior (*riwayat al-akabir
+'an al-asaghir*). The keys are `config/structure.yaml: continuity.min_hearing_age, tabaka_window`;
+the brief's {0,1,2} window is reported in the audit (it flags 36% of all links, including canonical
+ones — DECISIONS D9, D32). Of 3.74M chain links, 1.6% are incompatible (0.9% by tabaka, 0.7% by
+years). One function serves bundle edges, the nocompat graph and the `drop_incompatible` scope.
+Continuity enters only κ_nocompat (hence κ_lower), never κ itself or the derived grade.
 
 ### Transmission words and mu'an'an by a mudallis — `itibar.words`
 For a chain whose narrators can be matched to the hadith's inline mentions (`hadith_rawis`, sanad
@@ -215,7 +253,7 @@ Per chain (`out/chains.parquet`): `agree_full` = our weakest link over the whole
 | `out/bundles/nodes`, `out/bundles/edges` | the bundle graphs, Hive-partitioned by `bucket` |
 | `out/words.parquet` | transmission word per aligned (sanad, teacher pos) |
 | `reports/audit.md`, `reports/gold.md` | source audit; gold-set results |
-| `figures/` | fig1 (κ distribution by threshold), fig2 (width by tabaka, Sahihayn vs rest), with CSVs |
+| `figures/` | fig1 (κ distribution by threshold), fig2 (width by Taqrib layer 1–12, Sahihayn vs rest; CSV keeps every layer), with CSVs |
 
 ## Gates and gold set
 
@@ -232,13 +270,19 @@ Per chain (`out/chains.parquet`): `agree_full` = our weakest link over the whole
 - **Companion band**: for the ten most-narrated groups, upstream's recount ≤ ours ≤ declared
   `sahaba_qty`; corpus-wide (declared ≥ 10) our median ratio to declared is 0.846, inside upstream's
   0.795–0.966; ours exceeds declared in 0.7% of groups.
-- Also asserted: one record per group; κ_lower ≤ κ and nested thresholds; cut vertices iff κ = 1;
-  bypass = 0 iff the common link is a cut vertex; recorded values untouched; no verdict words.
+- **κ = 0 explained**: every group with κ_everyone = 0 has a `kappa_zero_reason`, and `other`
+  (a continuous chain but no route) occurs 0 times.
+- Also asserted: one record per group; κ_lower = min of the three hypotheses, ≤ κ_nocompat ≤ κ, and
+  nested thresholds; cut vertices iff κ = 1; bypass = 0 iff the common link is a cut vertex;
+  recorded values untouched; no verdict words.
 
 ## Results at a glance (full corpus)
 
-20,282 groups with chains. κ_everyone: 0 in 14.6% (no unbroken route), 1 in 55.1%, 2–4 in 22.1%,
-5–9 in 5.7%, ≥ 10 in 2.5% (504 groups); at thiqa and above, ≥ 10 in 102 groups. Derived code agrees
+20,282 groups with chains. κ_everyone: 0 in 14.6% (no unbroken companion-ending route in this
+data: 2,531 groups with no companion-ending chain, 427 where every such chain is broken), 1 in
+55.1%, 2–4 in 22.1%, 5–9 in 5.7%, ≥ 10 in 2.5% (505 groups); at thiqa and above, ≥ 10 in 102 groups.
+κ_lower_everyone ≥ 10 in 451 groups (94 at thiqa and above); κ_lower < κ in 2,436 groups, almost all
+through removed incompatible links. Derived code agrees
 with the group's recorded grade in 72.3% of groups; the largest disagreement (2,573 groups: derived
 code 2, recorded حسن) is the class corroboration upgrades address in bucket 2.
 

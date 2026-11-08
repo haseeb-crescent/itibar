@@ -14,7 +14,7 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 
 from itibar import bundle as bundle_mod
-from itibar import data, derive, load, paths, structure
+from itibar import config, data, derive, load, paths, structure
 from itibar.bundle import PROPHET
 
 _CORPUS: load.Corpus | None = None
@@ -33,12 +33,27 @@ def _mode(xs):
     return min(x for x, n in c if n == top)
 
 
+def kappa_zero_reason(kappa_all: int | None, chains: list) -> str | None:
+    """Why kappa_all is zero, by precedence (None when kappa_all > 0):
+    no_chains, no_companion_end, broken_only, other. `chains` are ChainInfo rows."""
+    if not chains:
+        return "no_chains"
+    if kappa_all:
+        return None
+    if not any(c.ends_companion for c in chains):
+        return "no_companion_end"
+    if not any(c.connected for c in chains):
+        return "broken_only"
+    return "other"
+
+
 def analyse_group(gid: int, chains: list[load.Chain], corpus: load.Corpus, mg: dict) -> dict:
     """Returns {'record': {...}, 'nodes': [...], 'edges': [...], 'chains': [...]}."""
     _load_side_tables()
     scale, nar = corpus.scale, corpus.narrators
     rec: dict = {
         "group_id": gid,
+        "structure_version": int(config.load("structure")["structure"]["version"]),
         "nass": mg.get("nass"),
         "is_qudsi": mg.get("is_qudsi"),
         "sahaba_qty": mg.get("sahaba_qty"),
@@ -49,7 +64,8 @@ def analyse_group(gid: int, chains: list[load.Chain], corpus: load.Corpus, mg: d
         "n_books": len({c.book_id for c in chains}),
     }
     if not chains:
-        rec["status"] = "no_chains"
+        rec.update({"status": "no_chains", "kappa_zero_reason": "no_chains", "n_chains_companion_end": 0,
+                    "n_chains_broken": 0, "n_chains_connected": 0})
         return {"record": rec, "nodes": [], "edges": [], "chains": []}
     B = bundle_mod.build(gid, chains, corpus)
     S = structure.analyse(B, corpus)
@@ -79,6 +95,7 @@ def analyse_group(gid: int, chains: list[load.Chain], corpus: load.Corpus, mg: d
     hadith_codes = [c.hadith_matn_no for c in {c.hadith_id: c for c in chains}.values()]
     sanad_codes = [c.matn_no for c in chains]
     cont_counts = Counter(v for v in S.edge_continuity.values() if v != "n/a")
+    incompat_basis = Counter(S.edge_basis[e] for e, v in S.edge_continuity.items() if v == "incompatible")
     mu_counts = Counter(S.edge_muanan.values())
     lsrc = Counter(S.layer_source[v] for v in on if B.kind.get(v) in structure.NARRATOR_KINDS
                    and v in S.layer_source)
@@ -91,6 +108,9 @@ def analyse_group(gid: int, chains: list[load.Chain], corpus: load.Corpus, mg: d
         "width_profile": [{"layer": int(k), "width": int(v)} for k, v in S.width.items()],
         "width_max": max(S.width.values()) if S.width else 0,
         "width_min": min(S.width.values()) if S.width else 0,
+        "width_taqrib": [{"layer": int(k), "width": int(v)} for k, v in S.width_taqrib.items()],
+        "width_taqrib_max": max(S.width_taqrib.values()) if S.width_taqrib else 0,
+        "width_taqrib_min": min(S.width_taqrib.values()) if S.width_taqrib else 0,
         "kappa_all": S.kappa["all"],
         "kappa_above_matruk": S.kappa["above_matruk"],
         "kappa_saduq_up": S.kappa["saduq_up"],
@@ -99,7 +119,10 @@ def analyse_group(gid: int, chains: list[load.Chain], corpus: load.Corpus, mg: d
         "kappa_lower_above_matruk": S.kappa_lower["above_matruk"],
         "kappa_lower_saduq_up": S.kappa_lower["saduq_up"],
         "kappa_lower_thiqa_up": S.kappa_lower["thiqa_up"],
+        **{f"kappa_lower_source_{th}": S.kappa_lower_source[th] for th in scale.thresholds},
+        **{f"kappa_nocompat_{th}": S.kappa_nocompat[th] for th in scale.thresholds},
         "kappa_lower_splice": [k for k, v in S.kappa_lower_splice.items() if v],
+        "kappa_zero_reason": kappa_zero_reason(S.kappa["all"], B.chains),
         "cut_set_all": S.cut_set["all"],
         "cut_set_thiqa_up": S.cut_set["thiqa_up"],
         "disjoint_routes_all": structure.routes_json(S.routes_all),
@@ -137,9 +160,13 @@ def analyse_group(gid: int, chains: list[load.Chain], corpus: load.Corpus, mg: d
         "n_taliq_marker_chains": sum(1 for c in B.chains if c.gaps.get("taliq")),
         "n_mubham_chains": sum(1 for c in B.chains if c.has_mubham),
         "n_stub_chains": sum(1 for c in B.chains if c.has_stub),
-        "n_connected_chains": sum(1 for c in B.chains if c.connected),
+        "n_chains_companion_end": sum(1 for c in B.chains if c.ends_companion),
+        "n_chains_broken": sum(1 for c in B.chains if c.gaps),
+        "n_chains_connected": sum(1 for c in B.chains if c.connected),
         "n_edges_compatible": cont_counts.get("compatible", 0),
         "n_edges_incompatible": cont_counts.get("incompatible", 0),
+        "n_edges_incompatible_years": incompat_basis.get("years", 0),
+        "n_edges_incompatible_tabaka": incompat_basis.get("tabaka", 0),
         "n_edges_unknown": cont_counts.get("unknown", 0),
         "n_edges_muanan_mudallis": mu_counts.get("yes", 0),
         "n_edges_mudallis_unknown_word": mu_counts.get("unknown_word", 0),
@@ -194,6 +221,7 @@ def analyse_group(gid: int, chains: list[load.Chain], corpus: load.Corpus, mg: d
             "word_classes": [o[4] for o in occ],
             "on_path": u in on and v in on,
             "continuity": S.edge_continuity.get((u, v)),
+            "continuity_basis": S.edge_basis.get((u, v)),
             "muanan_mudallis": S.edge_muanan.get((u, v)),
         })
     chain_rows = []
@@ -288,8 +316,10 @@ def run(group_ids: list[int] | None = None, workers: int | None = None, out_dir=
     return {"groups": len(results), "load_s": round(t_load, 1), "total_s": round(time.time() - t0, 1)}
 
 
+_WIDTH = pa.list_(pa.struct([("layer", pa.int16()), ("width", pa.int32())]))
 RECORD_SCHEMA_OVERRIDES = {
-    "width_profile": pa.list_(pa.struct([("layer", pa.int16()), ("width", pa.int32())])),
+    "width_profile": _WIDTH,
+    "width_taqrib": _WIDTH,
     "bypass_paths": pa.decimal128(38, 0),
     "paths_total": pa.decimal128(38, 0),
 }
@@ -328,10 +358,15 @@ def write(results: list[dict], out_dir) -> None:
 
 
 _ORDER = [
-    "group_id", "status", "nass", "is_qudsi", "n_hadith", "n_chains", "n_books", "n_nodes", "n_edges",
-    "n_narrators_on_path", "width_profile", "width_max", "width_min",
-    "kappa_all", "kappa_above_matruk", "kappa_saduq_up", "kappa_thiqa_up",
-    "kappa_lower_all", "kappa_lower_above_matruk", "kappa_lower_saduq_up", "kappa_lower_thiqa_up", "kappa_lower_splice",
+    "group_id", "structure_version", "status", "nass", "is_qudsi", "n_hadith", "n_chains", "n_books", "n_nodes",
+    "n_edges", "n_narrators_on_path", "width_profile", "width_max", "width_min",
+    "width_taqrib", "width_taqrib_max", "width_taqrib_min",
+    "kappa_all", "kappa_above_matruk", "kappa_saduq_up", "kappa_thiqa_up", "kappa_zero_reason",
+    "kappa_lower_all", "kappa_lower_above_matruk", "kappa_lower_saduq_up", "kappa_lower_thiqa_up",
+    "kappa_lower_source_all", "kappa_lower_source_above_matruk", "kappa_lower_source_saduq_up",
+    "kappa_lower_source_thiqa_up",
+    "kappa_nocompat_all", "kappa_nocompat_above_matruk", "kappa_nocompat_saduq_up", "kappa_nocompat_thiqa_up",
+    "kappa_lower_splice",
     "cut_set_all", "cut_set_thiqa_up", "disjoint_routes_all",
     "companions", "companions_on_path", "companions_chain_end", "companions_upstream_def", "sahaba_qty", "repeat_qty",
     "n_single_strand", "single_strand", "n_pcl_k2", "pcl_k2", "n_pcl_k3", "pcl_k3",
@@ -340,8 +375,9 @@ _ORDER = [
     "bypass_paths", "bypass_paths_capped", "bypass_chains", "paths_total", "paths_capped",
     "paths_on_acyclic_reduction", "cl_death_year", "cl_death_year_raw", "cut_death_year", "cut_death_year_raw",
     "n_mursal_chains", "n_irsal_marker_chains", "n_inqita_marker_chains", "n_taliq_marker_chains",
-    "n_mubham_chains", "n_stub_chains", "n_connected_chains",
-    "n_edges_compatible", "n_edges_incompatible", "n_edges_unknown", "n_edges_muanan_mudallis",
+    "n_mubham_chains", "n_stub_chains", "n_chains_companion_end", "n_chains_broken", "n_chains_connected",
+    "n_edges_compatible", "n_edges_incompatible", "n_edges_incompatible_years", "n_edges_incompatible_tabaka",
+    "n_edges_unknown", "n_edges_muanan_mudallis",
     "n_edges_mudallis_unknown_word", "n_layer_fallback_missing", "n_layer_fallback_backward",
     "n_backward_edges", "n_self_loops", "has_cycle", "n_takhrij",
     "derived_ordinal", "derived_level", "derived_code", "derived_best_sanad_id", "derived_best_continuous",

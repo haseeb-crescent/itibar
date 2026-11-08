@@ -16,6 +16,14 @@ import pyarrow.dataset as ds
 from itibar import data, grades, paths
 
 BAR = "█"
+THRESHOLD_LABELS = {"all": "everyone", "above_matruk": "above matruk", "saduq_up": "saduq+", "thiqa_up": "thiqa+"}
+ZERO_REASONS = {
+    "no_chains": "the group has no chains",
+    "no_companion_end": "no chain ends in a companion (each ends at an irsal marker, an unnamed person, "
+                        "a non-companion or a stub)",
+    "broken_only": "companion-ending chains exist, but every one contains a break marker",
+    "other": "continuous chains exist yet no PROPHET → book route survived (see reports/audit.md §9)",
+}
 
 
 def _record(gid: int) -> dict:
@@ -75,6 +83,7 @@ def show(gid: int, file=sys.stdout) -> None:
     p("")
     if rec.get("status") != "ok":
         p(f" recorded grade (meaning_groups.matn_no): {rec.get('matn_no_group')} {hk.get(rec.get('matn_no_group'), '')}")
+        p(f" κ = 0 — reason: {rec.get('kappa_zero_reason')}: {ZERO_REASONS.get(rec.get('kappa_zero_reason'), '')}")
         p(" no chains: nothing to compute")
         return
     p(f" chains {rec['n_chains']:,} · hadith {rec['n_hadith']:,} · books {rec['n_books']:,} · "
@@ -83,10 +92,17 @@ def show(gid: int, file=sys.stdout) -> None:
       f"chain-end companions {rec['companions_chain_end']})")
     p("")
     p(" κ (vertex-disjoint routes PROPHET → books)")
-    p(f"   everyone {rec['kappa_all']:>4}   above matruk {rec['kappa_above_matruk']:>4}   "
-      f"saduq+ {rec['kappa_saduq_up']:>4}   thiqa+ {rec['kappa_thiqa_up']:>4}")
-    p(f"   κ_lower  {rec['kappa_lower_all']:>4}                {rec['kappa_lower_above_matruk']:>4}   "
-      f"       {rec['kappa_lower_saduq_up']:>4}          {rec['kappa_lower_thiqa_up']:>4}")
+    p(f"   {'':<12}" + "".join(f"{lab:>14}" for lab in THRESHOLD_LABELS.values()))
+    p(f"   {'κ':<12}" + "".join(f"{rec[f'kappa_{th}']:>14}" for th in THRESHOLD_LABELS))
+    p(f"   {'κ_nocompat':<12}" + "".join(f"{rec[f'kappa_nocompat_{th}']:>14}" for th in THRESHOLD_LABELS))
+    p(f"   {'κ_lower':<12}" + "".join(f"{rec[f'kappa_lower_{th}']:>14}" for th in THRESHOLD_LABELS))
+    p(f"   {'attained by':<12}" + "".join(f"{rec[f'kappa_lower_source_{th}']:>14}" for th in THRESHOLD_LABELS))
+    p("   κ_lower: the minimum of κ over three stated hypotheses (same-name clusters merged, unmerged,")
+    p("   continuity-incompatible links removed); a lower bound under those hypotheses, not a guarantee.")
+    if rec["kappa_all"] == 0:
+        reason = rec.get("kappa_zero_reason")
+        p(f"   κ = 0 — reason: {reason}: {ZERO_REASONS.get(reason, '')}")
+        p("   (κ = 0 means no unbroken companion-ending route in this data, not no support.)")
     p(f"   one minimum cut (everyone): {', '.join(nm(x) for x in rec['cut_set_all'])}")
     if rec["cut_vertices"]:
         p("   cut vertices (on every route): " + " → ".join(
@@ -107,15 +123,19 @@ def show(gid: int, file=sys.stdout) -> None:
     wp = rec["width_profile"]
     mx = max((w["width"] for w in wp), default=1)
     for w in wp[:16]:
-        p(f"   {w['layer']:>3} {w['width']:>5} {BAR * max(1, round(40 * w['width'] / mx))}")
+        note = "   (13+: later compilers and quoters)" if w["layer"] == 13 else ""
+        p(f"   {w['layer']:>3} {w['width']:>5} {BAR * max(1, round(40 * w['width'] / mx))}{note}")
     if len(wp) > 16:
         p(f"   … {len(wp) - 16} more layers")
+    p(f"   Taqrib layers 1–12: max width {rec['width_taqrib_max']}, min {rec['width_taqrib_min']}")
     p("")
     p(f" chains: mursal {rec['n_mursal_chains']} (irsal marker {rec['n_irsal_marker_chains']}), "
       f"inqita' {rec['n_inqita_marker_chains']}, ta'liq {rec['n_taliq_marker_chains']}, "
       f"unnamed narrator {rec['n_mubham_chains']}, undescribed narrator {rec['n_stub_chains']}, "
-      f"continuous {rec['n_connected_chains']}")
-    p(f" links: compatible {rec['n_edges_compatible']}, incompatible {rec['n_edges_incompatible']}, "
+      f"companion-ending {rec['n_chains_companion_end']}, with a break marker {rec['n_chains_broken']}, "
+      f"continuous {rec['n_chains_connected']}")
+    p(f" links: compatible {rec['n_edges_compatible']}, incompatible {rec['n_edges_incompatible']} "
+      f"(by years {rec['n_edges_incompatible_years']}, by tabaka {rec['n_edges_incompatible_tabaka']}), "
       f"unknown {rec['n_edges_unknown']}; mu'an'an by a mudallis {rec['n_edges_muanan_mudallis']} "
       f"(+{rec['n_edges_mudallis_unknown_word']} mudallis links with no recovered word)")
     p("")

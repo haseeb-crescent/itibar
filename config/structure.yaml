@@ -20,8 +20,17 @@ layers:
   # A narrator whose tabaka puts it more than this many layers *before* every
   # one of its resolved teachers is treated as unusable for this bundle.
   max_backward: 1
+  # Taqrib's own generations. Layers above this are later compilers and quoters:
+  # they count how many books carry a report, not how it was transmitted, so
+  # `width_taqrib` and fig2 keep layers 1..taqrib_max_layer only.
+  taqrib_max_layer: 12
 
 structure:
+  # Version of the structural definitions; every record carries it.
+  # 2: kappa_lower over three hypotheses (adds nocompat), kappa_zero_reason,
+  #    continuity window [-1..4] and min_hearing_age, companion label overrides,
+  #    width_taqrib.
+  version: 2
   pcl_k: [2, 3]
   common_link_k: 2
   # Path counts can be astronomically large; saturate at int64 max and flag.
@@ -29,12 +38,20 @@ structure:
 
 continuity:
   # Teacher u -> student v. Years first, then tabaka window, else unknown.
-  # The brief proposed [0, 1, 2]; on this source's tabaka scale that marks ~36% of
-  # all chain links incompatible, including canonical links (Anas -> al-Zuhri,
-  # 'Alqama -> al-Taymi, al-Zuhri -> Malik are gaps of 3; al-Zuhri -> Ibn 'Uyayna 4).
-  # [0..4] is the narrowest window that keeps them; see DECISIONS.md and
-  # reports/audit.md (section 8.5) for the full distribution.
-  tabaka_window: [0, 1, 2, 3, 4]
+  #
+  # Years: when death(u) and birth(v) are both known, compatible iff
+  # death(u) - birth(v) >= min_hearing_age (the student was at least that old
+  # when the teacher died). Below it, including negative, is incompatible.
+  min_hearing_age: 5
+  #
+  # Tabaka: compatible iff tabaka(v) - tabaka(u) is in the window.
+  # -1 is a senior narrating from a junior (riwayat al-akabir 'an al-asaghir), an
+  # accepted pattern; -2 and below stay incompatible. Upper end 4: on this source's
+  # scale canonical links are gaps of 3 (Anas -> al-Zuhri, 'Alqama -> al-Taymi,
+  # al-Zuhri -> Malik) and 4 (al-Zuhri -> Ibn 'Uyayna). The brief proposed [0, 1, 2],
+  # which marks ~36% of all chain links incompatible; see DECISIONS.md (D9, D32)
+  # and reports/audit.md (section 8.5) for the full distribution.
+  tabaka_window: [-1, 0, 1, 2, 3, 4]
   brief_tabaka_window: [0, 1, 2]   # reported in the audit for comparison
   # Transmission words that make a mudallis's link mu'an'an (normalized forms).
   muanan_words: ["عن", "أن", "قال"]

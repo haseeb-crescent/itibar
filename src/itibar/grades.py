@@ -21,6 +21,7 @@ class GradeScale:
     unknown_code: int
     companion_rank_nos: frozenset[int]
     companion_exclude_labels: frozenset[str]
+    companion_label_overrides: frozenset[str]
     placeholders: dict[int, dict]
     thresholds: dict[str, int]          # name -> min ordinal (ordered)
     hukm_codes: dict[int, str]
@@ -33,9 +34,14 @@ class GradeScale:
         return self.level_ordinal.get(int(rank_no), UNKNOWN)
 
     def is_companion(self, rank_no: int | None, label: str | None) -> bool:
+        """rank_no in companion.rank_no minus companion.exclude_labels, plus any
+        narrator carrying one of companion.label_overrides whatever its rank_no."""
+        lab = (label or "").strip()
+        if lab in self.companion_label_overrides:
+            return True
         if rank_no is None or int(rank_no) not in self.companion_rank_nos:
             return False
-        return (label or "").strip() not in self.companion_exclude_labels
+        return lab not in self.companion_exclude_labels
 
     def code_of_ordinal(self, ordinal: int) -> int:
         return self.ordinal_code.get(ordinal, self.unknown_code)
@@ -65,6 +71,7 @@ def load() -> GradeScale:
         unknown_code=g["unknown"]["code"],
         companion_rank_nos=frozenset(int(x) for x in g["companion"]["rank_no"]),
         companion_exclude_labels=frozenset(g["companion"].get("exclude_labels") or []),
+        companion_label_overrides=frozenset(g["companion"].get("label_overrides") or []),
         placeholders={int(k): v for k, v in g["placeholders"].items()},
         thresholds=thresholds,
         hukm_codes={int(k): v for k, v in g["hukm_codes"].items()},
@@ -92,7 +99,7 @@ def write_labels(con) -> int:
         entry = {"label": rank, "n": int(n), "ordinal": ordinal}
         if stubs and stubs == n:
             entry["note"] = "stub narrators (never described in the source)"
-        if rank_no in scale.companion_rank_nos:
+        if rank_no in scale.companion_rank_nos or rank in scale.companion_label_overrides:
             entry["companion"] = scale.is_companion(rank_no, rank)
         labels.setdefault(int(rank_no), []).append(entry)
     path = paths.CONFIG_DIR / "grades.yaml"
