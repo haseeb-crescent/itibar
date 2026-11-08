@@ -14,6 +14,12 @@
 # structure, if the data gains or loses a contradicting chain, or if the
 # documented structure does not hold on the remaining chains.
 #
+# A deviation caused by cross-name misresolution (a different full name resolved
+# to the wrong person) carries `misresolution: {resolved, intended}`; a suspected
+# one not yet in the deviation lists is recorded as `candidate_misresolution` for
+# the name-resolution work of a later bucket. reports/audit.md (section 8.4) checks
+# each against the continuity rule. Neither key changes what the test asserts.
+#
 # Node ids: r<rawi_id>. Narrator names are given for the reader; ids are what
 # the test checks. Source attributions name the work; `confidence` says how
 # sure the editor is that the cited work makes this exact claim (medium =
@@ -41,8 +47,9 @@ entries:
   scope: {companion: 5913, threshold: all}
   deviation_key: [r5913, r5719, r6796, r8272]
   known_deviations:
-    - reason: "homonym misresolution: 'Yahya b. Sa'id' under al-Taymi (d. 120) resolved to al-Qattan (r8271, b. 120, layer 9); the student of al-Taymi is al-Ansari"
+    - reason: "homonym misresolution: 'Yahya b. Sa'id' under al-Taymi (d. 119 in the data, 120 in Taqrib) resolved to al-Qattan (r8271, b. 120, layer 9); the student of al-Taymi is al-Ansari"
       sanad_ids: [320050, 320051, 320052, 320053, 320054, 320055]
+      misresolution: {resolved: r8271, intended: r8272}
     - reason: "dropped link: 'Alqama missing between 'Umar and al-Taymi (al-Humaydi's chain; al-Humaydi's own Musnad has 'Alqama)"
       sanad_ids: [349231, 349232]
     - reason: "route from al-Taymi via Muhammad b. 'Amr b. 'Alqama al-Laythi (r7225, Taqrib level 5), against the documented tafarrud of Yahya; absent at saduq_up and above"
@@ -83,6 +90,7 @@ entries:
       sanad_ids: [247434, 247435, 270696, 294947, 294949, 469954, 506092, 506095]
     - reason: "'Abdullah b. Dinar resolved to al-Bahrani (r4796, layer 6) instead of al-Qurashi (r4797): homonym misresolution"
       sanad_ids: [494475, 494476]
+      misresolution: {resolved: r4796, intended: r4797}
     - reason: "other single routes: 'Ata' b. Yasar (Musnad Abi Hanifa), Hamza b. Waqid (r41818, Taqrib level 9), Hisham b. 'Urwa (Tarikh Dimashq)"
       sanad_ids: [240476, 506093, 506094, 519732, 519733]
   expect:
@@ -121,6 +129,7 @@ entries:
   known_deviations:
     - reason: "'Umara b. al-Qa'qa' resolved to 'Umara b. 'Umayr al-Taymi (r5885): homonym misresolution"
       sanad_ids: [145572, 145573]
+      misresolution: {resolved: r5885, intended: r5866}
     - reason: "ta'liq: compiler omitted the chain below 'Umara (break marker)"
       sanad_ids: [351326]
     - reason: "al-'Abbas b. Yazid al-Bahrani from 'Umara in place of Ibn Fudayl (a late single chain)"
@@ -153,9 +162,14 @@ entries:
       r6458: [r3795]                # Qatada -> Shu'ba
       r4574: [r1003, r5270]         # 'Abd al-'Aziz -> Isma'il b. 'Ulayya, 'Abd al-Warith
     min_students: {r720: 2, r6458: 2, r4574: 2}
+  candidate_misresolution:
+    - {resolved: r3306, intended: r3281, teacher: r6458,
+       note: "Qatada's second student in the data is Sa'id b. Bashir (r3306) where Ibn Hajar names Sa'id b. Abi 'Aruba (r3281)"}
   notes: >
-    The data's second student of Qatada is Sa'id b. Bashir (r3306), not Sa'id b. Abi 'Aruba;
-    the group also folds in the 'Umar/'Abdullah b. Hisham report and others (7 companions on path).
+    candidate_misresolution: the data's second student of Qatada is Sa'id b. Bashir (r3306) where
+    Ibn Hajar names Sa'id b. Abi 'Aruba (r3281); left for the name-resolution work of a later bucket,
+    no assertion depends on it. The group also folds in the 'Umar/'Abdullah b. Hisham report and
+    others (7 companions on path).
 
 - id: buniya-al-islam
   group_id: 523

@@ -7,7 +7,9 @@ that end in 'Umar, as transmitted by continuous links. A scope selects chains
 
   companion          keep chains whose last narrator is this rawi id
   drop_incompatible  drop chains containing a link the continuity rule marks
-                     incompatible (a generation gap the data itself contradicts)
+                     incompatible (a generation gap the data itself contradicts).
+                     The nocompat graph of kappa_lower drops the same links as
+                     edges instead of dropping whole chains.
   drop_breaks        drop chains containing a break marker
 """
 
@@ -15,7 +17,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from itibar import config, data, load, pipeline
+from itibar import data, load, pipeline, structure
 
 
 @dataclass(frozen=True)
@@ -25,22 +27,16 @@ class Scope:
     drop_breaks: bool = False
 
 
-def link_continuity(nar: load.Narrators, teacher: int, student: int, window: set[int]) -> str:
-    if nar.placeholder_role.get(teacher) or nar.placeholder_role.get(student):
-        return "n/a"
-    du, bv = int(nar.death[teacher]), int(nar.birth[student])
-    tu, tv = int(nar.tabaka[teacher]), int(nar.tabaka[student])
-    if du >= 0 and bv >= 0:
-        return "compatible" if du >= bv else "incompatible"
-    if tu > 0 and tv > 0:
-        return "compatible" if (tv - tu) in window else "incompatible"
-    return "unknown"
+def link_continuity(nar: load.Narrators, teacher: int, student: int) -> str:
+    """Verdict of the shared continuity rule (structure.link_continuity)."""
+    return structure.link_continuity(nar, teacher, student)[0]
 
 
 def chain_has_incompatible(ch: load.Chain, nar: load.Narrators) -> bool:
-    window = set(config.load("structure")["continuity"]["tabaka_window"])
+    rule = structure.ContinuityRule.load()
     r = ch.rawis
-    return any(link_continuity(nar, r[p + 1], r[p], window) == "incompatible" for p in range(len(r) - 1))
+    return any(structure.link_continuity(nar, r[p + 1], r[p], rule)[0] == "incompatible"
+               for p in range(len(r) - 1))
 
 
 def select(chains: list[load.Chain], scope: Scope, corpus: load.Corpus) -> list[load.Chain]:

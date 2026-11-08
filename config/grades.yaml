@@ -41,6 +41,12 @@ companion:
   # Narrators carrying them keep ordinal 12 (the source put them at level 1) but
   # do not get a PROPHET edge.
   exclude_labels: ["لم تثبت له صحبة", "له إدراك", "لها إدراك"]
+  # Labels that make a narrator a companion regardless of rank_no. The source
+  # puts 11 "young companions" at rank_no 3 or 4 (22 more are at rank_no 1).
+  # Companionship only: their ordinal still follows rank_no. Disputed
+  # companionship (مختلف في صحبته ...) is NOT overridden and follows rank_no.
+  # See DECISIONS.md D33.
+  label_overrides: ["صحابي صغير", "صحابية صغيرة"]
 
 # Pseudo-narrators: rawis rows with rank IS NULL and rank_no = 12 that are not
 # people. The audit asserts this list equals that set exactly.
@@ -635,6 +641,7 @@ labels:
   - label: صحابي صغير
     n: 6
     ordinal: 10
+    companion: true
   - label: ثقة فاضل
     n: 5
     ordinal: 10
@@ -695,6 +702,7 @@ labels:
   - label: صحابية صغيرة
     n: 2
     ordinal: 10
+    companion: true
   - label: مختلف في صحبته ، والراجح أنه تابعي ثقة
     n: 2
     ordinal: 10
@@ -870,6 +878,7 @@ labels:
   - label: صحابي صغير
     n: 3
     ordinal: 9
+    companion: true
   - label: صدوق رمي بالتشيع
     n: 3
     ordinal: 9
