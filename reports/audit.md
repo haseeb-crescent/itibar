@@ -1,6 +1,6 @@
 # itibar — source audit
 
-Generated 2026-11-08 15:12 by `make audit` (`itibar.audit`) from the Parquet copy of `hadith-kg.db` (Hugging Face `emadjumaah/hadith-kg` @ `8ae7e3d5be28`, sha256 `d528084321e71500…`). Upstream comparison values are from `DATA_REPORT.md` at `emadjumaah/hadith@b5a0cf2`.
+Generated 2026-11-08 16:45 by `make audit` (`itibar.audit`) from the Parquet copy of `hadith-kg.db` (Hugging Face `emadjumaah/hadith-kg` @ `8ae7e3d5be28`, sha256 `d528084321e71500…`). Upstream comparison values are from `DATA_REPORT.md` at `emadjumaah/hadith@b5a0cf2`.
 
 Every number below is recomputed. Where itibar's definition differs from upstream's, both are shown.
 
@@ -35,7 +35,7 @@ All upstream facts this project depends on reproduce exactly. Note: `meaning_gro
 
 ### sahaba_qty spot check (10 most-narrated groups)
 
-`upstream` = distinct chain-end narrators with rank exactly `صحابي`; `itibar` = distinct companions (rank_no 1 minus the labels that deny companionship) at chain ends; `on path` = companions narrating directly from PROPHET on an unbroken route to a book (`records.companions`; requires `make bundles`).
+`upstream` = distinct chain-end narrators with rank exactly `صحابي`; `itibar` = distinct companions (rank_no 1 minus the labels that deny companionship, plus the young-companion labels at any rank_no) at chain ends; `on path` = companions narrating directly from PROPHET on an unbroken route to a book (`records.companions`; requires `make bundles`).
 
 | group_id | declared | upstream | itibar | on_path | opening |
 |---|---|---|---|---|---|
@@ -45,7 +45,7 @@ All upstream facts this project depends on reproduce exactly. Note: `meaning_gro
 | 1 | 68 | 64 | 66 | 66 | لا تكذبوا علي فإنه من كذب علي فليلج النار |
 | 5 | 44 | 35 | 39 | 35 | صلى لنا رسول الله ركعتين من بعض الصلوات ثم قام فلم |
 | 6 | 38 | 31 | 32 | 30 | أقام النبي تسعة عشر يقصر فنحن إذا سافرنا تسعة عشر  |
-| 8 | 54 | 45 | 48 | 47 | نهى رسول الله عن الدباء والحنتم والمقير والمزفت |
+| 8 | 54 | 45 | 49 | 48 | نهى رسول الله عن الدباء والحنتم والمقير والمزفت |
 | 9 | 24 | 20 | 22 | 22 | أن يجعلوها عمرة إلا من معه الهدي |
 | 7 | 58 | 56 | 56 | 56 | الله قد حرم على النار من قال لا إله إلا الله يبتغي |
 | 21 | 20 | 16 | 17 | 16 | المزابنة بيع الثمر بالتمر كيلا بيع الزبيب بالكرم ك |
@@ -105,6 +105,36 @@ Labels whose wording disagrees with their level (kept at the source's level; iti
 | 6 | انفرد بتوثيقه ابن حبان | 7 |
 | 6 | انفرد بتوثيقه ابن شاهين | 1 |
 | 7 | ضعيف الحديث | 1 |
+
+### 2.1 Companion label overrides
+
+`grades.yaml: companion.label_overrides` (`صحابي صغير`, `صحابية صغيرة`) makes a narrator a companion whatever its `rank_no`. 11 narrators carry these labels outside rank_no 1 (22 more are at rank_no 1 and were companions already). Their chains now reach PROPHET. Companionship only: the ordinal still follows `rank_no` (DECISIONS D33).
+
+| id | nickname | rank | rank_no | tabaka | death_year | chain_ends | groups |
+|---|---|---|---|---|---|---|---|
+| 3,165 | زينب بنت أم سلمة المخزومية | صحابية صغيرة | 3 | 1 | 73 | 92 | 18 |
+| 4,407 | عبد الرحمن بن عبد القاري | صحابي صغير | 3 | 2 | 88 | 3 | 2 |
+| 4,516 | عبد الرحمن بن جارية الأنصاري | صحابي صغير | 3 | 2 | 93 | 14 | 3 |
+| 4,645 | عبد الله بن زيد الأنصاري | صحابي صغير | 3 | 2 | 84 | 1 | 1 |
+| 4,852 | عبد الله بن سهل الأنصاري | صحابي صغير | 3 | 2 |  | 0 | 0 |
+| 4,959 | عبد الله بن عكيم الجهني | صحابي صغير | 3 | 2 |  | 36 | 2 |
+| 17,500 | زينب بنت علي القرشية | صحابية صغيرة | 3 | 1 |  | 0 | 0 |
+| 25,711 | عمرو بن صليع المحاربي | صحابي صغير | 3 | 3 |  | 0 | 0 |
+| 4,072 | عاصم بن عمر العدوي | صحابي صغير | 4 | 1 | 70 | 12 | 4 |
+| 17,511 | السائب بن أبي لبابة الأنصاري | صحابي صغير | 4 | 1 |  | 3 | 3 |
+| 41,203 | عبيد بن رحى الجهني | صحابي صغير | 4 | 2 |  | 1 | 1 |
+
+Disputed companionship (`مختلف في صحبته` and variants) is not overridden and follows `rank_no`: a companion at rank_no 1, a narrator of that level otherwise.
+
+| rank_no | narrators | companions_in_itibar | chain_ends |
+|---|---|---|---|
+| 1 | 31 | 31 | 1,120 |
+| 2 | 5 | 0 | 20 |
+| 3 | 21 | 0 | 241 |
+| 4 | 5 | 0 | 19 |
+| 6 | 14 | 0 | 95 |
+| 7 | 60 | 0 | 218 |
+| 8 | 3 | 0 | 69 |
 
 ## 3. `tabaka`: distribution, and Ibn Hajar's twelve generations
 
@@ -190,7 +220,7 @@ So `tabaka` is the source's generation scale anchored on Taqrib, not a copy of T
 | 12 | 2,923 | 947 | 28 | 1,948 | 91 | 0 | 2,832 |
 | 13+ | 16,135 | 8,832 | 15 | 7,288 | 4,319 | 0 | 11,816 |
 
-Raw-only values are ranges or approximations the build declined to parse, e.g. `130 - 121` (16), `290 - 281` (14), `300 - 291` (11), `23 - 13` (7), `158 - 136` (6), `40 - 20` (6), `35 - 23` (5), `530 - 540` (4). itibar keeps them beside the parsed value (terminus columns) and never parses them itself. Birth years are rare, so the continuity check falls back to tabaka for most links (§8.5).
+Raw-only values are ranges or approximations the build declined to parse, e.g. `130 - 121` (16), `290 - 281` (14), `300 - 291` (11), `23 - 13` (7), `158 - 136` (6), `40 - 20` (6), `35 - 23` (5), `60 - 41` (4). itibar keeps them beside the parsed value (terminus columns) and never parses them itself. Where both the teacher's death and the student's birth are known the continuity check uses years; otherwise it falls back to tabaka (§8.5).
 
 ## 5. Inline mentions and transmission words
 
@@ -247,31 +277,31 @@ A cluster can only change kappa inside a group where two of its members both occ
 
 | id | name | chain_links | min_pos | max_pos |
 |---|---|---|---|---|
-| 40,137 | عَبْدُ اللَّهِ بْنُ عُبَيْدَةَ | 6 | 1 | 6 |
 | 47,654 | كُرَيْبٍ السَّحُولِيِّ | 6 | 6 | 10 |
-| 51,756 | بِنْتِ كُرْزٍ | 5 | 5 | 7 |
+| 40,137 | عَبْدُ اللَّهِ بْنُ عُبَيْدَةَ | 6 | 1 | 6 |
 | 44,306 | مُحَمَّدِ بْنِ عَبْدِ الصَّمَدِ | 5 | 4 | 9 |
-| 50,119 | أَبِي | 4 | 8 | 10 |
+| 51,756 | بِنْتِ كُرْزٍ | 5 | 5 | 7 |
 | 44,304 | عَبْدُ الْمُؤْمِنِ | 4 | 2 | 7 |
-| 40,740 | وَمُحَمَّدُ بْنُ الْحُسَيْنِ | 2 | 2 | 2 |
+| 50,119 | أَبِي | 4 | 8 | 10 |
+| 40,741 | وَأَبُو مُسْلِمٍ | 2 | 2 | 2 |
 | 50,437 | السُّمَيْطِ الْبَجَلِيِّ | 2 | 6 | 6 |
 | 44,305 | أَبَاهُ | 2 | 4 | 4 |
+| 50,436 | أَبِيهِ | 2 | 6 | 7 |
 | 47,655 | عَبْدِ اللَّهِ بْنِ حُذَيْمٍ | 2 | 5 | 5 |
 | 9,481 | غير معرف | 2 | 7 | 7 |
 | 26,043 | عِيسَى بْنُ الأَشْعَثِ | 2 | 4 | 8 |
-| 50,436 | أَبِيهِ | 2 | 6 | 7 |
+| 40,138 | مُحَمَّدُ بْنُ عَمْرٍو | 2 | 1 | 3 |
+| 40,740 | وَمُحَمَّدُ بْنُ الْحُسَيْنِ | 2 | 2 | 2 |
 | 47,653 | النُّعْمَانِ بْنِ نُعَيْمٍ | 2 | 5 | 7 |
 | 60,137 | مَخْرَمَةَ الْعَبْدِيِّ | 2 | 5 | 5 |
-| 40,741 | وَأَبُو مُسْلِمٍ | 2 | 2 | 2 |
-| 40,138 | مُحَمَّدُ بْنُ عَمْرٍو | 2 | 1 | 3 |
-| 40,139 | سَعْدِ بْنِ عُثْمَانَ | 1 | 4 | 4 |
-| 40,142 | مُحَمَّدِ بْنِ مَطَرٍ | 1 | 2 | 2 |
+| 45,024 | سَعِيدِ بْنِ عَوْسَجَةَ | 1 | 3 | 3 |
+| 60,677 | سَنْجَوَيْهِ النَّاهِكِيُّ | 1 | 3 | 3 |
 | 40,260 | قَيْسٌ السَّعِيدِيُّ | 1 | 4 | 4 |
 | 61,758 | الأَخْنَسِ بْنِ زُهَيْرٍ | 1 | 7 | 7 |
 | 60,136 | مَنْدُوسٍ | 1 | 6 | 6 |
 | 45,025 | جَعْفَر بْنِ الْفُرَافِصَةِ الْحَنَفِيِّ | 1 | 4 | 4 |
-| 60,677 | سَنْجَوَيْهِ النَّاهِكِيُّ | 1 | 3 | 3 |
-| 45,024 | سَعِيدِ بْنِ عَوْسَجَةَ | 1 | 3 | 3 |
+| 40,139 | سَعْدِ بْنِ عُثْمَانَ | 1 | 4 | 4 |
+| 40,142 | مُحَمَّدِ بْنِ مَطَرٍ | 1 | 2 | 2 |
 
 Stubs touch 60 chain links. They get ordinal 0 (below every threshold but `all`) and are dropped in `kappa_lower`. Several names are relational (`أبي`, `أبيه`, `أباه`).
 
@@ -283,17 +313,18 @@ Stubs touch 60 chain links. They get ordinal 0 (below every threshold but `all`)
 | break marker (30002) | 32,497 | 0 |
 | companion: صحابية | 10,646 | 10,646 |
 | unnamed person (1131) | 5,040 | 0 |
-| companion: صحابي صغير | 3,879 | 3,879 |
+| companion: صحابي صغير | 3,949 | 3,949 |
 | companion: مختلف في صحبته | 1,085 | 1,085 |
-| other narrator, rank_no 3 | 1,001 | 1,001 |
+| other narrator, rank_no 3 | 855 | 855 |
 | rank_no 1, not a companion: له إدراك | 284 | 284 |
 | other narrator, rank_no 7 | 264 | 264 |
 | companion: له رؤية | 196 | 196 |
 | other narrator, rank_no 6 | 116 | 116 |
 | other narrator, rank_no 2 | 99 | 99 |
+| companion: صحابية صغيرة | 92 | 92 |
 | other narrator, rank_no 8 | 72 | 72 |
-| other narrator, rank_no 4 | 68 | 68 |
 | other narrator, rank_no 9 | 56 | 56 |
+| other narrator, rank_no 4 | 52 | 52 |
 | companion: مختلف في صحبته ، والأكثر أنه صحابي | 31 | 31 |
 | stub | 11 | 0 |
 | companion: لها رؤية | 7 | 7 |
@@ -302,7 +333,7 @@ Stubs touch 60 chain links. They get ordinal 0 (below every threshold but `all`)
 | other narrator, rank_no 10 | 1 | 1 |
 | break marker (30000) | 1 | 0 |
 
-Upstream's 17,811 counts chain ends whose label is not exactly `صحابي`: it **includes** 10,646 chains ending at female companions and 3,879 at `صحابي صغير`, and **excludes** every chain ending at a NULL-rank placeholder (37,538, mostly `موضع إرسال`, the source's own irsal marker). By itibar's companion rule (rank_no 1, minus `لم تثبت له صحبة` / `له إدراك` / `لها إدراك`) **39,512** marfu'/qudsi chains do not end in a companion; these are kept in their bundles, flagged mursal, and get no PROPHET edge.
+Upstream's 17,811 counts chain ends whose label is not exactly `صحابي`: it **includes** 10,646 chains ending at female companions and 3,879 at `صحابي صغير`, and **excludes** every chain ending at a NULL-rank placeholder (37,538, mostly `موضع إرسال`, the source's own irsal marker). By itibar's companion rule (rank_no 1, minus `لم تثبت له صحبة` / `له إدراك` / `لها إدراك`, plus the young-companion labels at any rank_no) **39,350** marfu'/qudsi chains do not end in a companion; these are kept in their bundles, flagged mursal, and get no PROPHET edge.
 
 ### 6.4 Groups without chains
 
@@ -403,21 +434,41 @@ Groups with a cycle in the on-path bundle: 322.
 
 ### 8.4 Homonym misresolution across different full names
 
-See §6.1. Not mergeable without a name-resolution model (out of scope); the continuity check is the visible symptom. The gold set documents every such chain it meets.
+Not mergeable without a name-resolution model (out of scope, §6.1). The continuity rule (§8.5) is the visible symptom: a wrongly resolved narrator often sits in the wrong generation for his teacher. For every cross-name misresolution documented in `tests/gold/gold.yaml` (and the one candidate), the links into and out of the wrong narrator are checked against the corrected rule. *Caught* means at least one of them is incompatible, so the `nocompat` graph of `kappa_lower` removes that route.
 
-### 8.5 Layer gaps along chain links (calibrating the continuity window)
+| gold entry | group | sanad | resolved (in the data) | intended | link above: teacher → resolved | link below: resolved → student | verdict | PR 1 rule |
+|---|---|---|---|---|---|---|---|---|
+| innama-al-amal | 319 | 320050 | يحيى بن سعيد القطان (r8271) | يحيى بن سعيد الأنصاري (r8272) | محمد بن إبراهيم القرشي: incompatible (years: d. 119 − b. 120 = -1) | compatible (years: d. 198 − b. 110 = 88) | **caught** | caught |
+| innama-al-amal | 319 | 320051 | يحيى بن سعيد القطان (r8271) | يحيى بن سعيد الأنصاري (r8272) | محمد بن إبراهيم القرشي: incompatible (years: d. 119 − b. 120 = -1) | compatible (years: d. 198 − b. 110 = 88) | **caught** | caught |
+| innama-al-amal | 319 | 320052 | يحيى بن سعيد القطان (r8271) | يحيى بن سعيد الأنصاري (r8272) | محمد بن إبراهيم القرشي: incompatible (years: d. 119 − b. 120 = -1) | compatible (years: d. 198 − b. 110 = 88) | **caught** | caught |
+| innama-al-amal | 319 | 320053 | يحيى بن سعيد القطان (r8271) | يحيى بن سعيد الأنصاري (r8272) | محمد بن إبراهيم القرشي: incompatible (years: d. 119 − b. 120 = -1) | compatible (years: d. 198 − b. 110 = 88) | **caught** | caught |
+| innama-al-amal | 319 | 320054 | يحيى بن سعيد القطان (r8271) | يحيى بن سعيد الأنصاري (r8272) | محمد بن إبراهيم القرشي: incompatible (years: d. 119 − b. 120 = -1) | compatible (years: d. 198 − b. 110 = 88) | **caught** | caught |
+| innama-al-amal | 319 | 320055 | يحيى بن سعيد القطان (r8271) | يحيى بن سعيد الأنصاري (r8272) | محمد بن إبراهيم القرشي: incompatible (years: d. 119 − b. 120 = -1) | compatible (years: d. 198 − b. 110 = 88) | **caught** | caught |
+| bay-al-wala | 276 | 494475 | عبد الله بن دينار البهراني (r4796) | عبد الله بن دينار القرشي (r4797) | عبد الله بن عمر العدوي: incompatible (tabaka 1 → 6, gap +5) | compatible (tabaka 6 → 8, gap +2) | **caught** | caught |
+| bay-al-wala | 276 | 494476 | عبد الله بن دينار البهراني (r4796) | عبد الله بن دينار القرشي (r4797) | عبد الله بن عمر العدوي: incompatible (tabaka 1 → 6, gap +5) | compatible (tabaka 6 → 8, gap +2) | **caught** | caught |
+| kalimatan-khafifatan | 2852 | 145572 | عمارة بن عمير التيمي (r5885) | عمارة بن القعقاع الضبي (r5866) | أبو زرعة بن عمرو البجلي: compatible (tabaka 3 → 4, gap +1) | incompatible (tabaka 4 → 9, gap +5) | **caught** | caught |
+| kalimatan-khafifatan | 2852 | 145573 | عمارة بن عمير التيمي (r5885) | عمارة بن القعقاع الضبي (r5866) | أبو زرعة بن عمرو البجلي: compatible (tabaka 3 → 4, gap +1) | incompatible (tabaka 4 → 9, gap +5) | **caught** | caught |
+| la-yuminu-ahadukum (candidate) | 1581 | 238022 | سعيد بن بشير الأزدي (r3306) | سعيد بن أبي عروبة العدوي (r3281) | قتادة بن دعامة السدوسي: compatible (tabaka 4 → 8, gap +4) | compatible (years: d. 168 − b. 132 = 36) | **not caught** | not caught |
+| la-yuminu-ahadukum (candidate) | 1581 | 280018 | سعيد بن بشير الأزدي (r3306) | سعيد بن أبي عروبة العدوي (r3281) | قتادة بن دعامة السدوسي: compatible (tabaka 4 → 8, gap +4) | compatible (years: d. 168 − b. 132 = 36) | **not caught** | not caught |
 
-| student_minus_teacher | links | share |
-|---|---|---|
-| 0 | 181,588 | 0.049 |
-| 1 | 685,435 | 0.183 |
-| 2 | 1,438,125 | 0.384 |
-| 3 | 1,028,658 | 0.275 |
-| 4 | 244,461 | 0.065 |
-| 5 | 32,622 | 0.009 |
-| 6+ | 8,720 | 0.002 |
-| missing | 86,393 | 0.023 |
-| negative | 36,605 | 0.010 |
+**10 of 12** chains caught. The al-Qattan chains are caught by years: the data gives al-Taymi d. 119 (Taqrib: 120) and al-Qattan b. 120, so the student was born after the teacher died; PR 1's rule (death ≥ birth) already flagged them because of the 119, and the corrected rule (death − birth ≥ 5) would also catch the Taqrib date. Every documented case was already flagged under PR 1's rule (last column); what changes is that the flags now lower `kappa_lower` through the `nocompat` graph (§8.7). The candidate (Sa'id b. Bashir for Ibn Abi 'Aruba) sits in a plausible generation and is not caught. Cross-name misresolution the rule does not catch remains an unquantified upward bias on κ.
+
+### 8.5 Continuity: layer gaps and the years rule
+
+Chain links (adjacent narrators in `sanad_rawis`, placeholders excluded) by tabaka gap, student minus teacher. This is the tabaka rule's input; years decide first where both are known.
+
+| student_minus_teacher | links | distinct_pairs | share | itibar_window | brief_window |
+|---|---|---|---|---|---|
+| ≤ −2 | 9,344 | 2,890 | 0.002 | out | out |
+| −1 | 27,261 | 5,209 | 0.007 | in | out |
+| 0 | 181,588 | 20,737 | 0.049 | in | in |
+| 1 | 685,435 | 52,609 | 0.183 | in | in |
+| 2 | 1,438,125 | 91,944 | 0.384 | in | in |
+| 3 | 1,028,658 | 53,165 | 0.275 | in | out |
+| 4 | 244,461 | 17,816 | 0.065 | in | out |
+| 5 | 32,622 | 6,632 | 0.009 | out | out |
+| 6+ | 8,720 | 4,061 | 0.002 | out | out |
+| missing | 86,393 | 31,369 | 0.023 |  |  |
 
 | link | teacher tabaka | student tabaka | gap |
 |---|---|---|---|
@@ -428,7 +479,50 @@ See §6.1. Not mergeable without a name-resolution model (out of scope); the con
 | al-Zuhri → Ibn 'Uyayna | 4 | 8 | 4 |
 | 'Umar → al-Taymi (dropped link) | 1 | 5 | 4 |
 
-The brief's window [0, 1, 2] would mark every gap-3 and gap-4 link incompatible — about 36% of all links, including canonical ones above. itibar uses [0, 1, 2, 3, 4] (`config/structure.yaml`), which keeps them; incompatible then means a gap of 5+ layers (~125 years) or a student placed before the teacher. The continuity flags are reported, never used in kappa or the derived grade.
+The brief's window [0, 1, 2] puts 36% of all links outside it, including every canonical gap-3 and gap-4 link above. itibar's window [-1, 0, 1, 2, 3, 4] (`config/structure.yaml`) keeps them and accepts −1 (a senior narrating from a junior, *riwayat al-akabir 'an al-asaghir*); 1.4% of links fall outside it (a gap of 5+ layers, ~125 years, or a student two or more layers before the teacher).
+
+**Years rule.** 1,628,486 of 3,742,607 links (43.5%) have both the teacher's death year and the student's birth year; for them the years decide. Compatible iff death(teacher) − birth(student) ≥ 5 (`continuity.min_hearing_age`): 24,621 links (1.51%) fall below it, of which 8,246 are 0–4 (passed by PR 1's death ≥ birth rule) and the rest negative.
+
+| death_minus_birth | links | distinct_pairs | share | verdict |
+|---|---|---|---|---|
+| < −20 | 7,324 | 3,138 | 0.004 | incompatible |
+| -20 to -16 | 1,518 | 540 | 0.001 | incompatible |
+| -15 to -11 | 1,851 | 603 | 0.001 | incompatible |
+| -10 to -6 | 1,726 | 631 | 0.001 | incompatible |
+| -5 to -1 | 3,956 | 740 | 0.002 | incompatible |
+| 0 to 4 | 8,246 | 1,118 | 0.005 | incompatible |
+| 5 to 9 | 46,157 | 2,301 | 0.028 | compatible |
+| 10 to 14 | 99,124 | 3,191 | 0.061 | compatible |
+| 15 to 19 | 110,491 | 4,278 | 0.068 | compatible |
+| 20 to 24 | 223,708 | 6,172 | 0.137 | compatible |
+| 25 to 29 | 271,136 | 6,682 | 0.166 | compatible |
+| 30 to 34 | 205,537 | 6,260 | 0.126 | compatible |
+| 35 to 39 | 202,565 | 5,363 | 0.124 | compatible |
+| 40 to 44 | 168,695 | 4,441 | 0.104 | compatible |
+| 45 to 49 | 104,014 | 3,515 | 0.064 | compatible |
+| 50 to 54 | 73,816 | 2,623 | 0.045 | compatible |
+| 55 to 59 | 36,518 | 2,081 | 0.022 | compatible |
+| 60 to 64 | 20,988 | 1,570 | 0.013 | compatible |
+| 65 to 69 | 15,713 | 1,212 | 0.010 | compatible |
+| 70 to 74 | 10,964 | 986 | 0.007 | compatible |
+| 75 to 79 | 4,243 | 795 | 0.003 | compatible |
+| 80 to 84 | 2,824 | 643 | 0.002 | compatible |
+| 85 to 89 | 2,180 | 580 | 0.001 | compatible |
+| 90 to 94 | 1,335 | 469 | 0.001 | compatible |
+| 95 to 99 | 1,041 | 301 | 0.001 | compatible |
+| ≥ 100 | 2,816 | 1,004 | 0.002 | compatible |
+
+Verdicts over all chain links, by basis (`continuity_basis`), under the corrected rule and under PR 1's (window [0..4], death ≥ birth):
+
+| verdict | basis | links (corrected) | share | links (PR 1) | share |
+|---|---|---|---|---|---|
+| compatible | tabaka | 1,993,733 | 53.27% | 1,971,427 | 52.68% |
+| compatible | years | 1,603,865 | 42.85% | 1,612,111 | 43.07% |
+| incompatible | tabaka | 34,016 | 0.91% | 56,322 | 1.50% |
+| incompatible | years | 24,621 | 0.66% | 16,375 | 0.44% |
+| unknown | unknown | 86,372 | 2.31% | 86,372 | 2.31% |
+
+The continuity flags feed one quantity: the `nocompat` hypothesis of `kappa_lower` (§8.7), which removes every incompatible link. They are never used in κ itself or in the derived grade.
 
 ### 8.6 `max_rank` includes the compiler
 
@@ -438,16 +532,96 @@ The brief's window [0, 1, 2] would mark every gap-3 and gap-4 link incompatible 
 
 `agree_full`: our weakest link over the whole stored chain equals `max_rank` (the like-for-like check of our reading). `agree_derived`: the same with the compiler at pos 0 excluded, as the derived grade does; every disagreement is a chain whose compiler is strictly weaker than everyone else in it.
 
-### 8.7 Summary of modelling consequences
+### 8.7 κ_lower under three hypotheses
+
+`kappa_lower_θ` = min of κ_θ over three graphs, stubs dropped in all: **unmerged** (identities as resolved), **merged** (each same-name cluster one node of min ordinal, unnamed persons merged per student) and **nocompat** (unmerged, every continuity-incompatible link removed). `kappa_lower_source_θ` names the first hypothesis attaining the minimum in that order; since removing links never raises κ, `nocompat` there means removing incompatible links lowered κ below both other graphs.
+
+| threshold | groups | lower_below_kappa | nocompat_below_kappa | attained_unmerged | attained_merged | attained_nocompat | kappa_2plus_lower_below_2 | kappa_1plus_lower_0 |
+|---|---|---|---|---|---|---|---|---|
+| all | 20,282 | 2,436 | 2,436 | 17,849 | 1 | 2,432 | 404 | 1,020 |
+| above_matruk | 20,282 | 1,765 | 1,764 | 18,517 | 2 | 1,763 | 303 | 746 |
+| saduq_up | 20,282 | 835 | 827 | 19,447 | 11 | 824 | 131 | 363 |
+| thiqa_up | 20,282 | 569 | 569 | 19,713 | 1 | 568 | 95 | 245 |
+
+It is a lower bound under those hypotheses, not a guarantee: cross-name misresolution that the continuity rule does not catch (§8.4) remains an unquantified upward bias on κ.
+
+### 8.8 Summary of modelling consequences
 
 - break markers: per-chain, untraversable gap nodes (no fused hubs; broken chains do not count as routes)
 - unnamed person: per-(student, teacher) node, ordinal 0
 - compiler node in front of every book; book nodes never cut
 - self-loops dropped; cycles handled; path counts flagged on cyclic bundles
-- companion = rank_no 1 minus explicit denials; mursal chains kept, not connected to PROPHET
-- continuity window calibrated to the source scale ([0..4])
-- `kappa_lower`: min(κ with homonym clusters merged (min ordinal), unnamed persons merged per student and stubs dropped; κ with stubs dropped only) — merging alone can splice two half-routes into a new route
+- companion = rank_no 1 minus explicit denials, plus the young-companion labels at any rank_no; mursal chains kept, not connected to PROPHET
+- continuity: years first (death − birth ≥ 5), then the tabaka window [-1, 0, 1, 2, 3, 4] calibrated to the source scale
+- `kappa_lower`: min of κ over three stated hypotheses — same-name clusters merged, unmerged, continuity-incompatible links removed (stubs dropped in all); a lower bound under those hypotheses, not a guarantee
 
+## 9. Why κ is zero
+
+κ = 0 means **no unbroken companion-ending route in this data**, not no support. 3,421 of 20,745 groups have no PROPHET → book route at *everyone*: 2,958 of the 20,282 groups with chains (14.6%) plus the groups without chains. `kappa_zero_reason` assigns each one reason, by precedence:
+
+| reason | groups | share_of_all_groups | share_of_zero_groups | meaning |
+|---|---|---|---|---|
+| no_chains | 463 | 0.022 | 0.135 | the group has no chains |
+| no_companion_end | 2,531 | 0.122 | 0.740 | no chain ends in a companion (irsal marker, unnamed person, non-companion or stub) |
+| broken_only | 427 | 0.021 | 0.125 | companion-ending chains exist, every one with a break marker |
+| other | 0 | 0 | 0 | a continuous chain exists yet no route survived (gated at 0) |
+
+**`no_companion_end`: the ten books contributing the most such groups** (a group counts for every book with a chain in it):
+
+| book_id | book | author | groups | groups_with_chains | share_of_book |
+|---|---|---|---|---|---|
+| 274 | الطبقات الكبرى لابن سعد | محمد بن سعد الزهري | 319 | 2,096 | 0.152 |
+| 303 | تاريخ دمشق لابن عساكر | ابن عساكر الدمشقي | 314 | 5,605 | 0.056 |
+| 62 | مصنف ابن أبي شيبة | ابن ابي شيبة | 239 | 3,431 | 0.070 |
+| 61 | مصنف عبد الرزاق | عبد الرزاق الصنعاني | 174 | 1,900 | 0.092 |
+| 22 | السنن الكبرى للبيهقي | البيهقي | 150 | 4,551 | 0.033 |
+| 297 | معرفة الصحابة لأبي نعيم | أبو نعيم الأصبهاني | 148 | 3,092 | 0.048 |
+| 143 | المراسيل مع الأسانيد لأبي داود | أبو داود السجستاني | 129 | 417 | 0.309 |
+| 249 | جامع البيان عن تأويل آي القرآن | ابن جرير الطبري | 129 | 1,292 | 0.100 |
+| 269 | دلائل النبوة للبيهقي | البيهقي | 117 | 1,399 | 0.084 |
+| 278 | تاريخ المدينة لابن شبة | ابن شبة النميري | 87 | 455 | 0.191 |
+
+**`broken_only`: the ten books contributing the most such groups** (a group counts for every book with a chain in it):
+
+| book_id | book | author | groups | groups_with_chains | share_of_book |
+|---|---|---|---|---|---|
+| 305 | التدوين في أخبار قزوين للرافعي | عبد الكريم الرافعي | 52 | 1,188 | 0.044 |
+| 303 | تاريخ دمشق لابن عساكر | ابن عساكر الدمشقي | 46 | 5,605 | 0.008 |
+| 255 | الوسيط في تفسير القرآن المجيد | الواحدي | 33 | 793 | 0.042 |
+| 297 | معرفة الصحابة لأبي نعيم | أبو نعيم الأصبهاني | 23 | 3,092 | 0.007 |
+| 45 | مسند الشاميين للطبراني | سليمان بن أحمد الطبراني | 19 | 1,846 | 0.010 |
+| 274 | الطبقات الكبرى لابن سعد | محمد بن سعد الزهري | 16 | 2,096 | 0.008 |
+| 9 | مسند أحمد بن حنبل | أحمد بن حنبل | 15 | 5,666 | 0.003 |
+| 40 | المطالب العالية بزوائد المسانيد الثمانية لابن حجر | ابن حجر العسقلاني | 14 | 2,500 | 0.006 |
+| 67 | المعجم الكبير للطبراني | سليمان بن أحمد الطبراني | 13 | 5,496 | 0.002 |
+| 22 | السنن الكبرى للبيهقي | البيهقي | 11 | 4,551 | 0.002 |
+
+**The converse does not hold.** 13 groups have κ ≥ 1 with no continuous chain: every chain is broken, but at different places, and the union graph joins the intact parts into a route. In group 7978 one copy of the isnad has an inqita' marker in the middle and another a ta'liq at the compiler's end; together they cover the whole chain. Routes are paths in the bundle, not attested chains (DECISIONS D31); `n_chains_connected` and `bypass_chains` count attested chains.
+
+| group_id | kappa_all | n_chains | n_chains_companion_end | n_chains_broken | opening |
+|---|---|---|---|---|---|
+| 7,978 | 1 | 2 | 2 | 2 | يطير الحمام |
+| 9,030 | 1 | 6 | 1 | 5 | ليأخذ العبد من نفسه لنفسه ومن دنياه لآخر |
+| 9,730 | 1 | 5 | 1 | 5 | ضرب رسول الله لجعفر يوم بدر بسهمه وأجره |
+| 11,928 | 1 | 2 | 2 | 2 | نصلي مع رسول الله المغرب ونحن ننظر إلى ا |
+| 11,996 | 1 | 6 | 1 | 6 | آخى رسول الله بين عويم بن ساعدة وبين عمر |
+| 12,053 | 1 | 3 | 1 | 1 | نهى عن الشعر إذا أبنت فيه النساء وبذر في |
+| 12,120 | 1 | 4 | 3 | 4 | الله يقبض أرواح شهداء البحر بيده ولا يكل |
+| 12,518 | 1 | 3 | 2 | 3 | تريدون من ربكم إلا أن يغفر لكم ذنوبكم وي |
+| 13,542 | 1 | 5 | 1 | 1 | أهل حين راح إلى منى |
+| 14,391 | 1 | 3 | 2 | 3 | عليكم بأمهات الأولاد فإنهن مباركات الأرح |
+| 14,804 | 1 | 2 | 1 | 2 | لا تزال مصليا قانتا ما ذكرت الله قائما و |
+| 15,955 | 1 | 2 | 1 | 2 | غارت خيل للمشركين على سرح المدينة فخرج ر |
+| 16,716 | 1 | 2 | 1 | 2 | أمر معاذا أن يصلي بهم |
+
+**Against the source's recorded group grade** (`meaning_groups.matn_no`, labels quoted from the source). A group the source grades صحيح with no connected chain here is a gap in this data's chains, not a finding about the report:
+
+| reason | 0 صحيح | 1 حسن | 2 ضعيف | 3 شديد الضعف | 4 متهم بالوضع | 5 موضوع |
+|---|---|---|---|---|---|---|
+| no_chains | 21 | 40 | 180 | 86 | 84 | 52 |
+| no_companion_end | 83 | 110 | 1,511 | 426 | 322 | 79 |
+| broken_only | 2 | 6 | 245 | 93 | 49 | 32 |
+| κ ≥ 1 | 5,957 | 4,519 | 2,217 | 2,025 | 1,567 | 1,039 |
 ## Appendix A. Full `rawis.rank` vocabulary
 
 | rank_no | rank | n | ordinal |
@@ -952,4 +1126,4 @@ The brief's window [0, 1, 2] would mark every gap-3 and gap-4 link incompatible 
 | 12 | وضاع رافضي | 1 | 1 |
 | 12 | يكذب ويضع الحديث | 1 | 1 |
 
-_Audit computed in 1.4s._
+_Audit computed in 1.5s._
