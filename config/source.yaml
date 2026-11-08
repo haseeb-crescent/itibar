@@ -1,0 +1,31 @@
+# Source database: read-only input, never modified, never committed.
+huggingface:
+  repo_id: emadjumaah/hadith-kg
+  repo_type: dataset
+  filename: hadith-kg.db
+  # Pinned dataset revision (commit sha on the Hugging Face hub) and file digest,
+  # so every run reads byte-identical input. Bump both together, re-run the audit.
+  revision: 8ae7e3d5be284a6b32a989cd41866343fc19501c
+  sha256: d528084321e715006712e0e2461809a3afc9408065a1d1af90238c8b723815a6
+  license: CC-BY-4.0
+
+upstream_code:
+  repo: https://github.com/emadjumaah/hadith
+  commit: b5a0cf235684bdf92aa807051735fab0f5970fc1   # DATA_REPORT.md / build_hkg.py read for the audit
+
+# Tables converted to Parquet. group_embedding (Gemini vectors, ML-derived) and
+# sqlite_stat1 are deliberately not converted: nothing in itibar may depend on ML.
+tables:
+  - meta
+  - books
+  - rawis
+  - alems
+  - aqwal
+  - meaning_groups
+  - tarafs
+  - hadiths
+  - hadith_rawis
+  - hadith_ayas
+  - sanads
+  - sanad_rawis
+  - topics
