@@ -1,0 +1,55 @@
+# Structural parameters for bundle construction and analysis.
+
+bundle:
+  # Compiler resolution. A book's compiler is identified with a narrator when one
+  # rawi occupies sanad_rawis.pos 0 in at least this share of the book's chains
+  # (primary collections: Bukhari 99.5%, Muslim 99.9%, Ahmad 99.4%). Otherwise the
+  # book quotes other people's chains at pos 0 (Tarikh Dimashq, Tahdhib al-Kamal,
+  # the zawa'id books) and gets a synthetic compiler node keyed by books.author_no.
+  compiler_min_share: 0.5
+  # Every route into a book passes through its compiler node (cuttable). Book
+  # nodes themselves are records, not transmitters: never cut.
+  insert_compiler: true
+  # Self-loops (same narrator at adjacent positions) are dropped and counted.
+  drop_self_loops: true
+
+layers:
+  # Fallback layer for a narrator without a usable tabaka: one layer below its
+  # latest resolved teacher (depth propagation from PROPHET at layer 0).
+  missing_tabaka: [0]
+  # A narrator whose tabaka puts it more than this many layers *before* every
+  # one of its resolved teachers is treated as unusable for this bundle.
+  max_backward: 1
+
+structure:
+  pcl_k: [2, 3]
+  common_link_k: 2
+  # Path counts can be astronomically large; saturate at int64 max and flag.
+  path_count_cap: 9223372036854775807
+
+continuity:
+  # Teacher u -> student v. Years first, then tabaka window, else unknown.
+  # The brief proposed [0, 1, 2]; on this source's tabaka scale that marks ~36% of
+  # all chain links incompatible, including canonical links (Anas -> al-Zuhri,
+  # 'Alqama -> al-Taymi, al-Zuhri -> Malik are gaps of 3; al-Zuhri -> Ibn 'Uyayna 4).
+  # [0..4] is the narrowest window that keeps them; see DECISIONS.md and
+  # reports/audit.md (section 8.5) for the full distribution.
+  tabaka_window: [0, 1, 2, 3, 4]
+  brief_tabaka_window: [0, 1, 2]   # reported in the audit for comparison
+  # Transmission words that make a mudallis's link mu'an'an (normalized forms).
+  muanan_words: ["عن", "أن", "قال"]
+
+derive:
+  version: 1
+  exclude_compiler: true          # chain grade ignores the compiler at pos 0
+  # Codes in the source matn_no scale (0 = best). A chain that does not reach
+  # PROPHET through a companion (mursal), or that contains a break marker, cannot
+  # be placed above this code. Set to null to disable.
+  discontinuity_cap_code: 2
+  # Best chain: maximise the chain grade among chains that are continuous and end
+  # in a companion; fall back to all chains (flagged) when none qualifies.
+  prefer_continuous: true
+  # Corroboration upgrades (hasan li-ghayrihi, sahih li-ghayrihi, ...) are bucket 2.
+  corroboration:
+    enabled: false
+    rules: []

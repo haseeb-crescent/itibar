@@ -5,3 +5,7 @@ __pycache__/
 *.db
 *.db.bak
 .DS_Store
+.ci-out/
+.pytest_cache/
+figures/bundles/
+*.parquet.tmp
