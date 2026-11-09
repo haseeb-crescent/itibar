@@ -23,8 +23,19 @@ class Result:
 
 
 def entries() -> list[dict]:
+    """Gold entries; `scope_from: <id>` copies another entry's scope and documented
+    deviations (so a new mechanism can be checked on an existing scope unchanged)."""
     with open(paths.GOLD_FILE, encoding="utf-8") as f:
-        return yaml.safe_load(f)["entries"]
+        es = yaml.safe_load(f)["entries"]
+    by_id = {e["id"]: e for e in es}
+    for e in es:
+        src = e.get("scope_from")
+        if src:
+            base = by_id[src]
+            for k in ("scope", "deviation_key", "known_deviations"):
+                if k in base and k not in e:
+                    e[k] = base[k]
+    return es
 
 
 def gold_group_ids() -> list[int]:
@@ -44,6 +55,9 @@ def evaluate(entry: dict, con=None, corpus: load.Corpus | None = None) -> Result
     chains = load.chains_by_group(con, [gid]).get(gid, [])
     if scope.get("companion") is not None:
         chains = [c for c in chains if c.rawis[-1] == int(scope["companion"])]
+    if scope.get("companions") is not None:
+        keep_c = {int(x) for x in scope["companions"]}
+        chains = [c for c in chains if c.rawis[-1] in keep_c]
     # deviations: exactly the in-scope chains that miss a deviation_key narrator
     listed: set[int] = set()
     for d in entry.get("known_deviations") or []:
@@ -120,6 +134,70 @@ def evaluate(entry: dict, con=None, corpus: load.Corpus | None = None) -> Result
         d = int(corpus.narrators.death[_rid(node)])
         if d != v:
             F.append(f"death_year({node}) = {d}, expected {v}")
+    # ---- bucket 2: number class, qara'in, derived grade v2, lists
+    for k in ("number_class", "number_class_kappa", "in_sahihayn", "in_sahih_class", "huffaz_chain",
+              "sound_distinct_routes"):
+        if f"{k}_eq" in exp and rec.get(k) != exp[f"{k}_eq"]:
+            F.append(f"{k} = {rec.get(k)}, expected {exp[f'{k}_eq']}")
+    miss = [x for x in exp.get("tafarrud_layers_include") or [] if x not in list(rec.get("tafarrud_layers") or [])]
+    if miss:
+        F.append(f"tafarrud_layers {list(rec.get('tafarrud_layers') or [])} lack {miss}")
+    for rs, want in (exp.get("v2") or {}).items():
+        for k, v in want.items():
+            got = rec.get(f"{k}_v2_{rs}")
+            if got != v:
+                F.append(f"{k}_v2_{rs} = {got}, expected {v}")
+    if exp.get("no_upgrade"):
+        for row in out["chains"]:
+            for rs in ruleset_names():
+                if row[f"code_v2_{rs}"] != row["chain_code"]:
+                    F.append(f"sanad {row['sanad_id']}: code_v2_{rs} {row[f'code_v2_{rs}']} != v1 {row['chain_code']}")
+                    break
+        for rs in ruleset_names():
+            if rec.get(f"code_v2_{rs}") != rec.get("derived_code"):
+                F.append(f"group code_v2_{rs} {rec.get(f'code_v2_{rs}')} != v1 {rec.get('derived_code')}")
+    cv = exp.get("chain_v2")
+    chain_obs = {}
+    if cv:
+        path = [_rid(x) for x in cv["path"]]          # companion first, then down the chain
+        by_sid = {c.sanad_id: c for c in kept}
+
+        def has_path(c) -> bool:
+            r = list(c.rawis)[::-1]
+            return any(r[i:i + len(path)] == path for i in range(len(r) - len(path) + 1))
+
+        sel = [row for row in out["chains"] if has_path(by_sid[row["sanad_id"]])]
+        if not sel:
+            F.append(f"chain_v2: no chain carries {cv['path']}")
+        else:
+            b = min(sel, key=lambda row: (row["code_v2_ibn_hajar"], not row["connected"], -row["chain_ordinal"],
+                                          row["sanad_id"]))
+            ch = by_sid[b["sanad_id"]]
+            weak = [ch.rawis[p] for p in b["weakest_positions"]]
+            chain_obs = {"chains_selected": len(sel), "sanad_id": b["sanad_id"], "weakest": [f"r{x}" for x in weak],
+                         "weakest_level": [int(corpus.narrators.rank_no[x]) for x in weak],
+                         **{f"{k}_{rs}": b.get(f"{k}_v2_{rs}") for rs in ruleset_names()
+                            for k in ("code", "rule", "divergence")}}
+            w = cv.get("weakest")
+            if w and (len(weak) != 1 or f"r{weak[0]}" != w["node"]
+                      or int(corpus.narrators.rank_no[weak[0]]) != int(w["level"])):
+                F.append(f"chain_v2 weakest {chain_obs['weakest']} levels {chain_obs['weakest_level']}, expected {w}")
+            for rs in ruleset_names():
+                for k, v in (cv.get(rs) or {}).items():
+                    if b.get(f"{k}_v2_{rs}") != v:
+                        F.append(f"chain_v2 {k}_v2_{rs} = {b.get(f'{k}_v2_{rs}')}, expected {v}")
+    lm = exp.get("list_match")
+    if lm:
+        import csv
+        rows = []
+        conf = paths.ROOT / "lists" / "confirmed.csv"
+        if conf.exists():
+            with open(conf, encoding="utf-8") as f:
+                rows = [r for r in csv.DictReader(f) if r["list"] == lm["list"] and r["entry"] == str(lm["entry"])]
+        ok = any(r.get("group_id") and int(r["group_id"]) == gid and r.get("confirmed_by") == lm.get("confirmed_by", "auto")
+                 for r in rows)
+        if not ok:
+            F.append(f"list {lm['list']}:{lm['entry']} not confirmed to group {gid} ({lm.get('confirmed_by', 'auto')}): {rows}")
     res.observed = {
         "scope_chains": len(chains), "kept_chains": len(kept), "deviations": len(listed),
         **{k: rec[k] for k in ("kappa_all", "kappa_above_matruk", "kappa_saduq_up", "kappa_thiqa_up",
@@ -127,8 +205,17 @@ def evaluate(entry: dict, con=None, corpus: load.Corpus | None = None) -> Result
                                "n_common_links", "n_cut_vertices")},
         "cut_vertices": list(rec["cut_vertices"]),
         "cut_vertices_thiqa_up": list(rec["cut_vertices_thiqa_up"]),
+        **{k: rec.get(k) for k in ("number_class", "number_class_kappa", "min_width", "in_sahihayn", "huffaz_chain")},
+        "tafarrud_layers": list(rec.get("tafarrud_layers") or []),
+        **{f"{k}_v2_{rs}": rec.get(f"{k}_v2_{rs}") for rs in ruleset_names() for k in ("code", "rule", "divergence")},
+        "chain_v2": chain_obs,
     }
     return res
+
+
+def ruleset_names() -> list[str]:
+    from itibar import corroborate
+    return corroborate.ruleset_names()
 
 
 def whole_group(gid: int, con, corpus) -> dict:
@@ -154,10 +241,12 @@ def report() -> tuple[str, bool]:
              "|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
     all_ok = True
     detail = []
+    obs_by: dict = {}
     for e in entries():
         r = evaluate(e, con, corpus)
         all_ok &= r.ok
         o = r.observed
+        obs_by[e["id"]] = o
         cuts = ", ".join(names.get(_rid(x), x) if x.startswith("r") else x for x in o.get("cut_vertices", []))
         lines.append(
             f"| {e['id']} | {e['group_id']} | {e['class']} | {'yes' if r.ok else 'NO'} | "
@@ -168,6 +257,20 @@ def report() -> tuple[str, bool]:
         detail.append(f"- **{e['id']}** (group {e['group_id']}, whole group): "
                       + ", ".join(f"{k}={v}" for k, v in wg.items())
                       + ("" if r.ok else f" — FAILURES: {'; '.join(r.failures)}"))
+    lines += ["", "## Bucket-2 mechanisms (scoped values)", "",
+              "Number class on Taqrīb layers 1–12 (width, and κ_all with the same cut points); derived grade v2 under",
+              "both rulesets for the group's v2 chain; for chain-level entries, the selected chains' best chain.", "",
+              "| entry | number class | by κ | tafarrud layers | in Ṣaḥīḥayn | v2 ibn_hajar | v2 ibn_al_salah | chain-level |",
+              "|---|---|---|---|---|---|---|---|"]
+    for e in entries():
+        o = obs_by.get(e["id"], {})
+        cv = o.get("chain_v2") or {}
+        chain = (f"sanad {cv['sanad_id']}: weakest {cv['weakest']} (level {cv['weakest_level']}); "
+                 f"ibn_hajar {cv.get('rule_ibn_hajar')} → {cv.get('code_ibn_hajar')} ({cv.get('divergence_ibn_hajar')}); "
+                 f"ibn_al_salah {cv.get('rule_ibn_al_salah')} → {cv.get('code_ibn_al_salah')}") if cv else ""
+        lines.append(f"| {e['id']} | {o.get('number_class')} | {o.get('number_class_kappa')} | {o.get('tafarrud_layers')} | "
+                     f"{o.get('in_sahihayn')} | {o.get('rule_v2_ibn_hajar')} → {o.get('code_v2_ibn_hajar')} | "
+                     f"{o.get('rule_v2_ibn_al_salah')} → {o.get('code_v2_ibn_al_salah')} | {chain} |")
     lines += ["", "## Whole-group records", ""] + detail + [""]
     return "\n".join(lines), all_ok
 

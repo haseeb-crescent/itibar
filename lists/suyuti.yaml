@@ -1,0 +1,2657 @@
+meta:
+  work: الأزهار المتناثرة في الأخبار المتواترة (al-Azhar al-Mutanathira fi al-Akhbar al-Mutawatira)
+  author: Jalal al-Din al-Suyuti (d. 911/1505)
+  source: 'SECONDARY. Reconstructed from al-Kattani, Nazm al-Mutanathir (Shamela book 7016): in his introduction he states that he included every hadith of al-Azhar and marked it with ''أورده في الأزهار
+    من حديث فلان'', listing the companions al-Suyuti counted and dropping al-Suyuti''s source citations. The primary text is not in Shamela''s catalogue or on usul.ai; a scan of a printed edition can replace
+    this file (see DECISIONS.md D45).'
+  criterion: ما رواه من الصحابة عشرة فصاعدا (ten or more companions), per al-Suyuti
+  fields:
+    index: order of appearance in al-Kattani; NOT al-Suyuti's own numbering (not transmitted)
+    kattani_index: al-Kattani's entry number
+    companions_stated: the count al-Suyuti gives ('خمسة عشر نفسا'), as al-Kattani reports it
+    companions_numbered: the length of al-Suyuti's numbered list as al-Kattani reports it
+    cited_sources: 'null: al-Kattani drops al-Suyuti''s citations (مسقطا لما ذكره من المخرجين)'
+  kattani_count_note: 'al-Kattani: al-Suyuti states 100 entries at the end of al-Azhar; al-Kattani counted 112 (Nazm al-Mutanathir, introduction).'
+entries:
+- index: '1'
+  kattani_index: '2'
+  kind: wording
+  wording: من كذب علي متعمداً فليتبوأ مقعده من النار
+  companions_stated: 72
+  companions_numbered: 0
+  companions: []
+  cited_sources: null
+  page_id: 27
+  page_label: ص ٢٨
+  url: https://shamela.ws/book/7016/27
+- index: '2'
+  kattani_index: '3'
+  kind: wording
+  wording: نضر الله امرءاً
+  companions_stated: 16
+  companions_numbered: 16
+  companions:
+  - زيد بن ثابت
+  - ابن مسعود
+  - جبير بن مطعم
+  - النعمان بن بشير
+  - والده بشير
+  - سعد بن أبي وقاص
+  - أنس
+  - جابر بن عبد الله
+  - عمير بن قتادة الليثي
+  - معاذ بن جبل
+  - أبي الدرداء
+  - أبي قرفاصة
+  - أبي سعيد الخدري
+  - ربيعة بن عثمان التيمي
+  - ابن عمر
+  - زيد بن خالد الجهني
+  cited_sources: null
+  page_id: 32
+  page_label: ص ٣٣
+  url: https://shamela.ws/book/7016/32
+- index: '3'
+  kattani_index: '8'
+  kind: wording
+  wording: من شهد أن لا إله إلا الله وجبت له الجنة
+  companions_stated: 34
+  companions_numbered: 34
+  companions:
+  - معاذ بن جبل
+  - عتبان بن مالك
+  - أبي ذر
+  - عثمان بن عفان
+  - عبادة بن الصامت
+  - أبي هريرة
+  - أبي بكر الصديق
+  - عمر ابن الخطاب
+  - خريم بن فاتك
+  - رفاعة الجهني
+  - سلمة ابن نعيم الأشجعي
+  - سهيل بن بيضاء
+  - شداد بن أوس
+  - ابن عمرو
+  - أبي الدرداء
+  - أبي سعيد الخدري
+  - أبي عمرة الأنصاري
+  - أبي موسى الأشعري
+  - أنس
+  - بلال
+  - جرير بن عبد الله
+  - زيد بن أرقم
+  - زيد بن خالد الجهني
+  - سعد ابن عبادة
+  - ابن عباس
+  - ابن عمر
+  - عقبة بن عامر
+  - عمارة بن رويبة
+  - عمران بن حصين
+  - عياض الأنصاري
+  - النواس بن سمعان
+  - أبي شيبة الخدري
+  - عبد الرحمان بن عوف
+  - جابر بن عبد الله أربعة وثلاثين
+  cited_sources: null
+  page_id: 37
+  page_label: ص ٣٨
+  url: https://shamela.ws/book/7016/37
+- index: '4'
+  kattani_index: '9'
+  kind: wording
+  wording: أمرت أن أقاتل الناس حتى يقولوا لا إله إلا الله
+  companions_stated: 15
+  companions_numbered: 15
+  companions:
+  - ابن عمر
+  - أبي هريرة
+  - جابر بن عبد الله
+  - أبي بكر الصديق
+  - عمر
+  - أوس بن أوس الثقفي
+  - جرير بن عبد الله البجلي
+  - أنس
+  - سمرة بن جندب
+  - سهل بن سعد
+  - ابن عباس
+  - أبي بكرة
+  - أبي مالك الأشجعي عن أبيه
+  - عياض الأنصاري
+  - النعمان بن بشير
+  cited_sources: null
+  page_id: 38
+  page_label: ص ٣٩
+  url: https://shamela.ws/book/7016/38
+- index: '5'
+  kattani_index: '10'
+  kind: wording
+  wording: المسلم من سلم المسلمون من لسانه ويده
+  companions_stated: 12
+  companions_numbered: 12
+  companions:
+  - عبد الله بن عمرو بن العاص
+  - أبي موسى
+  - جابر بن عبد الله
+  - أنس
+  - فضالة بن عبيد
+  - أبي هريرة
+  - معاذ
+  - عمرو بن عبسة
+  - بلال بن الحارث
+  - ابن عمر
+  - أبي أمامة
+  - واثلة بن الأسقع
+  cited_sources: null
+  page_id: 40
+  page_label: ص ٤١
+  url: https://shamela.ws/book/7016/40
+- index: '6'
+  kattani_index: '12'
+  kind: wording
+  wording: الحياء من الإيمان
+  companions_stated: 10
+  companions_numbered: 10
+  companions:
+  - أبي هريرة
+  - ابن عمر
+  - أبي أمامة
+  - أبي بكرة
+  - عبد الله بن سلام
+  - ابن عباس
+  - ابن مسعود
+  - عمران بن حصين
+  - أبي موسى
+  - قرة بن إياس
+  cited_sources: null
+  page_id: 41
+  page_label: ص ٤٢
+  url: https://shamela.ws/book/7016/41
+- index: '7'
+  kattani_index: '13'
+  kind: wording
+  wording: سؤال جبريل النبي عن الإيمان والإسلام والإحسان
+  companions_stated: 8
+  companions_numbered: 8
+  companions:
+  - أبي هريرة
+  - عمر
+  - أبي ذر
+  - أنس
+  - ابن عباس
+  - ابن عمر
+  - أبي عامر الأشعري
+  - جرير البجلي
+  cited_sources: null
+  page_id: 41
+  page_label: ص ٤٢
+  url: https://shamela.ws/book/7016/41
+- index: '8'
+  kattani_index: '15'
+  kind: wording
+  wording: أكمل المؤمنين إيمانا أحسنهم خلقاً
+  companions_stated: 9
+  companions_numbered: 9
+  companions:
+  - ابن عمرو بن العاصي
+  - أبي هريرة
+  - عائشة
+  - الحسن مرسلاً
+  - عمير ابن قتادة
+  - أبي سعيد الخدري
+  - أنس
+  - جابر بن عبد الله
+  - ابن عمر
+  cited_sources: null
+  page_id: 42
+  page_label: ص ٤٣
+  url: https://shamela.ws/book/7016/42
+- index: '9'
+  kattani_index: '23'
+  kind: wording
+  wording: سئل عن البحر فقال هو الطهور ماؤه الحل ميتته
+  companions_stated: 12
+  companions_numbered: 12
+  companions:
+  - أبي هريرة
+  - علي
+  - جابر بن عبد الله
+  - ابن عباس
+  - ابن عمرو
+  - أبي بكر الصديق
+  - أنس
+  - ابن عمر
+  - عبد الله المدلجي
+  - الفراسي
+  - مرسل سليمان بن موسى
+  - يحيى بن أبي كثير
+  cited_sources: null
+  page_id: 49
+  page_label: ص ٥٠
+  url: https://shamela.ws/book/7016/49
+- index: '10'
+  kattani_index: '24'
+  kind: wording
+  wording: لا يقبل الله صلاة بغير طهور ولا صدقة ولا غلول
+  companions_stated: 14
+  companions_numbered: 14
+  companions:
+  - ابن عمر
+  - أسامة بن عمير
+  - أنس
+  - أبي بكرة
+  - الزبير بن العوام
+  - ابن مسعود
+  - عمران بن حصين
+  - أبي سعيد الخدري
+  - أبي هريرة
+  - الحسن بن علي
+  - مرسل الحسن
+  - أبي قلابة
+  - عن عمر
+  - ابن مسعود موقوفاً
+  cited_sources: null
+  page_id: 50
+  page_label: ص ٥١
+  url: https://shamela.ws/book/7016/50
+- index: '11'
+  kattani_index: '25'
+  kind: wording
+  wording: لا وضوء لمن لم يذكر اسم الله عليه
+  companions_stated: 9
+  companions_numbered: 9
+  companions:
+  - سعيد بن زيد
+  - أبي سعيد
+  - أبي هريرة
+  - أبي سبرة
+  - سهل بن سعد
+  - عائشة
+  - علي
+  - أم سبرة
+  - أنس
+  cited_sources: null
+  page_id: 50
+  page_label: ص ٥١
+  url: https://shamela.ws/book/7016/50
+- index: '12'
+  kattani_index: '28'
+  kind: wording
+  wording: تخليل اللحية
+  companions_stated: 15
+  companions_numbered: 15
+  companions:
+  - أنس
+  - عثمان ابن عفان
+  - علي
+  - عمار
+  - أبي أيوب
+  - عائشة
+  - ابن أبي أوفي
+  - ابن عباس
+  - ابن عمر
+  - أبي أمامة
+  - أبي الدرداء
+  - أم سلمة
+  - جابر بن عبد الله
+  - جرير
+  - مرسل جبير بن نفير
+  cited_sources: null
+  page_id: 54
+  page_label: ص ٥٥
+  url: https://shamela.ws/book/7016/54
+- index: '13'
+  kattani_index: '30'
+  kind: wording
+  wording: ويل للأعقاب من النار
+  companions_stated: 9
+  companions_numbered: 9
+  companions:
+  - ابن عمرو
+  - أبي هريرة
+  - عائشة
+  - جابر بن عبد الله
+  - عبد الله بن الحارث بن جزء الزبيدي
+  - معيقيب
+  - أبي أمامة الباهلي
+  - أخيه
+  - أبي ذر
+  cited_sources: null
+  page_id: 56
+  page_label: ص ٥٧
+  url: https://shamela.ws/book/7016/56
+- index: '14'
+  kattani_index: '32'
+  kind: topic
+  wording: المسح على الخفين
+  companions_stated: 46
+  companions_numbered: 46
+  companions:
+  - المغيرة ابن شعبة
+  - عمر بن الخطاب
+  - علي بن أبي طالب
+  - سعد بن أبي وقاص
+  - بلال
+  - بريدة
+  - جرير البجلي
+  - حذيفة
+  - عمرو بن أمية الضمري
+  - أبي بن عمارة
+  - أوس بن أبي أوس الثقفي
+  - خزيمة بن ثابت
+  - صفوان بن عسال
+  - جابر بن عبد الله
+  - أبي بكرة
+  - أنس
+  - سهل بن سعد الساعدي
+  - عوف بن مالك الأشجعي
+  - عائشة
+  - ميمونة
+  - ثوبان
+  - أبي أيوب الأنصاري
+  - أبي هريرة
+  - أسامة بن زيد
+  - أسامة بن شريك
+  - جابر بن سمرة
+  - ربيعة بن كعب الأسلمي
+  - الشريد
+  - عبادة بن الصامت
+  - عبد الله بن رواحة
+  - ابن عباس
+  - ابن عمر
+  - ابن مسعود
+  - عبد الرحمان بن حسنة
+  - عصمة
+  - عمرو بن حزم
+  - زمسلم والدعوسجة
+  - معقل بن يسار
+  - يعلى بن مرة
+  - أبي أمامة الباهلي
+  - ابن برزة الأسلمي
+  - أبي سعيد الخدري
+  - أبي طلحة
+  - شبيب بن غالب
+  - زيد بن خريم
+  - مرسل الضحاك ستة وأربعين
+  cited_sources: null
+  page_id: 59
+  page_label: ص ٦٠
+  url: https://shamela.ws/book/7016/59
+- index: '15'
+  kattani_index: '34'
+  kind: wording
+  wording: من مس فرجه فليتوضأ
+  companions_stated: 17
+  companions_numbered: 17
+  companions:
+  - بسرة بنت صفوان
+  - جابر
+  - أم حبيبة
+  - سعد بن أبي وقاص
+  - أبي هريرة
+  - أم سلمة
+  - زيد بن خالد الجهني
+  - ابن عمرو
+  - ابن عمر
+  - عائشة
+  - ابن عباس
+  - أروى بنت أنيس
+  - أبي بن كعب
+  - أنس
+  - قبيصة
+  - معاوية بن حيدة
+  - النعمان بن بشير
+  cited_sources: null
+  page_id: 64
+  page_label: ص ٦٥
+  url: https://shamela.ws/book/7016/64
+- index: '16'
+  kattani_index: '35'
+  kind: wording
+  wording: توضئوا مما مست النار
+  companions_stated: 14
+  companions_numbered: 14
+  companions:
+  - زيد بن ثابت
+  - أبي هريرة
+  - عائشة
+  - أبي أيوب الأنصاري
+  - أبي طلحة
+  - أنس
+  - سهل بن الحنظلية
+  - أبي موسى
+  - أم سلمة
+  - ابن عمر
+  - عبد الله بن زيد
+  - أبي سعد الخير
+  - معاذ
+  - أم حبيبة
+  cited_sources: null
+  page_id: 66
+  page_label: ص ٦٧
+  url: https://shamela.ws/book/7016/66
+- index: '17'
+  kattani_index: '38'
+  kind: wording
+  wording: الماء من الماء
+  companions_stated: 11
+  companions_numbered: 11
+  companions:
+  - أبي سعيد
+  - أبي بن كعب
+  - رافع بن خديج
+  - رفاعة بن رافع
+  - عتبان الأنصاري
+  - أبي أيوب
+  - عبد الرحمان بن عوف
+  - جابر
+  - ابن عباس
+  - أبي هريرة
+  - أنس
+  cited_sources: null
+  page_id: 68
+  page_label: ص ٦٩
+  url: https://shamela.ws/book/7016/68
+- index: '18'
+  kattani_index: '44'
+  kind: wording
+  wording: المؤذنون أطول الناس أعناقاً يوم القيامة
+  companions_stated: 9
+  companions_numbered: 9
+  companions:
+  - معاوية بن أبي سفيان
+  - أنس
+  - بلال
+  - زيد بن أرقم
+  - ابن الزبير
+  - عقبة بن عامر
+  - أبي هريرة
+  - ابن عمر
+  - رجل من الصحابة لم يسم
+  cited_sources: null
+  page_id: 70
+  page_label: ص ٧١
+  url: https://shamela.ws/book/7016/70
+- index: '19'
+  kattani_index: '45'
+  kind: wording
+  wording: يغفر للمؤذن مدى صوته
+  companions_stated: 7
+  companions_numbered: 7
+  companions:
+  - أبي هريرة
+  - البراء
+  - أبي سعيد
+  - ابن عمر
+  - أنس
+  - أبي أمامة
+  - جابر
+  cited_sources: null
+  page_id: 71
+  page_label: ص ٧٢
+  url: https://shamela.ws/book/7016/71
+- index: '20'
+  kattani_index: '49'
+  kind: wording
+  wording: إمامة جبريل بالنبي
+  companions_stated: 9
+  companions_numbered: 9
+  companions:
+  - ابن عباس
+  - جابر
+  - أبي هريرة
+  - أنس
+  - ابن عمر
+  - أبي سعيد
+  - عمرو بن حزم
+  - أبي مسعود الأنصاري
+  - مرسل رجل من ولد عمر
+  cited_sources: null
+  page_id: 72
+  page_label: ص ٧٣
+  url: https://shamela.ws/book/7016/72
+- index: '21'
+  kattani_index: '55'
+  kind: wording
+  wording: من بني لله مسجداً بنى الله له بيتاً في الجنة
+  companions_stated: 21
+  companions_numbered: 21
+  companions:
+  - عثمان بن عفان
+  - أنس
+  - عمرو ابن عبسة
+  - عمر
+  - علي
+  - جابر بن عبد الله
+  - ابن عباس
+  - ابن عمر
+  - واثلة
+  - أسماء بنت يزيد
+  - أبي بكر الصديق
+  - ابن عمرو
+  - نبيط ابن شريط
+  - أبي أمامة
+  - أبي ذر
+  - أبي قرصافة
+  - أبي هريرة
+  - عائشة
+  - عبد الله بن أبي أوفى
+  - معاذ بن جبل
+  - أم حبيبة أحد وعشرين
+  cited_sources: null
+  page_id: 75
+  page_label: ص ٧٦
+  url: https://shamela.ws/book/7016/75
+- index: '22'
+  kattani_index: '56'
+  kind: wording
+  wording: من أكل من هذه الشجرة الخبيثة فلا يقربن مسجدنا
+  companions_stated: 12
+  companions_numbered: 12
+  companions:
+  - أنس
+  - جابر بن عبد الله
+  - ابن عمر
+  - أبي هريرة
+  - معقل بن يسار
+  - أبي بكر الصديق
+  - بشير بن معبد الأسلمي
+  - خزيمة بن ثابت
+  - عبد الله بن زيد
+  - أبي ثعلبة
+  - أبي سعيد
+  - جابر بن سمرة
+  cited_sources: null
+  page_id: 76
+  page_label: ص ٧٧
+  url: https://shamela.ws/book/7016/76
+- index: '23'
+  kattani_index: '60'
+  kind: wording
+  wording: بشر المشاءين في الظلم إلى المساجد بالنور التام يوم القيامة
+  companions_stated: 15
+  companions_numbered: 15
+  companions:
+  - بريدة
+  - أنس
+  - سهل بن سعد
+  - زيد بن حارثة
+  - ابن عباس
+  - ابن عمر
+  - أبي أمامة
+  - أبي الدرداء
+  - أبي هريرة
+  - عائشة
+  - أبي موسى
+  - أبي سعيد
+  - حارثة بن وهب
+  - حطيم الحداني مرسلاً
+  - عطاء بن يسار مرسلاً
+  cited_sources: null
+  page_id: 79
+  page_label: ص ٨٠
+  url: https://shamela.ws/book/7016/79
+- index: '24'
+  kattani_index: '61'
+  kind: wording
+  wording: أسفروا بالفجر فإنه أعظم للأجر
+  companions_stated: 9
+  companions_numbered: 9
+  companions:
+  - رافع بن خديج
+  - محمود بن لبيد
+  - بلال
+  - ابن مسعود
+  - أبي هريرة
+  - حواء
+  - أنس
+  - قتادة
+  - رجل من الصحابة
+  cited_sources: null
+  page_id: 79
+  page_label: ص ٨٠
+  url: https://shamela.ws/book/7016/79
+- index: '25'
+  kattani_index: '62'
+  kind: wording
+  wording: إذا اشتد الحر فابردوا بالصلاة
+  companions_stated: 17
+  companions_numbered: 17
+  companions:
+  - أبي ذر
+  - أبي هريرة
+  - ابن عمر
+  - أبي سعيد
+  - أبي موسى
+  - المغيرة بن شعبة
+  - عائشة
+  - صفوان والد القاسم
+  - عبد الرحمان ابن جارية
+  - عمرو بن عبسة
+  - رجل لم يسم أراه عبد الله
+  - عمر
+  - ابن عباس
+  - عبد الرحمان ابن علقمة
+  - أنس
+  - مرسل عطاء بن يسار
+  - حجاج الباهلي وله صحبة
+  cited_sources: null
+  page_id: 80
+  page_label: ص ٨١
+  url: https://shamela.ws/book/7016/80
+- index: '26'
+  kattani_index: '65'
+  kind: wording
+  wording: لولا أن أشق على أمتي لامرتهم بالسواك عند كل صلاة
+  companions_stated: 28
+  companions_numbered: 28
+  companions:
+  - أبي هريرة
+  - زيد بن خالد الجهني
+  - أبي سعيد
+  - علي
+  - تمام بن العباس
+  - أخيه قيم
+  - رجل من الصحابة لم يسم
+  - زينب بنت جحش
+  - أم حبيبة
+  - جعفر بن أبي طالب
+  - العباس بن عبد المطلب
+  - ابن عباس
+  - ابن عمرو
+  - عائشة
+  - أنس
+  - جابر
+  - سهل بن سعد
+  - ابن عمر
+  - أسامة بن زيد
+  - ابن الزبير
+  - عبد الله بن حنظلة بن أبي عامر
+  - أبي بكر الصديق
+  - حذيفة
+  - واثلة
+  - أبي أمامكة
+  - أبي أيوب
+  - أبي موسى
+  - أم سلمة ثمانية وعشرين
+  cited_sources: null
+  page_id: 82
+  page_label: ص ٨٣
+  url: https://shamela.ws/book/7016/82
+- index: '27'
+  kattani_index: '66'
+  kind: wording
+  wording: مفتاح الصلاة الطهور وتحريمها التكبير وتحليلها التسليم
+  companions_stated: 7
+  companions_numbered: 7
+  companions:
+  - علي
+  - جابر
+  - أبي سعيد
+  - عبد الله بن زيد
+  - ابن عباس
+  - ابن مسعود
+  - أنس
+  cited_sources: null
+  page_id: 83
+  page_label: ص ٨٤
+  url: https://shamela.ws/book/7016/83
+- index: '28'
+  kattani_index: '67'
+  kind: wording
+  wording: رفع اليدين في الصلاة في الإحرام والركوع والاعتدال
+  companions_stated: 23
+  companions_numbered: 23
+  companions:
+  - ابن عمر
+  - مالك ابن الحويرث
+  - وائل بن حجر
+  - علي
+  - سهل بن سعد
+  - ابن الزبير
+  - ابن عباس
+  - محمد بن مسلمة
+  - أبي أسيد
+  - أبي حميد
+  - أبي قتادة
+  - أبي هريرة
+  - أنس
+  - جابر بن عبد الله
+  - عمر الليثي
+  - الحكم بن عمير
+  - الأعرابي
+  - أبي بكر الصديق
+  - البراء
+  - عمر بن الخطاب
+  - أبي موسى الأشعري
+  - عقبة بن عامر
+  - معاذ بن جبل ثلاثة وعشرين
+  cited_sources: null
+  page_id: 84
+  page_label: ص ٨٥
+  url: https://shamela.ws/book/7016/84
+- index: '29'
+  kattani_index: '71'
+  kind: topic
+  wording: الجهر بالبسملة
+  companions_stated: 18
+  companions_numbered: 18
+  companions:
+  - أنس
+  - ابن عباس
+  - أبي هريرة
+  - أم سلمة
+  - عثمان
+  - علي
+  - جابر بن عبد الله
+  - الحكم بن عمير
+  - ابن عمر
+  - عمار بن ياسر
+  - النعمان بن بشير
+  - عائشة
+  - أبي بن كعب
+  - سمرة ابن جندب
+  - بريدة
+  - بشر أو بشير بن معاوية
+  - حسين بن عرفطة
+  - مجالد بن ثور وجماعة من المهاجرين والأنصار
+  cited_sources: null
+  page_id: 87
+  page_label: ص ٨٨
+  url: https://shamela.ws/book/7016/87
+- index: '30'
+  kattani_index: '76'
+  kind: topic
+  wording: أحاديث التشهد في الصلاة
+  companions_stated: 24
+  companions_numbered: 24
+  companions:
+  - ابن مسعود
+  - ابن عباس
+  - أبي موسى
+  - عمر
+  - جابر
+  - ابن عمر
+  - سمرة بن جندب
+  - عائشة
+  - علي
+  - ابن الزبير
+  - معاوية ابن أبي سفيان
+  - سلمان
+  - أبي حميد الساعدي
+  - أبي بكر الصديق
+  - طلحة بن عبيد الله
+  - أنس
+  - حذيفة
+  - الحسين بن علي
+  - ابن أبي أوفى
+  - الفضل ابن العباس
+  - المطلب بن ربيعة
+  - أبي سعيد
+  - أبي هريرة
+  - أم سلمة أربعة وعشرين
+  cited_sources: null
+  page_id: 92
+  page_label: ص ٩٣
+  url: https://shamela.ws/book/7016/92
+- index: '31'
+  kattani_index: '78'
+  kind: wording
+  wording: كيفية الصلاة عليه صلى الله عليه وسلم
+  companions_stated: 13
+  companions_numbered: 13
+  companions:
+  - كعب بن عجرة
+  - أبي حميد الساعدي
+  - أبي سعيد
+  - أبي مسعود الأنصاري
+  - طلحة بن عبيد الله
+  - زيد بن خارجة
+  - بريدة
+  - أبي هريرة
+  - سهل بن سعد
+  - رويفع بن ثابت
+  - جابر
+  - ابن عباس
+  - النعمان ابن أبي عياش
+  cited_sources: null
+  page_id: 95
+  page_label: ص ٩٦
+  url: https://shamela.ws/book/7016/95
+- index: '32'
+  kattani_index: '79'
+  kind: wording
+  wording: تسليمتان في الصلاة
+  companions_stated: 14
+  companions_numbered: 14
+  companions:
+  - سعد بن أبي وقاص
+  - جابر بن سمرة
+  - وائل ابن حجر
+  - ابن مسعود
+  - عمار بن ياسر
+  - حذيفة
+  - عدي بن عميرة الحضرمي
+  - سهل بن سعد
+  - طلق بن علي
+  - المغيرة بن شعبة
+  - أبي رمثة البلوى
+  - واثلة بن الأسقع
+  - البراء بن عازب
+  - يعقوب بن الحصين
+  cited_sources: null
+  page_id: 96
+  page_label: ص ٩٧
+  url: https://shamela.ws/book/7016/96
+- index: '33'
+  kattani_index: '82'
+  kind: wording
+  wording: نومه عن صلاة الصبح بالوادي
+  companions_stated: 15
+  companions_numbered: 15
+  companions:
+  - عمران بن حصين
+  - أبي قتادة
+  - أبي هريرة
+  - ذي مخبر
+  - عمرو بن أمية الضمري
+  - جبير بن مطعم
+  - أبي مريم السلولي
+  - ابن مسعود
+  - ابن عباس
+  - بلال
+  - جندب
+  - ابن عمرو
+  - أبي أمامة
+  - أبي جحيفة
+  - أنس
+  cited_sources: null
+  page_id: 99
+  page_label: ص ١٠٠
+  url: https://shamela.ws/book/7016/99
+- index: '34'
+  kattani_index: '83'
+  kind: wording
+  wording: النهي عن الصلاة بعد الصبح والعصر
+  companions_stated: 17
+  companions_numbered: 17
+  companions:
+  - أبي سعيد
+  - أبي هريرة
+  - عمر
+  - ابن عمر
+  - عمرو بن عبسة
+  - عقبة بن عامر
+  - عائشة
+  - معاوية
+  - أنس
+  - ابن مسعود
+  - زيد بن ثابت
+  - سعد بن أبي وقاص
+  - سمرة
+  - كعب بن مرة أو مرة بن كعب
+  - أبي أمة
+  - صفوان بن المعطل
+  - أبي ذر
+  cited_sources: null
+  page_id: 99
+  page_label: ص ١٠٠
+  url: https://shamela.ws/book/7016/99
+- index: '35'
+  kattani_index: '86'
+  kind: wording
+  wording: إن الله زادكم صلاة هي خير لكم من حمر النعم وهي الوتر
+  companions_stated: 8
+  companions_numbered: 8
+  companions:
+  - خارجة بن حذافة
+  - أبي بصرة الغفاري
+  - معاذ بن جبل
+  - ابن عمرو
+  - ابن عباس
+  - عقبة بن عامر الجهني
+  - عمرو بن العاصي
+  - ابن عمر
+  cited_sources: null
+  page_id: 103
+  page_label: ص ١٠٤
+  url: https://shamela.ws/book/7016/103
+- index: '36'
+  kattani_index: '92'
+  kind: wording
+  wording: من ترك الجمعة ثلاثاً من غير عذر طبع الله على قلبه
+  companions_stated: 12
+  companions_numbered: 12
+  companions:
+  - أبي الجعد الضمري
+  - جابر
+  - أبي قتادة
+  - أسامة
+  - حارثة بن النعمان
+  - ابن عمر
+  - أبي هريرة
+  - ابن أبي أوفى
+  - أبي عبس بن جبر
+  - ابن عباس
+  - ابن أسعد بن زرارة
+  - صفوان ابن سليم مرسلاً
+  cited_sources: null
+  page_id: 109
+  page_label: ص ١١٠
+  url: https://shamela.ws/book/7016/109
+- index: '37'
+  kattani_index: '93'
+  kind: wording
+  wording: الغسل يوم الجمعة
+  companions_stated: null
+  companions_numbered: 1
+  companions:
+  - ابن عمر
+  cited_sources: null
+  page_id: 109
+  page_label: ص ١١٠
+  url: https://shamela.ws/book/7016/109
+- index: '38'
+  kattani_index: '95'
+  kind: wording
+  wording: أنه عليه الصلاة والسلام كان يذهب في العيد في طريق ويرجع في أخرى
+  companions_stated: 7
+  companions_numbered: 7
+  companions:
+  - جابر
+  - ابن عمر
+  - أبي هريرة
+  - سعد القرظ
+  - أبي رافع
+  - سعيد
+  - عبد الرحمان بن حاطب
+  cited_sources: null
+  page_id: 112
+  page_label: ص ١١٣
+  url: https://shamela.ws/book/7016/112
+- index: '39'
+  kattani_index: '97'
+  kind: wording
+  wording: من عاد مريضاً خاض في الرحمة حتى يجلس فإذا جلس غمرته الرحمة
+  companions_stated: 10
+  companions_numbered: 10
+  companions:
+  - جابر بن عبد الله
+  - أنس
+  - كعب بن مالك
+  - أبي أمامة
+  - عبد الرحمان بن عوف
+  - عمرو بن حزم
+  - ابن عباس
+  - صفوان بن عسال
+  - أبي الدرداء
+  - أبي هريرة
+  cited_sources: null
+  page_id: 113
+  page_label: ص ١١٤
+  url: https://shamela.ws/book/7016/113
+- index: '40'
+  kattani_index: '100'
+  kind: wording
+  wording: لقنوا موتاكم لا إله إلا الله
+  companions_stated: 12
+  companions_numbered: 12
+  companions:
+  - أبي سعيد
+  - أبي هريرة
+  - عبد الله بن جعفر
+  - عائشة
+  - ابن عباس
+  - ابن مسعود
+  - جابر بن عبد الله
+  - عروة بن مسعود
+  - حذيفة
+  - عمر
+  - عثمان
+  - أنس
+  cited_sources: null
+  page_id: 114
+  page_label: ص ١١٥
+  url: https://shamela.ws/book/7016/114
+- index: '41'
+  kattani_index: '103'
+  kind: wording
+  wording: مر بجنازة فأثنى عليها خير فقال عليه الصلاة والسلام وجبت ثم مر بأخرى فأثنى عليها بشر فقال وجبت أنتم شهداء الله في الأرض
+  companions_stated: 9
+  companions_numbered: 9
+  companions:
+  - أنس
+  - عمر
+  - أبي هريرة
+  - أبي قتادة
+  - أبي زهير
+  - سلمة بن الأكوع
+  - كعب بن عجرة
+  - عامر بن ربيعة
+  - ابن عمر
+  cited_sources: null
+  page_id: 116
+  page_label: ص ١١٧
+  url: https://shamela.ws/book/7016/116
+- index: '42'
+  kattani_index: '106'
+  kind: wording
+  wording: إن الميت يعذب ببكاء الحي عليه
+  companions_stated: 9
+  companions_numbered: 9
+  companions:
+  - عمر
+  - ابن عمر
+  - حفصة
+  - أنس
+  - عمران بن حصين
+  - أبي موسى
+  - أبي بكر الصديق
+  - أبي هريرة
+  - سمرة
+  cited_sources: null
+  page_id: 117
+  page_label: ص ١١٨
+  url: https://shamela.ws/book/7016/117
+- index: '43'
+  kattani_index: '107'
+  kind: wording
+  wording: الصلاة على القبر
+  companions_stated: 15
+  companions_numbered: 15
+  companions:
+  - ابن عباس
+  - أبي هريرة
+  - عقبة بن عامر
+  - زيد بن ثابت
+  - عبد الله بن عامر بن ربيعة
+  - أبي سعيد
+  - ابن عمر
+  - عمران ابن حصين
+  - عمرو بن عوف
+  - أنس بن مالك
+  - أبي أمامة بن سهل
+  - بريدة
+  - عامر بن ربيعة
+  - عبادة
+  - أبي قتادة
+  cited_sources: null
+  page_id: 118
+  page_label: ص ١١٩
+  url: https://shamela.ws/book/7016/118
+- index: '44'
+  kattani_index: '108'
+  kind: wording
+  wording: كنت نهيتكم عن زيارة القبور فزوروها
+  companions_stated: 8
+  companions_numbered: 8
+  companions:
+  - بريدة
+  - أبي سعيد الخدري
+  - علي بن أبي طالب
+  - أم سلمة
+  - زيد بن الخطاب
+  - ابن عباس
+  - ثوبان
+  - عائشة
+  cited_sources: null
+  page_id: 119
+  page_label: ص ١٢٠
+  url: https://shamela.ws/book/7016/119
+- index: '45'
+  kattani_index: '111'
+  kind: topic
+  wording: سؤال الملكين الميت في القبر وهو فتنته
+  companions_stated: 26
+  companions_numbered: 26
+  companions:
+  - أنس
+  - أسماء بنت أبي بكر
+  - عمرو بن العاص
+  - البراء بن عازب
+  - عثمان بن عفان
+  - أبي هريرة
+  - جابر بن عبد الله
+  - ابن عمرو
+  - أبي سعيد الخدري
+  - عائشة
+  - ابن عباس
+  - ابن مسعود
+  - عمر بن الخطاب
+  - أبي الدرداء
+  - أبي رافع
+  - أبي موسى
+  - عطاء ابن يسار مرسلاً
+  - تميم الداري
+  - عبادة بن الصامت
+  - بشير بن أكال
+  - أبي أمامة
+  - ثوبان
+  - حمزة بن حبيب مرسلاً
+  - ابن عمر
+  - معاذ ابن جبل
+  - أبي قتادة ستة وعشرين
+  cited_sources: null
+  page_id: 122
+  page_label: ص ١٢٣
+  url: https://shamela.ws/book/7016/122
+- index: '46'
+  kattani_index: '116'
+  kind: wording
+  wording: لا زكاة في المال حتى يحول عليه الحول
+  companions_stated: 5
+  companions_numbered: 5
+  companions:
+  - علي
+  - عائشة
+  - أنس
+  - ابن عمر
+  - أم سعد الأنصارية
+  cited_sources: null
+  page_id: 126
+  page_label: ص ١٢٧
+  url: https://shamela.ws/book/7016/126
+- index: '47'
+  kattani_index: '118'
+  kind: wording
+  wording: اتقوا النار ولو بشق تمرة
+  companions_stated: 15
+  companions_numbered: 15
+  companions:
+  - عدي بن حاتم
+  - ابن مسعود
+  - عائشة
+  - أبي بكر الصديق
+  - أنس
+  - النعمان بن بشير
+  - أبي هريرة
+  - ابن عباس
+  - أبي أمامة
+  - عبد الله بن مخمر
+  - فضالة بن عبيد
+  - ابن عمر
+  - مرسل عروة بن الزبير
+  - قتادة
+  - مرسل الحسن
+  cited_sources: null
+  page_id: 127
+  page_label: ص ١٢٨
+  url: https://shamela.ws/book/7016/127
+- index: '48'
+  kattani_index: '119'
+  kind: wording
+  wording: كل معروف صدقة
+  companions_stated: 8
+  companions_numbered: 8
+  companions:
+  - جابر بن عبد الله
+  - حذيفة
+  - عبد الله ابن يزيد الخطمي
+  - ابن مسعود
+  - نييط بن شريط
+  - أبي مسعود الأنصاري
+  - والد ثابت
+  - والد أبي مالك الأشجعي
+  cited_sources: null
+  page_id: 127
+  page_label: ص ١٢٨
+  url: https://shamela.ws/book/7016/127
+- index: '49'
+  kattani_index: '125'
+  kind: wording
+  wording: أفطر الحاجم والمحجوم
+  companions_stated: 15
+  companions_numbered: 15
+  companions:
+  - ثوبان
+  - شداد ابن أوس
+  - رافع ابن خديج
+  - علي
+  - أسامة بن زيد
+  - بلال
+  - معقل بن يسار
+  - أبي موسى
+  - أبي هريرة
+  - عائشة
+  - أنس
+  - جابر بن عبد الله
+  - سمرة بن جندب
+  - ابن عباس
+  - ابن عمر
+  cited_sources: null
+  page_id: 130
+  page_label: ص ١٣١
+  url: https://shamela.ws/book/7016/130
+- index: '50'
+  kattani_index: '127'
+  kind: wording
+  wording: ليس من البر الصيام في السفر
+  companions_stated: 7
+  companions_numbered: 7
+  companions:
+  - جابر بن عبد الله
+  - كعب بن عاصم الأشعري
+  - أبي برزة الأسلمي
+  - ابن عباس
+  - ابن عمر
+  - عمار بن ياسر
+  - أبي الدرداء
+  cited_sources: null
+  page_id: 132
+  page_label: ص ١٣٣
+  url: https://shamela.ws/book/7016/132
+- index: '51'
+  kattani_index: '128'
+  kind: wording
+  wording: من صام من رمضان واتبعه ستاً من شوال فكأنما صام الدهر
+  companions_stated: 8
+  companions_numbered: 8
+  companions:
+  - أبي أيوب
+  - ثوبان
+  - جابر بن عبد الله
+  - أبي هريرة
+  - ابن عباس
+  - ابن عمر
+  - غنام
+  - البراء بن عازب
+  cited_sources: null
+  page_id: 133
+  page_label: ص ١٣٤
+  url: https://shamela.ws/book/7016/133
+- index: '52'
+  kattani_index: '129'
+  kind: wording
+  wording: صيام يوم عاشوراء وعرفة
+  companions_stated: 7
+  companions_numbered: 7
+  companions:
+  - أبي قتادة
+  - قتادة بن النعمان
+  - ابن عمر
+  - أبي سعيد
+  - عائشة
+  - زيد بن أرقم
+  - سهل بن سعد
+  cited_sources: null
+  page_id: 133
+  page_label: ص ١٣٤
+  url: https://shamela.ws/book/7016/133
+- index: '53'
+  kattani_index: '130'
+  kind: wording
+  wording: أيام التشريق أيام أكل وشرب
+  companions_stated: 16
+  companions_numbered: 16
+  companions:
+  - كعب بن مالك
+  - نبيشة الهذلي
+  - عقبة بن عامر
+  - علي ابن أبي طالب
+  - أم مسعود بن الحكم الزرقي
+  - عبد الله بن حذافة السمهي
+  - أم الفضل بنت الحارث
+  - أبي هريرة
+  - بشر بن سحيم الغفاري
+  - سعد بن أبي وقاص
+  - ابن عمر
+  - بديل بن ورقاء
+  - ابن عباس
+  - معمر بن عبد الله العدوي
+  - عمر بن الخطاب
+  - أسامة الهذلي
+  cited_sources: null
+  page_id: 134
+  page_label: ص ١٣٥
+  url: https://shamela.ws/book/7016/134
+- index: '54'
+  kattani_index: '139'
+  kind: wording
+  wording: عمرة في رمضان تعدل حجة
+  companions_stated: 19
+  companions_numbered: 16
+  companions:
+  - جابر بن عبد الله
+  - يوسف بن عبد الله ابن سلام
+  - أم معقل
+  - ابن عباس
+  - وهب بن خنبش أو هرم بن خنبش
+  - أبي معقل
+  - علي
+  - أنس
+  - ابن الزبير
+  - عروة البارقي
+  - أبي طليق
+  - الأحمري
+  - بكر بن عبد الله المزني مرسلاً
+  - مرسل عكرمة
+  - مرسل مجاهد
+  - الفضل بن العباس
+  cited_sources: null
+  page_id: 137
+  page_label: ص ١٣٨
+  url: https://shamela.ws/book/7016/137
+- index: '55'
+  kattani_index: '145'
+  kind: wording
+  wording: لا تزال طائفة من أمتي ظاهرين على الحق حتى يأتي أمر الله
+  companions_stated: 11
+  companions_numbered: 11
+  companions:
+  - معاوية بن أبي سفيان
+  - المغيرة بن شعبة
+  - جابر بن سمرة
+  - معاذ بن جبل
+  - جابر بن عبد الله
+  - زيد بن أرقم
+  - أبي أمامة
+  - عمر
+  - أبي هريرة
+  - مرة البهوي
+  - شرحبيل بن السمط
+  cited_sources: null
+  page_id: 140
+  page_label: ص ١٤١
+  url: https://shamela.ws/book/7016/140
+- index: '56'
+  kattani_index: '146'
+  kind: wording
+  wording: الخيل معقود بنواصيها الخير إلى يوم القيامة
+  companions_stated: 18
+  companions_numbered: 18
+  companions:
+  - أبي هريرة
+  - أنس
+  - عروة البارقي
+  - جرير
+  - جابر بن عبد الله
+  - أبي ذر
+  - أبي سعيد
+  - أسماء بنت يزيد
+  - حذيفة
+  - سوادة بن الربيع
+  - سهل بن الحنظلية
+  - عريب الملكي الشامي
+  - النعمان بن بشير
+  - أبي كبشة
+  - أبي أمامة
+  - جسر بن وهب
+  - مرسل مكحول
+  cited_sources: null
+  page_id: 141
+  page_label: ص ١٤٢
+  url: https://shamela.ws/book/7016/141
+- index: '57'
+  kattani_index: '148'
+  kind: wording
+  wording: الحرب خدعة
+  companions_stated: 14
+  companions_numbered: 14
+  companions:
+  - أبي هريرة
+  - علي
+  - ابن عباس
+  - أنس
+  - الحسن بن علي
+  - زيد بن ثابت
+  - عوف بن مالك
+  - نبيط بن شريط
+  - النواس بن سمعان
+  - الحسين بن علي
+  - ابن عمر
+  - عبد الله بن سلام
+  - خالد بن الوليد
+  - جابر
+  cited_sources: null
+  page_id: 142
+  page_label: ص ١٤٣
+  url: https://shamela.ws/book/7016/142
+- index: '58'
+  kattani_index: '149'
+  kind: wording
+  wording: غدوة في سبيل الله أو روحة خير من الدنيا وما فيها
+  companions_stated: 8
+  companions_numbered: 8
+  companions:
+  - أنس
+  - أبي أيوب
+  - سهل بن سعد
+  - ابن عباس
+  - أبي هريرة
+  - معاوية بن خديج
+  - ابن الزبير
+  - عمران بن حصين
+  cited_sources: null
+  page_id: 142
+  page_label: ص ١٤٣
+  url: https://shamela.ws/book/7016/142
+- index: '59'
+  kattani_index: '150'
+  kind: wording
+  wording: النهي عن قتل النساء والصبيان
+  companions_stated: 5
+  companions_numbered: 5
+  companions:
+  - ابن عمر
+  - كعب بن مالك
+  - عبد الله بن عتيك
+  - أبي ثعلبة الخشني
+  - أبي سعيد
+  cited_sources: null
+  page_id: 143
+  page_label: ص ١٤٤
+  url: https://shamela.ws/book/7016/143
+- index: '60'
+  kattani_index: '155'
+  kind: wording
+  wording: من قتل دون ماله ماله فهو شهيد
+  companions_stated: 13
+  companions_numbered: 13
+  companions:
+  - ابن عمرو
+  - أبي هريرة
+  - الحسين بن علي
+  - ابن عباس
+  - سعد بن أبي وقاص
+  - أنس
+  - ابن الزبير
+  - ابن مسعود
+  - عبد الله بن عامر بن كريز
+  - شداد بن أوس
+  - علي ابن أبي طالب
+  - جابر بن عبد الله
+  - سويد بن مقرن
+  cited_sources: null
+  page_id: 145
+  page_label: ص ١٤٦
+  url: https://shamela.ws/book/7016/145
+- index: '61'
+  kattani_index: '157'
+  kind: wording
+  wording: لا نكاح إلا بولي
+  companions_stated: 7
+  companions_numbered: 7
+  companions:
+  - أبي موسى
+  - ابن عباس
+  - جابر
+  - أبي هريرة
+  - أبي أمامة
+  - عائشة
+  - عمران بن حصين
+  cited_sources: null
+  page_id: 146
+  page_label: ص ١٤٧
+  url: https://shamela.ws/book/7016/146
+- index: '62'
+  kattani_index: '165'
+  kind: wording
+  wording: كل مسكر حرام
+  companions_stated: 14
+  companions_numbered: 14
+  companions:
+  - عائشة
+  - أبي موسى
+  - ابن عباس
+  - أبي هريرة
+  - ابن عمر
+  - ابن مسعود
+  - معاوية ابن أبي سفيان
+  - أنس
+  - عمر
+  - خوات بن جبير
+  - زيد بن ثابت
+  - قيس ابن سعد
+  - أبي سعيد
+  - قرة بن إياس
+  cited_sources: null
+  page_id: 152
+  page_label: ص ١٥٣
+  url: https://shamela.ws/book/7016/152
+- index: '63'
+  kattani_index: '167'
+  kind: wording
+  wording: المؤمن يأكل في معي واحد والكافر يأكل في سبعة أمعاء
+  companions_stated: 14
+  companions_numbered: 14
+  companions:
+  - ابن عمر
+  - أبي هريرة
+  - أبي بصرة
+  - نضلة بن عمرو الغفاري
+  - رجل من جهينة له صحبة
+  - ميمونة بنت الحارث
+  - أنس
+  - سمرة
+  - سكين الضمري
+  - جهجاء الغفاري
+  - ابن الزبير
+  - ابن عمرو
+  - أبي سعيد
+  - أبي موسى
+  cited_sources: null
+  page_id: 153
+  page_label: ص ١٥٤
+  url: https://shamela.ws/book/7016/153
+- index: '64'
+  kattani_index: '168'
+  kind: wording
+  wording: من غشنا فليس منا
+  companions_stated: 12
+  companions_numbered: 12
+  companions:
+  - أبي هريرة
+  - ابن عمر
+  - أبي بردة بن نيار
+  - أنس
+  - البراء بن عازب
+  - حذيفة
+  - ابن عباس
+  - ابن مسعود
+  - قيس ابن أبي غرزة
+  - أبي موسى
+  - عائشة
+  - الحارث بن سويد
+  cited_sources: null
+  page_id: 154
+  page_label: ص ١٥٥
+  url: https://shamela.ws/book/7016/154
+- index: '65'
+  kattani_index: '169'
+  kind: wording
+  wording: من باع عقاراً ولم يجعل ثمنه في مثله لم يبارك له فيه
+  companions_stated: 7
+  companions_numbered: 7
+  companions:
+  - حذيفة بن اليمان
+  - سعيد ابن حريث
+  - سعيد بن زيد
+  - عمران بن حصين
+  - عمرو بن حريث
+  - معقل بن يسار
+  - أبي ذر
+  cited_sources: null
+  page_id: 154
+  page_label: ص ١٥٥
+  url: https://shamela.ws/book/7016/154
+- index: '66'
+  kattani_index: '171'
+  kind: wording
+  wording: النهي عن بيع الغرر
+  companions_stated: 7
+  companions_numbered: 7
+  companions:
+  - ابن مسعود
+  - سهل بن سعد
+  - ابن عباس
+  - ابن عمرو
+  - عتاب بن أسيد
+  - ابن عمر
+  - أنس
+  cited_sources: null
+  page_id: 155
+  page_label: ص ١٥٦
+  url: https://shamela.ws/book/7016/155
+- index: '67'
+  kattani_index: '175'
+  kind: wording
+  wording: الأئمة من قريش
+  companions_stated: 3
+  companions_numbered: 3
+  companions:
+  - أبي برزة
+  - أنس
+  - علي
+  cited_sources: null
+  page_id: 157
+  page_label: ص ١٥٨
+  url: https://shamela.ws/book/7016/157
+- index: '68'
+  kattani_index: '181'
+  kind: wording
+  wording: الولد للفراش وللعاهر الحجر
+  companions_stated: 22
+  companions_numbered: 22
+  companions:
+  - أبي هريرة
+  - عائشة
+  - عثمان بن عفان
+  - ابن عمرو
+  - أبي أمامة
+  - عمرو بن خارجة
+  - ابن الزبير
+  - ابن مسعود
+  - عمر بن الخطاب
+  - علي ابن أبي طالب
+  - الحسن مرسلاً
+  - سعد بن أبي وقاص
+  - ابن عمر
+  - البراء ابن عازب
+  - زيد بن أرقم
+  - ابن عباس
+  - الحسين بن علي
+  - عبادة بن الصامت
+  - واثلة بن الأسقع
+  - أبي وائل مرسلاً
+  - معاوية بن عمرو
+  - أنس اثنين وعشرين
+  cited_sources: null
+  page_id: 161
+  page_label: ص ١٦٢
+  url: https://shamela.ws/book/7016/161
+- index: '69'
+  kattani_index: '182'
+  kind: wording
+  wording: قصة ماعز في الزنى ورجمه
+  companions_stated: 18
+  companions_numbered: 18
+  companions:
+  - جابر بن عبد الله
+  - ابن عباس
+  - بريدة
+  - جابر بن سمرة
+  - أبي سعيد
+  - اللجلاج
+  - نعيم بن هزال
+  - أبي هريرة
+  - أبي
+  - رجل من الصحابة
+  - مرسل ابن المسيب
+  - أبي بكر الصديق
+  - أبي ذر
+  - نصر والد عثمان
+  - أبي برزة الأسلمي
+  - مرسل عطاء بن يسار
+  - الشعبي
+  - أبي أمامة بن سهل بن حنيف
+  cited_sources: null
+  page_id: 162
+  page_label: ص ١٦٣
+  url: https://shamela.ws/book/7016/162
+- index: '70'
+  kattani_index: '184'
+  kind: wording
+  wording: النهي عن الشفاعة في الحد إذا بلغ الإمام
+  companions_stated: 13
+  companions_numbered: 13
+  companions:
+  - جابر بن عبد الله
+  - عائشة
+  - صفوان بن أمية
+  - ابن عمر
+  - ابن عمرو
+  - ابن مسعود
+  - علي بن أبي طالب
+  - الزبير
+  - ابن عباس
+  - عمار بن ياسر
+  - أبي هريرة
+  - أم سلمة
+  - مسعود بن العجماء
+  cited_sources: null
+  page_id: 164
+  page_label: ص ١٦٥
+  url: https://shamela.ws/book/7016/164
+- index: '71'
+  kattani_index: '185'
+  kind: wording
+  wording: الظلم ظلمات يوم القيامة
+  companions_stated: 6
+  companions_numbered: 6
+  companions:
+  - ابن عمر
+  - ابن عمرو
+  - أبي هريرة
+  - المسور بن مخرمة
+  - معاذ بن جبل
+  - الهرماس بن زياد
+  cited_sources: null
+  page_id: 164
+  page_label: ص ١٦٥
+  url: https://shamela.ws/book/7016/164
+- index: '72'
+  kattani_index: '186'
+  kind: wording
+  wording: من ظلم قيد شبر من الأرض طوقه يوم القيامة من سبع أرضين
+  companions_stated: 14
+  companions_numbered: 14
+  companions:
+  - عائشة
+  - سعيد بن زيد
+  - أبي هريرة
+  - يعلى بن مرة
+  - أنس
+  - سعد ابن أبي وقاص
+  - ابن عباس
+  - الحكم بن الحارث السلمي
+  - شداد بن أوس
+  - أبي شريح الخزاعي
+  - المسور بن مخرمة
+  - عبادة بن الصامت
+  - أميمة مولاة رسول الله صلى الله عليه وسلم
+  - ابن عمر
+  cited_sources: null
+  page_id: 165
+  page_label: ص ١٦٦
+  url: https://shamela.ws/book/7016/165
+- index: '73'
+  kattani_index: '188'
+  kind: wording
+  wording: الولاء لمن أعتق
+  companions_stated: null
+  companions_numbered: 4
+  companions:
+  - عائشة
+  - ابن عباس
+  - علي
+  - بريدة
+  cited_sources: null
+  page_id: 165
+  page_label: ص ١٦٦
+  url: https://shamela.ws/book/7016/165
+- index: '74'
+  kattani_index: '190'
+  kind: wording
+  wording: القضاء باليمين مع الشاهد
+  companions_stated: 7
+  companions_numbered: 7
+  companions:
+  - أبي هريرة
+  - جابر
+  - عمارة بن حزم
+  - بلال بن الحارث
+  - زيد بن ثابت
+  - أبي سعيد الخدري
+  - ابن عمر
+  cited_sources: null
+  page_id: 167
+  page_label: ص ١٦٨
+  url: https://shamela.ws/book/7016/167
+- index: '75'
+  kattani_index: '192'
+  kind: wording
+  wording: إذا حلفت على يمين فرأيت غيرها خيراً منها فكفر عن يمينك وائت الذي هو خير
+  companions_stated: 8
+  companions_numbered: 8
+  companions:
+  - عبد الرحمان بن سمرة
+  - عدي بن حاتم
+  - ابن عمرو
+  - أذينة
+  - معاوية بن الحكم
+  - أم سلمة
+  - أبي الدرداء
+  - عمران بن حصين
+  cited_sources: null
+  page_id: 169
+  page_label: ص ١٧٠
+  url: https://shamela.ws/book/7016/169
+- index: '76'
+  kattani_index: '197'
+  kind: wording
+  wording: أنزل هذا القرآن على سبعة أحرف
+  companions_stated: 21
+  companions_numbered: 21
+  companions:
+  - عمر
+  - عثمان
+  - أبي بن كعب
+  - أنس
+  - حذيفة بن اليمان
+  - زيد بن أرقم
+  - سمرة بن جندب
+  - سليمان بن صرد
+  - ابن عباس
+  - ابن مسعود
+  - عبد الرحمان بن عوف
+  - عمر بن أبي سلمة
+  - عمرو بن العاص
+  - معاذ بن جبل
+  - هشام بن حكيم
+  - أبي بكرة
+  - أبي جهم
+  - أبي سعيد الخدري
+  - أبي طلحة الأنصاري
+  - أبي هريرة
+  - أم أيوب أحد وعشرين
+  cited_sources: null
+  page_id: 172
+  page_label: ص ١٧٣
+  url: https://shamela.ws/book/7016/172
+- index: '77'
+  kattani_index: '198'
+  kind: wording
+  wording: قل هو الله أحد تعدل ثلث القرآن
+  companions_stated: 16
+  companions_numbered: 16
+  companions:
+  - أبي سعيد
+  - أبي الدرداء
+  - أبي هريرة
+  - أبي أيوب
+  - أبي مسعود
+  - أبي بن كعب
+  - ابن عمرو
+  - أم كلثوم بنت عقبة بن أبي معيط
+  - أنس
+  - جابر بن عبد الله
+  - سعد بن أبي وقاص
+  - ابن عمر
+  - ابن مسعود
+  - معاذ بن جبل
+  - ابن عباس
+  - قتادة بن النعمان
+  cited_sources: null
+  page_id: 173
+  page_label: ص ١٧٤
+  url: https://shamela.ws/book/7016/173
+- index: '78'
+  kattani_index: '199'
+  kind: wording
+  wording: لقد أوتي مزماراً من مزامير آل داود
+  companions_stated: 7
+  companions_numbered: 7
+  companions:
+  - بريدة
+  - أبي هريرة
+  - عائشة
+  - أنس
+  - البراء
+  - سلمة بن قيس الأشجعي
+  - عبد الرحمان بن كعب بن مالك مرسلاً
+  cited_sources: null
+  page_id: 174
+  page_label: ص ١٧٥
+  url: https://shamela.ws/book/7016/174
+- index: '79'
+  kattani_index: '200'
+  kind: wording
+  wording: لا حول ولا قوة إلا بالله كنز من كنوز الجنة
+  companions_stated: 14
+  companions_numbered: 14
+  companions:
+  - أبي موسى الأشعري
+  - أبي ذر
+  - أبي هريرة
+  - زيد بن ثابت
+  - معاذ بن جبل
+  - أبي أيوب الأنصاري
+  - قيس بن سعد بن عبادة
+  - حازم بن حرملة الغفاري
+  - زيد ابن إسحاق الأنصاري
+  - معاوية بن حيدة
+  - فضالة بن عبيد
+  - أبي الدراء
+  - أنس
+  - أبي بكر الصديق
+  cited_sources: null
+  page_id: 174
+  page_label: ص ١٧٥
+  url: https://shamela.ws/book/7016/174
+- index: '80'
+  kattani_index: '208'
+  kind: wording
+  wording: لإن يمتلئ جوف أحدكم قيحاً خير له من أن يمتلئ شعراً
+  companions_stated: 16
+  companions_numbered: 16
+  companions:
+  - أبي هريرة
+  - ابن عمر
+  - سعد بن أبي وقاص
+  - أبي سعيد الخدري
+  - عمر
+  - سلمان الفارسي
+  - عتبة بن عبد السلمي
+  - ابن مسعود
+  - عوف بن مالك
+  - مالك بن عمير
+  - أبي الدرداء
+  - جابر بن عبد الله
+  - ابن عباس
+  - عائشة
+  - مرسل الحسن
+  - الشعبي
+  cited_sources: null
+  page_id: 179
+  page_label: ص ١٨٠
+  url: https://shamela.ws/book/7016/179
+- index: '81'
+  kattani_index: '210'
+  kind: wording
+  wording: أن من الشعر لحكمة
+  companions_stated: 14
+  companions_numbered: 14
+  companions:
+  - أبي كعب
+  - بريدة بن الحصيب
+  - ابن مسعود
+  - ابن عباس
+  - أنس
+  - أبي بكرة
+  - عمرو بن عوف المزني
+  - أبي هريرة
+  - حسان ابن ثابت
+  - عائشة
+  - سلمة بن الأكوع
+  - عمر بن الخطاب
+  - علي بن أبي طالب
+  - الطفيل بن عمرو الدوسي
+  cited_sources: null
+  page_id: 179
+  page_label: ص ١٨٠
+  url: https://shamela.ws/book/7016/179
+- index: '82'
+  kattani_index: '213'
+  kind: wording
+  wording: من لا يرحم لا يرحم
+  companions_stated: 8
+  companions_numbered: 8
+  companions:
+  - جرير البجلي
+  - أبي هريرة
+  - أبي سعيد
+  - ابن عمر
+  - ابن مسعود
+  - الأشعث ابن قيس
+  - معاوية بن حيدة
+  - عمران بن حصين
+  cited_sources: null
+  page_id: 181
+  page_label: ص ١٨٢
+  url: https://shamela.ws/book/7016/181
+- index: '83'
+  kattani_index: '214'
+  kind: wording
+  wording: لو كان لابن آدم واد من مال لابتغى إليه ثانياً وثالثاً ولا يملأ جوف ابن آدم إلا التراب ويتوب الله على من تاب
+  companions_stated: 15
+  companions_numbered: 15
+  companions:
+  - أنس
+  - ابن الزبير
+  - ابن عباس
+  - أبي بن كعب
+  - بريدة
+  - أبي سعيد
+  - سمرة
+  - عائشة
+  - جابر بن عبد الله
+  - زيد بن أرقم
+  - أبي موسى الأشعري
+  - سعد بن أبي وقاص
+  - أبي واقد الليثي
+  - أبي أمامة
+  - كعب ابن عياض الأشعري
+  cited_sources: null
+  page_id: 181
+  page_label: ص ١٨٢
+  url: https://shamela.ws/book/7016/181
+- index: '84'
+  kattani_index: '215'
+  kind: wording
+  wording: الدنيا خضرة حلوة
+  companions_stated: 13
+  companions_numbered: 13
+  companions:
+  - حكيم بن حزام
+  - أبي سعيد الخدري
+  - خولة بنت قيس
+  - زيد بن ثابت
+  - ابن عمرو
+  - عبد الرحمان بن سمرة
+  - أبي بكرة
+  - أبي هريرة
+  - أم سلمة
+  - ميمونة
+  - عمرة بنت الحارث
+  - أنس
+  - عائشة
+  cited_sources: null
+  page_id: 182
+  page_label: ص ١٨٣
+  url: https://shamela.ws/book/7016/182
+- index: '85'
+  kattani_index: '216'
+  kind: wording
+  wording: أن أحدكم ليعمل بعمل أهل الجنة حتى ما يكون بينه وبينها إلا قدر ذراع
+  companions_stated: 16
+  companions_numbered: 16
+  companions:
+  - ابن مسعود
+  - أنس
+  - سهل بن سعد
+  - حذيفة بن أسيد الغفاري
+  - أبي هريرة
+  - علي
+  - ابن عمر
+  - أكثم بن أبي الجون
+  - عائشة
+  - ابن عمرو
+  - العرس ابن عميرة
+  - جابر
+  - أبي ذر
+  - رباح اللخمي
+  - مالك بن الحويرث
+  - ابن عباس
+  cited_sources: null
+  page_id: 182
+  page_label: ص ١٨٣
+  url: https://shamela.ws/book/7016/182
+- index: '86'
+  kattani_index: '217'
+  kind: wording
+  wording: المستشار مؤتمن
+  companions_stated: 11
+  companions_numbered: 11
+  companions:
+  - أبي هريرة
+  - أم سلمة
+  - ابن عمر
+  - أبي مسعود
+  - علي
+  - جابر ابن سمرة
+  - سمرة بن جندب
+  - النعمان بن بشير
+  - أبي الهيثم بن التيهان
+  - ابن الزبير
+  - ابن عباس
+  cited_sources: null
+  page_id: 183
+  page_label: ص ١٨٤
+  url: https://shamela.ws/book/7016/183
+- index: '87'
+  kattani_index: '218'
+  kind: wording
+  wording: اللهم بارك لأمتي في بكورها
+  companions_stated: 14
+  companions_numbered: 14
+  companions:
+  - أبي هريرة
+  - علي
+  - أنس
+  - ابن عباس
+  - جابر
+  - ابن عمر
+  - ابن مسعود
+  - عبد الله بن سلام
+  - عمران بن حصين
+  - كعب بن مالك
+  - النواس بن سمعان
+  - نبيط بن شريط
+  - أبي بكرة
+  - عائشة
+  cited_sources: null
+  page_id: 183
+  page_label: ص ١٨٤
+  url: https://shamela.ws/book/7016/183
+- index: '88'
+  kattani_index: '222'
+  kind: wording
+  wording: حديث القبضتين
+  companions_stated: null
+  companions_numbered: 0
+  companions: []
+  cited_sources: null
+  page_id: 186
+  page_label: ص ١٨٧
+  url: https://shamela.ws/book/7016/186
+- index: '89'
+  kattani_index: '223'
+  kind: wording
+  wording: لن يدخل أحدكم الجنة عمله قالوا ولا أنت يا رسول الله قال ولا أنا إلا أن يتغمدني الله برحمته
+  companions_stated: 7
+  companions_numbered: 7
+  companions:
+  - أبي هريرة
+  - أبي سعيد
+  - شريك بن طريف
+  - أسامة بن شريك
+  - أسد بن كرز
+  - أبي موسى
+  - شريك بن طارق
+  cited_sources: null
+  page_id: 188
+  page_label: ص ١٨٩
+  url: https://shamela.ws/book/7016/188
+- index: '90'
+  kattani_index: '231'
+  kind: wording
+  wording: لو كنت متخذاً خليلاً غير ربي لاتخذت أبا بكر خليلاً
+  companions_stated: 11
+  companions_numbered: 11
+  companions:
+  - أبي سعيد
+  - ابن عباس
+  - ابن الزبير
+  - ابن مسعود
+  - جندب البجلي
+  - أبي المعلى
+  - أبي هريرة
+  - أنس
+  - ابن عمر
+  - أبي واقد
+  - عائشة
+  cited_sources: null
+  page_id: 192
+  page_label: ص ١٩٣
+  url: https://shamela.ws/book/7016/192
+- index: '91'
+  kattani_index: '232'
+  kind: wording
+  wording: من كنت مولاه فعلي مولاه
+  companions_stated: 18
+  companions_numbered: 18
+  companions:
+  - زيد بن أرقم
+  - علي
+  - أبي أيوب الأنصاري
+  - عمر
+  - ذي مر
+  - أبي هريرة
+  - طلحة
+  - عمارة
+  - ابن عباس
+  - بريدة
+  - ابن عمر
+  - مالك ابن الحويرث
+  - حبشي بن جنادة
+  - جرير
+  - سعد بن أبي وقاص
+  - أبي سعيد الخدري
+  - أنس
+  - جندع الأنصاري
+  cited_sources: null
+  page_id: 193
+  page_label: ص ١٩٤
+  url: https://shamela.ws/book/7016/193
+- index: '92'
+  kattani_index: '233'
+  kind: wording
+  wording: أما ترضى أن تكون مني بمنزلة هارون من موسى
+  companions_stated: 10
+  companions_numbered: 10
+  companions:
+  - أبي سعيد الخدري
+  - أسماء بنت عميس
+  - أم سلمة
+  - ابن عباس
+  - حبشي بن جنادة
+  - ابن عمر
+  - علي
+  - جابر بن سمرة
+  - البراء بن عازب
+  - زيد بن أرقم
+  cited_sources: null
+  page_id: 194
+  page_label: ص ١٩٥
+  url: https://shamela.ws/book/7016/194
+- index: '93'
+  kattani_index: '235'
+  kind: wording
+  wording: الحسن والحسين سيدا شباب أهل الجنة
+  companions_stated: 16
+  companions_numbered: 16
+  companions:
+  - أبي سعيد
+  - حذيفة بن اليمان
+  - عمر بن الخطاب
+  - علي
+  - جابر بن عبد الله
+  - الحسين بن علي
+  - أسامة بن زيد
+  - البراء بن عازب
+  - قرة بن إياس
+  - مالك بن الحويرث
+  - أبي هريرة
+  - ابن عمر
+  - ابن مسعود
+  - أنس
+  - بريدة
+  - ابن عباس
+  cited_sources: null
+  page_id: 195
+  page_label: ص ١٩٦
+  url: https://shamela.ws/book/7016/195
+- index: '94'
+  kattani_index: '237'
+  kind: wording
+  wording: تقتل عماراً الفئة الباغية
+  companions_stated: 24
+  companions_numbered: 24
+  companions:
+  - أبي سعيد
+  - أبي قتادة
+  - أم سلمة
+  - حذيفة
+  - ابن مسعود
+  - عمار بن ياسر
+  - عمرو بن العاص
+  - ابنه عبد الله
+  - عمرو بن حزم
+  - خزيمة بن ثابت
+  - عثمان بن عفان
+  - أنس
+  - أبي هريرة
+  - أبي رافع
+  - جابر بن عبد الله
+  - معاوية بن أبي سفيان
+  - عبد الله بن عباس
+  - زيد بن أبي أوفى الأسلمي
+  - جابر بن سمرة
+  - أبي اليسر السلمي كعب بن عمرو
+  - زياد بن الفرد
+  - كعب ابن مالك
+  - أبي أمامة الباهلي
+  - عائشة أربعة وعشرين
+  cited_sources: null
+  page_id: 196
+  page_label: ص ١٩٧
+  url: https://shamela.ws/book/7016/196
+- index: '95'
+  kattani_index: 238b
+  kind: wording
+  wording: اهتز العرش لموت سعد بن معاذ
+  companions_stated: 6
+  companions_numbered: 6
+  companions:
+  - جابر
+  - أنس
+  - أسيد بن حضير
+  - ابن عمر
+  - معيقيب
+  - أبي سعيد
+  cited_sources: null
+  page_id: 197
+  page_label: ص ١٩٨
+  url: https://shamela.ws/book/7016/197
+- index: '96'
+  kattani_index: '240'
+  kind: wording
+  wording: خير الناس قرني ثم الذين يلونهم ثم الذين يلونهم
+  companions_stated: 13
+  companions_numbered: 13
+  companions:
+  - ابن مسعود
+  - عمران بن حصين
+  - أبي هريرة
+  - عائشة
+  - بريدة
+  - النعمان بن بشير
+  - عمر
+  - سعد بن تميم
+  - جعدة بن هبيرة
+  - سمرة
+  - أبي برزة
+  - جميلة بنت أبي لهب
+  - عمرو بن شرحبيل مرسلاً
+  cited_sources: null
+  page_id: 198
+  page_label: ص ١٩٩
+  url: https://shamela.ws/book/7016/198
+- index: '97'
+  kattani_index: '243'
+  kind: wording
+  wording: ما بين بيتي ومنبري روضة من رياض الجنة
+  companions_stated: 5
+  companions_numbered: 5
+  companions:
+  - أبي هريرة
+  - عبد الله بن زيد المازني
+  - ابن عمر
+  - جابر بن عبد الله
+  - أبي بكر الصديق
+  cited_sources: null
+  page_id: 199
+  page_label: ص ٢٠٠
+  url: https://shamela.ws/book/7016/199
+- index: '98'
+  kattani_index: '246'
+  kind: wording
+  wording: المرء مع من أحب
+  companions_stated: 13
+  companions_numbered: 13
+  companions:
+  - أبي موسى
+  - صفوان بن عسال
+  - جابر بن عبد الله
+  - ابن مسعود
+  - أبي هريرة
+  - علي
+  - أبي قتادة
+  - أبي سريحة
+  - عبد الله بن يزيد الخطمي
+  - صفوان بن قدامة
+  - عروة بن مضرس الطائي
+  - معاذ بن جبل
+  - أبي أمامة الباهلي
+  cited_sources: null
+  page_id: 201
+  page_label: ص ٢٠٢
+  url: https://shamela.ws/book/7016/201
+- index: '99'
+  kattani_index: '257'
+  kind: wording
+  wording: أعطيت خمساً لم يعطهن أحد من الأنبياء قبلي نصرت بالرعب مسيرة شهر وجعلت لي الأرض مسجداً وطهوراً فأيما رجل من أمتي أدركته الصلاة فليصل وأحلت لي الغنائم ولم تحل لأحد قبلي وأعطيت الشفاعة وكان النبي
+    يبعث إلى قومه خاصة وبعثت إلى الناس عامة
+  companions_stated: 10
+  companions_numbered: 10
+  companions:
+  - جابر بن عبد الله
+  - أبي هريرة
+  - علي
+  - ابن عباس
+  - ابن عمرو
+  - أبي ذر
+  - أبي موسى
+  - ابن عمر
+  - السائب بن يزيد
+  - أبي سعيد الخدري
+  cited_sources: null
+  page_id: 206
+  page_label: ص ٢٠٧
+  url: https://shamela.ws/book/7016/206
+- index: '100'
+  kattani_index: '258'
+  kind: wording
+  wording: قصة الإسراء
+  companions_stated: 27
+  companions_numbered: 27
+  companions:
+  - أنس
+  - مالك بن صعصعة
+  - أبي ذر
+  - جابر بن عبد الله
+  - بريدة
+  - حذيفة بن اليمان
+  - ابن عباس
+  - أبي بن كعب
+  - أبي سعيد الخدري
+  - شداد بن أوس
+  - أبي هريرة
+  - عائشة
+  - ابن مسعود
+  - علي ابن أبي طالب
+  - عمر بن الخطاب
+  - أبي حبة الأنصاري
+  - أبي ليلى الأنصاري
+  - أبي الحمراء
+  - أبي أيوب
+  - أبي أمامة
+  - سمرة بن جندب
+  - ابن عمرو
+  - صهيب بن سنان
+  - أسماء بنت أبي بكر
+  - عبد الرحمان بن قرط
+  - أم هانئ
+  - أم سلمة سبعة وعشرين
+  cited_sources: null
+  page_id: 206
+  page_label: ص ٢٠٧
+  url: https://shamela.ws/book/7016/206
+- index: '101'
+  kattani_index: '263'
+  kind: wording
+  wording: حنين الجذع
+  companions_stated: 10
+  companions_numbered: 10
+  companions:
+  - سهل بن سعد
+  - جابر بن عبد الله
+  - ابن عمر
+  - أبي بن كعب
+  - بريدة
+  - ابن عباس
+  - أبي سعيد الخدري
+  - أنس
+  - أم سلمة
+  - المطلب بن أبي وداعة السمهي
+  cited_sources: null
+  page_id: 209
+  page_label: ص ٢١٠
+  url: https://shamela.ws/book/7016/209
+- index: '102'
+  kattani_index: '271'
+  kind: wording
+  wording: حديث الجمل الذي شكى إليه مالكه
+  companions_stated: null
+  companions_numbered: 0
+  companions: []
+  cited_sources: null
+  page_id: 214
+  page_label: ص ٢١٥
+  url: https://shamela.ws/book/7016/214
+- index: '103'
+  kattani_index: '272'
+  kind: wording
+  wording: لا نورث ما تركنا صدقة
+  companions_stated: 13
+  companions_numbered: 13
+  companions:
+  - عمر
+  - عثمان
+  - علي
+  - سعد بن أبي وقاص
+  - العباس
+  - أبي بكر الصديق
+  - عبد الرحمان بن عوف
+  - الزبير بن العوام
+  - أبي هريرة
+  - عائشة
+  - طلحة
+  - حذيفة
+  - ابن عباس
+  cited_sources: null
+  page_id: 215
+  page_label: ص ٢١٦
+  url: https://shamela.ws/book/7016/215
+- index: '104'
+  kattani_index: '274'
+  kind: wording
+  wording: الرؤيا جزء من ست وأربعين الخ
+  companions_stated: 10
+  companions_numbered: 10
+  companions:
+  - أبي هريرة
+  - ابن عباس
+  - ابن عمر
+  - عبد الله بن عمرو
+  - جابر
+  - العباس بن عبد المطلب
+  - سمرة
+  - ابن مسعود
+  - أنس
+  - عوف بن مالك
+  cited_sources: null
+  page_id: 216
+  page_label: ص ٢١٧
+  url: https://shamela.ws/book/7016/216
+- index: '105'
+  kattani_index: '275'
+  kind: wording
+  wording: من رآني في المنام فقد رآني
+  companions_stated: 14
+  companions_numbered: 14
+  companions:
+  - أنس
+  - أبي مسعود
+  - أبي قتادة
+  - أبي هريرة
+  - جابر
+  - ابن مسعود
+  - ابن عباس
+  - أبي جحيفة
+  - أبي مالك الأشجعي
+  - أبي سعيد
+  - ابن عمرو
+  - أبي بكرة
+  - مالك بن عبد الله الخثعمي
+  - طارق بن أشيع الأشجعي
+  cited_sources: null
+  page_id: 217
+  page_label: ص ٢١٨
+  url: https://shamela.ws/book/7016/217
+- index: '106'
+  kattani_index: '278'
+  kind: wording
+  wording: لا هجرة بعد الفتح
+  companions_stated: 4
+  companions_numbered: 4
+  companions:
+  - مجاشع ابن مسعود
+  - أبي سعيد
+  - غزية بن الحارث
+  - الحارث بن غزية
+  cited_sources: null
+  page_id: 218
+  page_label: ص ٢١٩
+  url: https://shamela.ws/book/7016/218
+- index: '107'
+  kattani_index: '285'
+  kind: wording
+  wording: لا يحل لمسلم أن يهجر أخاه فوق ثلاثة
+  companions_stated: 7
+  companions_numbered: 7
+  companions:
+  - أنس
+  - أبي أيوب الأنصاري
+  - سعد بن أبي وقاص
+  - هشام بن عامر
+  - ابن عباس
+  - ابن عمرو
+  - ابن مسعود
+  cited_sources: null
+  page_id: 222
+  page_label: ص ٢٢٣
+  url: https://shamela.ws/book/7016/222
+- index: '108'
+  kattani_index: '287'
+  kind: wording
+  wording: بعثت أنا والساعة كهاتين
+  companions_stated: 10
+  companions_numbered: 10
+  companions:
+  - أنس
+  - سهل بن سعد
+  - أبي هريرة
+  - المستورد بن شداد
+  - بريدة
+  - جابر بن سمرة
+  - وهب السواءى
+  - ابن عمر
+  - أبي جبيرة بن الضحاك
+  - أشياخ من الأنصار
+  cited_sources: null
+  page_id: 223
+  page_label: ص ٢٢٤
+  url: https://shamela.ws/book/7016/223
+- index: '109'
+  kattani_index: '301'
+  kind: wording
+  wording: الشفاعة الطويل
+  companions_stated: null
+  companions_numbered: 12
+  companions:
+  - أنس
+  - أبي هريرة
+  - ابن عمر
+  - حذيفة
+  - جابر
+  - أبي بكر
+  - ابن عباس
+  - أبي بن كعب
+  - أبي سعيد
+  - سلمان
+  - عقبة بن عامر
+  - عبادة بن الصامت اثني عشر رجلاً
+  cited_sources: null
+  page_id: 232
+  page_label: ص ٢٣٣
+  url: https://shamela.ws/book/7016/232
+- index: '110'
+  kattani_index: '305'
+  kind: topic
+  wording: الحوض
+  companions_stated: 49
+  companions_numbered: 49
+  companions:
+  - أنس
+  - أسيد بن حضير
+  - جندب بن عبد الله بن سفيان البجلي
+  - حارثة بن وهب
+  - سهل بن سعد
+  - عبد الله بن زيد
+  - ابن عمرو
+  - ابن مسعود
+  - المستورد بن شداد
+  - أبي هريرة
+  - أسماء بنت أبي بكر
+  - ابن عباس
+  - ثوبان
+  - جابر بن سمرة
+  - حذيفة بن اليمان
+  - عقبة بن عامر
+  - أبي ذر
+  - أبي سعيد الخدري
+  - عائشة
+  - أم سلمة
+  - أبي بكر الصديق
+  - عمر بن الخطاب
+  - عقبة بن عبد السلمي
+  - علي بن أبي طالب
+  - سمرة بن جندب
+  - أسامة بن زيد
+  - حمزة بن عبد المطلب
+  - زوجته خولة بنت قيس
+  - خباب بن الأرت
+  - زيد بن أرقم
+  - عائذ بن عمرو
+  - كعب بن عجرة
+  - لقيط بن عامر
+  - أبي برزة الأسلمي
+  - بريدة
+  - أبي بن كعب
+  - البراء ابن عازب
+  - جابر بن عبد الله
+  - حذيفة بن أسيد
+  - الحسن بن علي
+  - زيد بن ثابت
+  - سلمان
+  - أبي أمامة
+  - أبي بكرة
+  - أبي الدرداء
+  - أبي مسعود
+  - سويد ابن جبلة الفزاري
+  - العرباض بن سارية
+  - النواس بن سمعان تسعة وأربعين
+  cited_sources: null
+  page_id: 235
+  page_label: ص ٢٣٦
+  url: https://shamela.ws/book/7016/235
+- index: '111'
+  kattani_index: '309'
+  kind: wording
+  wording: يدخل الجنة سبعون ألفاً بغير حساب
+  companions_stated: 19
+  companions_numbered: 19
+  companions:
+  - ابن عباس
+  - أبي هريرة
+  - عمران بن حصين
+  - أبي أمامة
+  - أبي بكر الصديق
+  - ابنه عبد الرحمان
+  - ابن مسعود
+  - جابر بن عبد الله
+  - أبي أيوب الأنصاري
+  - ثوبان
+  - حذيفة بن اليمان
+  - أنس
+  - أبي سعيد الخدري
+  - رفاعة الجهني
+  - الفلتان بن عاصم
+  - سمرة بن جندب
+  - عمرو ابن حزم
+  - أبي سعيد الأنصاري
+  - أسماء بنت أبي بكر
+  cited_sources: null
+  page_id: 240
+  page_label: ص ٢٤١
+  url: https://shamela.ws/book/7016/240

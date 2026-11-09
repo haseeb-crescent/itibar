@@ -1,0 +1,420 @@
+list,entry,group_id,status,confirmed_by,score,margin,note
+kattani,1,319,auto,auto,1.0,0.5362,
+kattani,2,1,auto,auto,1.0,0.2831,
+kattani,3,,needs_review,,1.0,0.7162,wording too short for the auto rule
+kattani,4,,needs_review,,1.0,0.2298,below the auto rule
+kattani,5,,needs_review,,0.0787,0.0013,topic entry
+kattani,6,392,auto,auto,1.0,0.2755,
+kattani,7,457,auto,auto,1.0,0.7657,
+kattani,8,7,auto,auto,1.0,0.2908,
+kattani,9,66,auto,auto,1.0,0.2992,
+kattani,10,218,auto,auto,1.0,0.2918,
+kattani,11,171,auto,auto,1.0,0.7273,
+kattani,12,,needs_review,,1.0,0.2904,wording too short for the auto rule
+kattani,13,,needs_review,,0.3306,0.0742,too few supporting matns
+kattani,14,,needs_review,,1.0,0.2447,wording too short for the auto rule
+kattani,15,336,auto,auto,1.0,0.2943,
+kattani,16,,needs_review,,0.1325,0.003,too few supporting matns
+kattani,17,,needs_review,,0.1113,0.0022,too few supporting matns
+kattani,18,409,auto,auto,1.0,0.7297,
+kattani,19,,needs_review,,0.244,0.0927,too few supporting matns
+kattani,20,497,auto,auto,1.0,0.3366,
+kattani,21,,needs_review,,1.0,0.8349,wording too short for the auto rule
+kattani,22,,needs_review,,0.7031,0.4653,too few supporting matns
+kattani,23,,needs_review,,0.7364,0.57,below the auto rule
+kattani,24,614,auto,auto,1.0,0.5247,
+kattani,25,670,auto,auto,1.0,0.5951,
+kattani,26,,needs_review,,0.2358,0.0261,too few supporting matns
+kattani,27,,needs_review,,0.2978,0.0956,topic entry
+kattani,28,,needs_review,,0.3043,0.1086,wording too short for the auto rule
+kattani,29,,needs_review,,1.0,0.2954,wording too short for the auto rule
+kattani,30,177,auto,auto,1.0,0.293,
+kattani,31,,needs_review,,0.8,0.5327,wording too short for the auto rule
+kattani,32,,needs_review,,1.0,0.2361,topic entry
+kattani,33,,needs_review,,0.2445,0.0,too few supporting matns
+kattani,34,76,auto,auto,1.0,0.6583,
+kattani,35,242,auto,auto,1.0,0.6574,
+kattani,36,15,auto,auto,1.0,0.27,
+kattani,37,,needs_review,,0.2101,0.0,too few supporting matns
+kattani,38,,needs_review,,0.8793,0.0793,wording too short for the auto rule
+kattani,39,,needs_review,,0.2705,0.0,topic entry
+kattani,40,,needs_review,,0.2804,0.0,wording too short for the auto rule
+kattani,41,,needs_review,,0.3958,0.0287,too few supporting matns
+kattani,42,,needs_review,,0.5674,0.0,too few supporting matns
+kattani,43,,needs_review,,0.1824,0.0189,too few supporting matns
+kattani,44,2433,auto,auto,1.0,0.3,
+kattani,45,1556,auto,auto,1.0,0.6545,
+kattani,46,,needs_review,,0.1738,0.0,too few supporting matns
+kattani,47,,needs_review,,0.1805,0.0215,too few supporting matns
+kattani,48,,needs_review,,0.2746,0.0318,topic entry
+kattani,49,,needs_review,,0.372,0.0492,wording too short for the auto rule
+kattani,50,,needs_review,,0.3981,0.0,too few supporting matns
+kattani,51,,needs_review,,0.7582,0.0,too few supporting matns
+kattani,52,,needs_review,,0.3691,0.0,too few supporting matns
+kattani,53,,needs_review,,0.7059,0.0,too few supporting matns
+kattani,54,,needs_review,,1.0,0.7031,wording too short for the auto rule
+kattani,55,338,auto,auto,1.0,0.2615,
+kattani,56,123,auto,auto,1.0,0.3774,
+kattani,57,,needs_review,,0.7372,0.15,below the auto rule
+kattani,58,138,auto,auto,1.0,0.551,
+kattani,59,112,auto,auto,1.0,0.4351,
+kattani,60,,needs_review,,0.394,0.1735,too few supporting matns
+kattani,61,624,auto,auto,1.0,0.8198,
+kattani,62,124,auto,auto,1.0,0.7307,
+kattani,63,1001,auto,auto,1.0,0.3691,
+kattani,64,,needs_review,,0.2484,0.1068,wording too short for the auto rule
+kattani,65,121,auto,auto,1.0,0.4951,
+kattani,66,756,auto,auto,1.0,0.7311,
+kattani,67,,needs_review,,0.4795,0.2939,too few supporting matns
+kattani,68,,needs_review,,0.7156,0.1,below the auto rule
+kattani,69,,needs_review,,0.2445,0.0,too few supporting matns
+kattani,70,,needs_review,,0.3602,0.0974,wording too short for the auto rule
+kattani,71,,needs_review,,0.2239,0.0,topic entry
+kattani,72,,needs_review,,0.2332,0.0288,too few supporting matns
+kattani,73,37,auto,auto,1.0,0.3465,
+kattani,74,,needs_review,,0.268,0.0163,too few supporting matns
+kattani,75,,needs_review,,0.2811,0.0622,too few supporting matns
+kattani,76,,needs_review,,0.2937,0.0,topic entry
+kattani,77,,needs_review,,0.3142,0.0919,too few supporting matns
+kattani,78,,needs_review,,0.7324,0.0167,too few supporting matns
+kattani,79,,needs_review,,0.1536,0.0,wording too short for the auto rule
+kattani,80,,needs_review,,0.1847,0.0,too few supporting matns
+kattani,81,,needs_review,,0.3818,0.0,too few supporting matns
+kattani,82,,needs_review,,0.2724,0.0211,too few supporting matns
+kattani,83,,needs_review,,0.3156,0.0,too few supporting matns
+kattani,85,,needs_review,,0.146,0.0185,topic entry
+kattani,86,976,auto,auto,0.9579,0.692,
+kattani,87,191,auto,auto,1.0,0.3036,
+kattani,88,,needs_review,,0.263,0.0,topic entry
+kattani,89,,needs_review,,0.7366,0.4401,topic entry
+kattani,90,,needs_review,,0.2572,0.0,topic entry
+kattani,91,,needs_review,,0.2805,0.0,topic entry
+kattani,92,787,auto,auto,1.0,0.7397,
+kattani,93,,needs_review,,1.0,0.2786,wording too short for the auto rule
+kattani,94,,needs_review,,0.8,0.1,below the auto rule
+kattani,95,,needs_review,,0.3041,0.0311,too few supporting matns
+kattani,96,,needs_review,,0.8,0.4439,below the auto rule
+kattani,97,323,auto,auto,0.9486,0.6987,
+kattani,98,124,auto,auto,1.0,0.8024,
+kattani,99,,needs_review,,0.7592,0.4871,below the auto rule
+kattani,100,10930,auto,auto,1.0,0.6609,
+kattani,101,7,auto,auto,1.0,0.2743,
+kattani,102,,needs_review,,0.3129,0.0,too few supporting matns
+kattani,103,,needs_review,,0.5415,0.3005,too few supporting matns
+kattani,104,129,auto,auto,1.0,0.7422,
+kattani,105,,needs_review,,0.3394,0.0,too few supporting matns
+kattani,106,217,auto,auto,0.9664,0.5571,
+kattani,107,,needs_review,,0.7017,0.1,wording too short for the auto rule
+kattani,108,60,auto,auto,1.0,0.2897,
+kattani,109,446,auto,auto,1.0,0.5579,
+kattani,110,,needs_review,,0.139,0.041,too few supporting matns
+kattani,111,,needs_review,,0.1923,0.0089,topic entry
+kattani,112,,needs_review,,0.1804,0.0327,too few supporting matns
+kattani,113,,needs_review,,0.2644,0.0,wording too short for the auto rule
+kattani,114,,needs_review,,0.2484,0.0,too few supporting matns
+kattani,115,,needs_review,,0.3378,0.0,too few supporting matns
+kattani,116,,needs_review,,0.7694,0.275,below the auto rule
+kattani,117,,needs_review,,0.2485,0.064,too few supporting matns
+kattani,118,305,auto,auto,1.0,0.2922,
+kattani,119,,needs_review,,1.0,0.291,wording too short for the auto rule
+kattani,120,40,auto,auto,1.0,0.2979,
+kattani,121,3137,auto,auto,1.0,0.7327,
+kattani,122,,needs_review,,0.1252,0.0,too few supporting matns
+kattani,123,,needs_review,,0.7329,0.4938,below the auto rule
+kattani,124,,needs_review,,0.7183,0.3485,too few supporting matns
+kattani,125,,needs_review,,1.0,0.2982,wording too short for the auto rule
+kattani,126,,needs_review,,0.8,0.5597,too few supporting matns
+kattani,127,350,auto,auto,1.0,0.6942,
+kattani,128,,needs_review,,0.8,0.5808,below the auto rule
+kattani,129,,needs_review,,0.3183,0.0,too few supporting matns
+kattani,130,414,auto,auto,1.0,0.267,
+kattani,131,,needs_review,,0.2681,0.0862,topic entry
+kattani,132,,needs_review,,0.2932,0.0539,topic entry
+kattani,133,,needs_review,,0.7138,0.0122,too few supporting matns
+kattani,134,,needs_review,,0.3732,0.084,wording too short for the auto rule
+kattani,135,,needs_review,,0.2058,0.0,too few supporting matns
+kattani,136,,needs_review,,0.288,0.0019,too few supporting matns
+kattani,137,,needs_review,,0.3053,0.0277,too few supporting matns
+kattani,138,,needs_review,,0.2689,0.0064,too few supporting matns
+kattani,139,292,auto,auto,1.0,0.6364,
+kattani,140,290,auto,auto,1.0,0.6286,
+kattani,141,,needs_review,,0.2776,0.0552,too few supporting matns
+kattani,142,842,auto,auto,1.0,0.6944,
+kattani,143,,needs_review,,0.2267,0.0,wording too short for the auto rule
+kattani,144,200,auto,auto,1.0,0.6113,
+kattani,145,128,auto,auto,1.0,0.2591,
+kattani,146,94,auto,auto,1.0,0.2778,
+kattani,147,,needs_review,,0.1666,0.0,too few supporting matns
+kattani,148,,needs_review,,1.0,0.255,wording too short for the auto rule
+kattani,149,405,auto,auto,1.0,0.3762,
+kattani,150,,needs_review,,0.3699,0.0198,too few supporting matns
+kattani,151,,needs_review,,0.2233,0.0,too few supporting matns
+kattani,152,,needs_review,,0.2046,0.0016,too few supporting matns
+kattani,153,320,auto,auto,1.0,0.6692,
+kattani,154,,needs_review,,0.153,0.0083,too few supporting matns
+kattani,155,152,auto,auto,1.0,0.267,
+kattani,156,,needs_review,,0.3118,0.0041,topic entry
+kattani,157,80,auto,auto,1.0,0.2962,
+kattani,158,180,auto,auto,1.0,0.2925,
+kattani,159,,needs_review,,0.3378,0.0845,topic entry
+kattani,160,,needs_review,,0.3863,0.184,too few supporting matns
+kattani,161,,needs_review,,0.8,0.4533,too few supporting matns
+kattani,162,,needs_review,,0.393,0.0,too few supporting matns
+kattani,163,,needs_review,,0.3368,0.0,topic entry
+kattani,164,,needs_review,,0.3211,0.0208,topic entry
+kattani,165,,needs_review,,1.0,0.288,wording too short for the auto rule
+kattani,166,,needs_review,,1.0,0.18,below the auto rule
+kattani,167,252,auto,auto,1.0,0.6222,
+kattani,168,588,auto,auto,1.0,0.2956,
+kattani,169,,needs_review,,0.7652,0.5134,below the auto rule
+kattani,170,,needs_review,,0.2371,0.0169,too few supporting matns
+kattani,171,,needs_review,,0.3284,0.0,too few supporting matns
+kattani,172,,needs_review,,0.2241,0.0019,topic entry
+kattani,173,,needs_review,,0.3186,0.0,topic entry
+kattani,174,346,auto,auto,0.9322,0.6104,
+kattani,175,,needs_review,,1.0,0.2955,wording too short for the auto rule
+kattani,176,,needs_review,,0.2133,0.0,topic entry
+kattani,177,,needs_review,,0.1815,0.0,topic entry
+kattani,178,,needs_review,,0.1121,0.0,topic entry
+kattani,179,,needs_review,,0.1939,0.0059,topic entry
+kattani,180,1373,auto,auto,1.0,0.6442,
+kattani,181,,needs_review,,1.0,0.237,below the auto rule
+kattani,182,,needs_review,,0.1381,0.0,too few supporting matns
+kattani,183,366,auto,auto,0.9469,0.5785,
+kattani,184,,needs_review,,0.2457,0.0325,too few supporting matns
+kattani,185,853,auto,auto,1.0,0.6846,
+kattani,186,230,auto,auto,1.0,0.538,
+kattani,188,,needs_review,,1.0,0.2755,wording too short for the auto rule
+kattani,189,,needs_review,,1.0,0.2957,wording too short for the auto rule
+kattani,190,,needs_review,,0.3623,0.0,too few supporting matns
+kattani,191,2222,auto,auto,1.0,0.6127,
+kattani,192,,needs_review,,0.9819,0.2176,below the auto rule
+kattani,193,91,auto,auto,1.0,0.2864,
+kattani,194,,needs_review,,1.0,0.2811,topic entry
+kattani,195,,needs_review,,0.1714,0.0102,topic entry
+kattani,196,,needs_review,,0.1453,0.0079,too few supporting matns
+kattani,197,,needs_review,,0.8,0.2953,below the auto rule
+kattani,198,137,auto,auto,1.0,0.2761,
+kattani,199,546,auto,auto,1.0,0.4933,
+kattani,200,229,auto,auto,1.0,0.262,
+kattani,201,,needs_review,,0.2104,0.015,topic entry
+kattani,202,,needs_review,,0.1677,0.0133,topic entry
+kattani,203,,needs_review,,1.0,0.6283,topic entry
+kattani,204,,needs_review,,0.8,0.5387,topic entry
+kattani,205,,needs_review,,0.2729,0.0,topic entry
+kattani,206,,needs_review,,0.8,0.4909,wording too short for the auto rule
+kattani,207,11631,auto,auto,0.9676,0.7568,
+kattani,208,608,auto,auto,1.0,0.7827,
+kattani,209,,needs_review,,0.1574,0.0,topic entry
+kattani,210,158,auto,auto,1.0,0.6979,
+kattani,211,,needs_review,,0.2602,0.0,topic entry
+kattani,212,,needs_review,,0.2606,0.0,topic entry
+kattani,213,127,auto,auto,1.0,0.2761,
+kattani,214,,needs_review,,0.9435,0.1428,below the auto rule
+kattani,215,,needs_review,,1.0,0.1269,wording too short for the auto rule
+kattani,216,187,auto,auto,0.9568,0.4913,
+kattani,217,,needs_review,,1.0,0.2649,wording too short for the auto rule
+kattani,218,213,auto,auto,1.0,0.4489,
+kattani,219,827,auto,auto,1.0,0.8693,
+kattani,220,,needs_review,,1.0,0.6578,wording too short for the auto rule
+kattani,221,,needs_review,,1.0,0.6846,wording too short for the auto rule
+kattani,222,,needs_review,,0.3142,0.0,wording too short for the auto rule
+kattani,223,,needs_review,,0.7711,0.4145,below the auto rule
+kattani,224,,needs_review,,0.6,0.2817,too few supporting matns
+kattani,225,,needs_review,,0.1922,0.0521,topic entry
+kattani,226,,needs_review,,0.3098,0.0,topic entry
+kattani,227,,needs_review,,0.2645,0.0,topic entry
+kattani,228,,needs_review,,0.2886,0.0264,too few supporting matns
+kattani,229,,needs_review,,0.2782,0.0515,too few supporting matns
+kattani,230,,needs_review,,1.0,0.1167,below the auto rule
+kattani,231,182,auto,auto,1.0,0.3373,
+kattani,232,87,auto,auto,1.0,0.2966,
+kattani,233,56,auto,auto,1.0,0.2956,
+kattani,234,,needs_review,,0.3995,0.0062,topic entry
+kattani,235,268,auto,auto,1.0,0.2932,
+kattani,236,,needs_review,,0.8,0.4817,below the auto rule
+kattani,237,118,auto,auto,1.0,0.7505,
+kattani,238,,needs_review,,1.0,0.5436,cross_reference entry
+kattani,238b,384,auto,auto,1.0,0.6776,
+kattani,239,,needs_review,,0.2099,0.0,topic entry
+kattani,240,159,auto,auto,1.0,0.5549,
+kattani,241,,needs_review,,0.2426,0.0011,topic entry
+kattani,242,13,auto,auto,1.0,0.2829,
+kattani,243,,needs_review,,1.0,0.1822,below the auto rule
+kattani,244,,needs_review,,1.0,0.4364,topic entry
+kattani,245,707,auto,auto,1.0,0.2604,
+kattani,246,78,auto,auto,1.0,0.5496,
+kattani,247,,needs_review,,0.1078,0.0,too few supporting matns
+kattani,248,,needs_review,,0.3689,0.0,topic entry
+kattani,249,,needs_review,,0.1956,0.0,topic entry
+kattani,250,,needs_review,,0.1872,0.0109,topic entry
+kattani,251,,needs_review,,0.8,0.531,topic entry
+kattani,252,,needs_review,,0.2964,0.0294,topic entry
+kattani,253,,needs_review,,0.2389,0.0,topic entry
+kattani,254,,needs_review,,0.0537,0.0063,topic entry
+kattani,255,,needs_review,,0.2205,0.0105,topic entry
+kattani,256,,needs_review,,0.7351,0.1482,topic entry
+kattani,257,112,auto,auto,0.9873,0.709,
+kattani,258,,needs_review,,0.2676,0.0,wording too short for the auto rule
+kattani,259,,needs_review,,0.8,0.2724,topic entry
+kattani,260,,needs_review,,0.3538,0.0683,topic entry
+kattani,261,,needs_review,,0.3658,0.0904,too few supporting matns
+kattani,262,,needs_review,,0.8,0.24,topic entry
+kattani,263,,needs_review,,1.0,0.735,wording too short for the auto rule
+kattani,264,,needs_review,,1.0,0.6894,wording too short for the auto rule
+kattani,267,,needs_review,,0.2408,0.0053,too few supporting matns
+kattani,267b,,needs_review,,0.2039,0.0,topic entry
+kattani,268,,needs_review,,0.2927,0.0018,topic entry
+kattani,269,,needs_review,,0.348,0.0454,topic entry
+kattani,270,,needs_review,,0.3543,0.0628,topic entry
+kattani,271,,needs_review,,0.2589,0.0,too few supporting matns
+kattani,272,205,auto,auto,1.0,0.6497,
+kattani,273,,needs_review,,0.7049,0.3701,topic entry
+kattani,274,,needs_review,,0.3437,0.0772,too few supporting matns
+kattani,275,400,auto,auto,1.0,0.2935,
+kattani,276,,needs_review,,0.3318,0.0083,topic entry
+kattani,277,,needs_review,,0.2146,0.0,topic entry
+kattani,278,,needs_review,,1.0,0.2373,below the auto rule
+kattani,279,,needs_review,,0.2742,0.0,wording too short for the auto rule
+kattani,280,,needs_review,,0.3202,0.0,topic entry
+kattani,281,,needs_review,,0.1298,0.0,topic entry
+kattani,282,,needs_review,,0.3529,0.0,wording too short for the auto rule
+kattani,283,,needs_review,,0.2879,0.0,topic entry
+kattani,284,,needs_review,,0.5543,0.3366,too few supporting matns
+kattani,285,,needs_review,,1.0,0.0704,below the auto rule
+kattani,286,69,auto,auto,1.0,0.6625,
+kattani,287,369,auto,auto,1.0,0.279,
+kattani,288,,needs_review,,0.2746,0.0,too few supporting matns
+kattani,289,,needs_review,,0.2595,0.0,wording too short for the auto rule
+kattani,290,,needs_review,,1.0,0.2,topic entry
+kattani,291,,needs_review,,0.316,0.0,wording too short for the auto rule
+kattani,292,,needs_review,,1.0,0.1154,below the auto rule
+kattani,293,,needs_review,,1.0,0.2,topic entry
+kattani,294,,needs_review,,1.0,0.225,topic entry
+kattani,295,,needs_review,,0.0901,0.002,topic entry
+kattani,296,,needs_review,,0.2689,0.0,wording too short for the auto rule
+kattani,297,,needs_review,,1.0,0.1192,cross_reference entry
+kattani,298,,needs_review,,0.2752,0.0,topic entry
+kattani,299,,needs_review,,0.2936,0.0,topic entry
+kattani,300,98,auto,auto,1.0,0.6826,
+kattani,301,,needs_review,,0.2767,0.0,wording too short for the auto rule
+kattani,302,,needs_review,,0.2232,0.0079,topic entry
+kattani,303,,needs_review,,0.2337,0.0994,topic entry
+kattani,304,,needs_review,,1.0,0.6323,too few supporting matns
+kattani,305,,needs_review,,1.0,0.2167,topic entry
+kattani,306,,needs_review,,1.0,0.2619,topic entry
+kattani,307,,needs_review,,0.2975,0.0905,too few supporting matns
+kattani,308,,needs_review,,0.2347,0.0217,topic entry
+kattani,309,102,auto,auto,1.0,0.4961,
+kattani,310,,needs_review,,0.5668,0.2,too few supporting matns
+suyuti,1,1,auto,auto,1.0,0.2831,
+suyuti,2,,needs_review,,1.0,0.7162,wording too short for the auto rule
+suyuti,3,7,auto,auto,1.0,0.2908,
+suyuti,4,66,auto,auto,1.0,0.2992,
+suyuti,5,218,auto,auto,1.0,0.2918,
+suyuti,6,,needs_review,,1.0,0.2904,wording too short for the auto rule
+suyuti,7,,needs_review,,0.3306,0.0742,too few supporting matns
+suyuti,8,336,auto,auto,1.0,0.2943,
+suyuti,9,,needs_review,,0.7364,0.57,below the auto rule
+suyuti,10,614,auto,auto,1.0,0.5247,
+suyuti,11,670,auto,auto,1.0,0.5951,
+suyuti,12,,needs_review,,0.3043,0.1086,wording too short for the auto rule
+suyuti,13,177,auto,auto,1.0,0.293,
+suyuti,14,,needs_review,,1.0,0.2361,topic entry
+suyuti,15,76,auto,auto,1.0,0.6583,
+suyuti,16,242,auto,auto,1.0,0.6574,
+suyuti,17,,needs_review,,0.8793,0.0793,wording too short for the auto rule
+suyuti,18,2433,auto,auto,1.0,0.3,
+suyuti,19,1556,auto,auto,1.0,0.6545,
+suyuti,20,,needs_review,,0.372,0.0492,wording too short for the auto rule
+suyuti,21,338,auto,auto,1.0,0.2615,
+suyuti,22,123,auto,auto,1.0,0.3774,
+suyuti,23,,needs_review,,0.394,0.1735,too few supporting matns
+suyuti,24,624,auto,auto,1.0,0.8198,
+suyuti,25,124,auto,auto,1.0,0.7307,
+suyuti,26,121,auto,auto,1.0,0.4951,
+suyuti,27,756,auto,auto,1.0,0.7311,
+suyuti,28,,needs_review,,0.4795,0.2939,too few supporting matns
+suyuti,29,,needs_review,,0.2239,0.0,topic entry
+suyuti,30,,needs_review,,0.2937,0.0,topic entry
+suyuti,31,,needs_review,,0.7324,0.0167,too few supporting matns
+suyuti,32,,needs_review,,0.1536,0.0,wording too short for the auto rule
+suyuti,33,,needs_review,,0.2724,0.0211,too few supporting matns
+suyuti,34,,needs_review,,0.3156,0.0,too few supporting matns
+suyuti,35,976,auto,auto,0.9579,0.692,
+suyuti,36,787,auto,auto,1.0,0.7397,
+suyuti,37,,needs_review,,1.0,0.2786,wording too short for the auto rule
+suyuti,38,,needs_review,,0.3041,0.0311,too few supporting matns
+suyuti,39,323,auto,auto,0.9486,0.6987,
+suyuti,40,10930,auto,auto,1.0,0.6609,
+suyuti,41,,needs_review,,0.5415,0.3005,too few supporting matns
+suyuti,42,217,auto,auto,0.9664,0.5571,
+suyuti,43,,needs_review,,0.7017,0.1,wording too short for the auto rule
+suyuti,44,60,auto,auto,1.0,0.2897,
+suyuti,45,,needs_review,,0.1923,0.0089,topic entry
+suyuti,46,,needs_review,,0.7694,0.275,below the auto rule
+suyuti,47,305,auto,auto,1.0,0.2922,
+suyuti,48,,needs_review,,1.0,0.291,wording too short for the auto rule
+suyuti,49,,needs_review,,1.0,0.2982,wording too short for the auto rule
+suyuti,50,350,auto,auto,1.0,0.6942,
+suyuti,51,,needs_review,,0.8,0.5808,below the auto rule
+suyuti,52,,needs_review,,0.3183,0.0,too few supporting matns
+suyuti,53,414,auto,auto,1.0,0.267,
+suyuti,54,292,auto,auto,1.0,0.6364,
+suyuti,55,128,auto,auto,1.0,0.2591,
+suyuti,56,94,auto,auto,1.0,0.2778,
+suyuti,57,,needs_review,,1.0,0.255,wording too short for the auto rule
+suyuti,58,405,auto,auto,1.0,0.3762,
+suyuti,59,,needs_review,,0.3699,0.0198,too few supporting matns
+suyuti,60,152,auto,auto,1.0,0.267,
+suyuti,61,80,auto,auto,1.0,0.2962,
+suyuti,62,,needs_review,,1.0,0.288,wording too short for the auto rule
+suyuti,63,252,auto,auto,1.0,0.6222,
+suyuti,64,588,auto,auto,1.0,0.2956,
+suyuti,65,,needs_review,,0.7652,0.5134,below the auto rule
+suyuti,66,,needs_review,,0.3284,0.0,too few supporting matns
+suyuti,67,,needs_review,,1.0,0.2955,wording too short for the auto rule
+suyuti,68,,needs_review,,1.0,0.237,below the auto rule
+suyuti,69,,needs_review,,0.1381,0.0,too few supporting matns
+suyuti,70,,needs_review,,0.2457,0.0325,too few supporting matns
+suyuti,71,853,auto,auto,1.0,0.6846,
+suyuti,72,230,auto,auto,1.0,0.538,
+suyuti,73,,needs_review,,1.0,0.2755,wording too short for the auto rule
+suyuti,74,,needs_review,,0.3623,0.0,too few supporting matns
+suyuti,75,,needs_review,,0.9819,0.2176,below the auto rule
+suyuti,76,,needs_review,,0.8,0.2953,below the auto rule
+suyuti,77,137,auto,auto,1.0,0.2761,
+suyuti,78,546,auto,auto,1.0,0.4933,
+suyuti,79,229,auto,auto,1.0,0.262,
+suyuti,80,608,auto,auto,1.0,0.7827,
+suyuti,81,158,auto,auto,1.0,0.6979,
+suyuti,82,127,auto,auto,1.0,0.2761,
+suyuti,83,,needs_review,,0.9435,0.1428,below the auto rule
+suyuti,84,,needs_review,,1.0,0.1269,wording too short for the auto rule
+suyuti,85,187,auto,auto,0.9568,0.4913,
+suyuti,86,,needs_review,,1.0,0.2649,wording too short for the auto rule
+suyuti,87,213,auto,auto,1.0,0.4489,
+suyuti,88,,needs_review,,0.3142,0.0,wording too short for the auto rule
+suyuti,89,,needs_review,,0.7711,0.4145,below the auto rule
+suyuti,90,182,auto,auto,1.0,0.3373,
+suyuti,91,87,auto,auto,1.0,0.2966,
+suyuti,92,56,auto,auto,1.0,0.2956,
+suyuti,93,268,auto,auto,1.0,0.2932,
+suyuti,94,118,auto,auto,1.0,0.7505,
+suyuti,95,384,auto,auto,1.0,0.6776,
+suyuti,96,159,auto,auto,1.0,0.5549,
+suyuti,97,,needs_review,,1.0,0.1822,below the auto rule
+suyuti,98,78,auto,auto,1.0,0.5496,
+suyuti,99,112,auto,auto,0.9873,0.709,
+suyuti,100,,needs_review,,0.2676,0.0,wording too short for the auto rule
+suyuti,101,,needs_review,,1.0,0.735,wording too short for the auto rule
+suyuti,102,,needs_review,,0.2589,0.0,too few supporting matns
+suyuti,103,205,auto,auto,1.0,0.6497,
+suyuti,104,,needs_review,,0.3437,0.0772,too few supporting matns
+suyuti,105,400,auto,auto,1.0,0.2935,
+suyuti,106,,needs_review,,1.0,0.2373,below the auto rule
+suyuti,107,,needs_review,,1.0,0.0704,below the auto rule
+suyuti,108,369,auto,auto,1.0,0.279,
+suyuti,109,,needs_review,,0.2767,0.0,wording too short for the auto rule
+suyuti,110,,needs_review,,1.0,0.2167,topic entry
+suyuti,111,102,auto,auto,1.0,0.4961,

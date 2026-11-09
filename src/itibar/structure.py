@@ -233,6 +233,7 @@ class Structure:
     kappa_lower: dict[str, int]
     kappa_lower_source: dict[str, str]      # unmerged | merged | nocompat (first attaining the minimum)
     kappa_nocompat: dict[str, int]
+    kappa_nocompat_years: dict[str, int]    # only links incompatible by the years rule removed
     kappa_lower_splice: dict[str, bool]
     cut_set: dict[str, list[str]]
     routes_all: list[list[str]]
@@ -250,6 +251,12 @@ class Structure:
     bypass_chains: int
     backward_edges: int
     has_cycle: bool
+    width_number: dict[int, int] = field(default_factory=dict)   # layers 1..12, compiler roles excluded
+    min_width: int | None = None
+    tafarrud_layers: list[int] = field(default_factory=list)
+    number_class: str | None = None
+    number_class_kappa: str | None = None
+    bypass_nodes: set[str] = field(default_factory=set)
     edge_continuity: dict[tuple[str, str], str] = field(default_factory=dict)
     edge_basis: dict[tuple[str, str], str] = field(default_factory=dict)    # years | tabaka | unknown | n/a
     edge_muanan: dict[tuple[str, str], str] = field(default_factory=dict)  # yes | no | unknown_word | n/a
@@ -386,6 +393,60 @@ def continuity(B: Bundle, corpus: Corpus) -> tuple[dict, dict, dict]:
     return cont, basis, mu
 
 
+def tawatur_n() -> int:
+    return int(config.load("structure")["number_class"]["tawatur_n"])
+
+
+def class_of_count(n: int | None, N: int | None = None) -> str | None:
+    """The classical cut points on a count: 1 gharib, 2 aziz, 3..N-1 mashhur,
+    >= N mutawatir_count. None for no count (no route)."""
+    if not n:
+        return None
+    N = N or tawatur_n()
+    if n == 1:
+        return "gharib"
+    if n == 2:
+        return "aziz"
+    return "mashhur" if n < N else "mutawatir_count"
+
+
+def number_class(min_width: int | None, tafarrud_layers: list[int], N: int | None = None) -> str | None:
+    """number_class on the width profile: gharib splits into gharib_mutlaq (the
+    tafarrud is at layer 1, the companion) and gharib_nisbi (further down)."""
+    c = class_of_count(min_width, N)
+    if c == "gharib":
+        return "gharib_mutlaq" if 1 in tafarrud_layers else "gharib_nisbi"
+    return c
+
+
+def number_profile(B: Bundle, on: set[str], layer: dict[str, int]) -> tuple[dict[int, int], int | None, list[int]]:
+    """Width by layer over on-path narrators, Taqrib layers 1..taqrib_max_layer,
+    compiler-role nodes excluded; min_width over the layers that have any; the
+    layers of width 1."""
+    taqrib_max = int(config.load("structure")["layers"]["taqrib_max_layer"])
+    exempt = B.exempt
+    w: Counter = Counter()
+    for v in on:
+        if B.kind.get(v) in NARRATOR_KINDS and v not in exempt:
+            L = layer.get(v)
+            if L is not None and 1 <= L <= taqrib_max:
+                w[L] += 1
+    prof = dict(sorted(w.items()))
+    if not prof:
+        return prof, None, []
+    return prof, min(prof.values()), [L for L, n in prof.items() if n == 1]
+
+
+def bypass_nodes(sub: dict[str, set[str]], on: set[str], common_links: list[str], B: Bundle) -> set[str]:
+    """Narrators on a PROPHET -> book route that avoids every common link."""
+    if not common_links:
+        return set()
+    avoid = set(common_links)
+    s2 = {u: {v for v in vs if v not in avoid} for u, vs in sub.items() if u not in avoid}
+    both = reach(s2, PROPHET) & reach(reverse(s2), SINK)
+    return {v for v in both if B.kind.get(v) in NARRATOR_KINDS}
+
+
 LOWER_HYPOTHESES = ("unmerged", "merged", "nocompat")
 
 
@@ -395,8 +456,9 @@ def analyse(B: Bundle, corpus: Corpus) -> Structure:
     unc = uncuttable(B)
     cont, basis, mu = continuity(B, corpus)
     incompatible = {e for e, v in cont.items() if v == "incompatible"}
+    incompatible_years = {e for e in incompatible if basis.get(e) == "years"}
     kappa, kappa_lower, cut_set, cut_by, lower_splice = {}, {}, {}, {}, {}
-    lower_source, kappa_nocompat = {}, {}
+    lower_source, kappa_nocompat, kappa_nocompat_years = {}, {}, {}
     routes_all: list[list[str]] = []
     succ_all = None
     for name, theta in scale.thresholds.items():
@@ -423,6 +485,11 @@ def analyse(B: Bundle, corpus: Corpus) -> Structure:
         kappa_lower[name] = min(values.values())
         lower_source[name] = next(h for h in LOWER_HYPOTHESES if values[h] == kappa_lower[name])
         kappa_nocompat[name] = nocompat
+        if incompatible_years and unmerged > 0:
+            ysucc, yunc = lower_succ(B, corpus, theta, merge=False, drop_edges=incompatible_years)
+            kappa_nocompat_years[name] = vertex_connectivity(ysucc, PROPHET, SINK, yunc).value
+        else:
+            kappa_nocompat_years[name] = unmerged
         lower_splice[name] = merged > unmerged
 
     on, sub = on_path_subgraph(succ_all)
@@ -501,14 +568,19 @@ def analyse(B: Bundle, corpus: Corpus) -> Structure:
         bypass, bcapped = paths_total, paths_capped
     cls = set(common_links)
     bypass_chains = sum(1 for c in B.chains if c.connected and not (cls & set(c.nodes)))
+    width_number, min_width, tafarrud = number_profile(B, on, layer)
+    N = tawatur_n()
     return Structure(
         on_path=on, layer=layer, layer_source=lsource, width=dict(sorted(width.items())), width_taqrib=width_taqrib,
         kappa=kappa, kappa_lower=kappa_lower, kappa_lower_source=lower_source, kappa_nocompat=kappa_nocompat,
-        kappa_lower_splice=lower_splice, cut_set=cut_set, routes_all=routes_all,
+        kappa_nocompat_years=kappa_nocompat_years, kappa_lower_splice=lower_splice, cut_set=cut_set, routes_all=routes_all,
         cut_vertices=cut_vertices, cut_vertices_by=cut_by, single_strand=ss, pcl=pcl, common_links=common_links,
         cl_in_cycle=cl_in_cycle, bypass_paths=bypass, bypass_capped=bcapped,
         paths_total=paths_total, paths_capped=paths_capped, paths_approx=approx,
         bypass_chains=bypass_chains, backward_edges=backward, has_cycle=has_cycle,
+        width_number=width_number, min_width=min_width, tafarrud_layers=tafarrud,
+        number_class=number_class(min_width, tafarrud, N), number_class_kappa=class_of_count(kappa["all"], N),
+        bypass_nodes=bypass_nodes(sub, on, common_links, B),
         edge_continuity=cont, edge_basis=basis, edge_muanan=mu,
     )
 
