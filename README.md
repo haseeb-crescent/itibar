@@ -1,6 +1,6 @@
 # itibar
 
-**The transmission network behind the hadith, computed.**
+**Computing the transmission network behind the hadith.**
 
 A hadith is a report of something the Prophet Muhammad said or did. Each one comes with its
 *isnad*: the chain of people who passed it down, from the Prophet's companions to the scholars
