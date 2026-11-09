@@ -1,6 +1,6 @@
 # itibar — source audit
 
-Generated 2026-11-08 16:45 by `make audit` (`itibar.audit`) from the Parquet copy of `hadith-kg.db` (Hugging Face `emadjumaah/hadith-kg` @ `8ae7e3d5be28`, sha256 `d528084321e71500…`). Upstream comparison values are from `DATA_REPORT.md` at `emadjumaah/hadith@b5a0cf2`.
+Generated 2026-11-08 21:26 by `make audit` (`itibar.audit`) from the Parquet copy of `hadith-kg.db` (Hugging Face `emadjumaah/hadith-kg` @ `8ae7e3d5be28`, sha256 `d528084321e71500…`). Upstream comparison values are from `DATA_REPORT.md` at `emadjumaah/hadith@b5a0cf2`.
 
 Every number below is recomputed. Where itibar's definition differs from upstream's, both are shown.
 
@@ -220,7 +220,7 @@ So `tabaka` is the source's generation scale anchored on Taqrib, not a copy of T
 | 12 | 2,923 | 947 | 28 | 1,948 | 91 | 0 | 2,832 |
 | 13+ | 16,135 | 8,832 | 15 | 7,288 | 4,319 | 0 | 11,816 |
 
-Raw-only values are ranges or approximations the build declined to parse, e.g. `130 - 121` (16), `290 - 281` (14), `300 - 291` (11), `23 - 13` (7), `158 - 136` (6), `40 - 20` (6), `35 - 23` (5), `60 - 41` (4). itibar keeps them beside the parsed value (terminus columns) and never parses them itself. Where both the teacher's death and the student's birth are known the continuity check uses years; otherwise it falls back to tabaka (§8.5).
+Raw-only values are ranges or approximations the build declined to parse, e.g. `130 - 121` (16), `290 - 281` (14), `300 - 291` (11), `23 - 13` (7), `40 - 20` (6), `158 - 136` (6), `35 - 23` (5), `60 - 41` (4). itibar keeps them beside the parsed value (terminus columns) and never parses them itself. Where both the teacher's death and the student's birth are known the continuity check uses years; otherwise it falls back to tabaka (§8.5).
 
 ## 5. Inline mentions and transmission words
 
@@ -269,7 +269,7 @@ Words are recovered for 3,249,626 of 3,786,705 narrator links (85.8%); chains of
 | عبد الرحمن بن عبد الله السلمي | 2 | 2 | 140 |
 | شهاب بن عباد العبدي | 2 | 2 | 106 |
 | محمد بن سعد الأنصاري | 3 | 3 | 97 |
-| سعيد بن عثمان التنوخي | 2 | 2 | 95 |
+| مسلم بن سالم الجهني | 2 | 2 | 95 |
 
 A cluster can only change kappa inside a group where two of its members both occur: that happens 63 times (group × cluster). `kappa_lower` merges every cluster into one node. Misresolution across *different* full names is not caught by these clusters: e.g. `يحيى بن سعيد` resolved to al-Qattan (r8271, nickname `يحيى بن سعيد القطان`) where the student of al-Taymi is al-Ansari (r8272, `يحيى بن سعيد الأنصاري`) in six chains of *innama al-a'mal* (tests/gold/gold.yaml). Same-name clusters by `nickname` alone would be 2,545.
 
@@ -277,31 +277,31 @@ A cluster can only change kappa inside a group where two of its members both occ
 
 | id | name | chain_links | min_pos | max_pos |
 |---|---|---|---|---|
-| 47,654 | كُرَيْبٍ السَّحُولِيِّ | 6 | 6 | 10 |
 | 40,137 | عَبْدُ اللَّهِ بْنُ عُبَيْدَةَ | 6 | 1 | 6 |
-| 44,306 | مُحَمَّدِ بْنِ عَبْدِ الصَّمَدِ | 5 | 4 | 9 |
+| 47,654 | كُرَيْبٍ السَّحُولِيِّ | 6 | 6 | 10 |
 | 51,756 | بِنْتِ كُرْزٍ | 5 | 5 | 7 |
+| 44,306 | مُحَمَّدِ بْنِ عَبْدِ الصَّمَدِ | 5 | 4 | 9 |
 | 44,304 | عَبْدُ الْمُؤْمِنِ | 4 | 2 | 7 |
 | 50,119 | أَبِي | 4 | 8 | 10 |
-| 40,741 | وَأَبُو مُسْلِمٍ | 2 | 2 | 2 |
-| 50,437 | السُّمَيْطِ الْبَجَلِيِّ | 2 | 6 | 6 |
-| 44,305 | أَبَاهُ | 2 | 4 | 4 |
-| 50,436 | أَبِيهِ | 2 | 6 | 7 |
-| 47,655 | عَبْدِ اللَّهِ بْنِ حُذَيْمٍ | 2 | 5 | 5 |
-| 9,481 | غير معرف | 2 | 7 | 7 |
-| 26,043 | عِيسَى بْنُ الأَشْعَثِ | 2 | 4 | 8 |
-| 40,138 | مُحَمَّدُ بْنُ عَمْرٍو | 2 | 1 | 3 |
 | 40,740 | وَمُحَمَّدُ بْنُ الْحُسَيْنِ | 2 | 2 | 2 |
+| 50,437 | السُّمَيْطِ الْبَجَلِيِّ | 2 | 6 | 6 |
+| 50,436 | أَبِيهِ | 2 | 6 | 7 |
+| 40,138 | مُحَمَّدُ بْنُ عَمْرٍو | 2 | 1 | 3 |
 | 47,653 | النُّعْمَانِ بْنِ نُعَيْمٍ | 2 | 5 | 7 |
 | 60,137 | مَخْرَمَةَ الْعَبْدِيِّ | 2 | 5 | 5 |
-| 45,024 | سَعِيدِ بْنِ عَوْسَجَةَ | 1 | 3 | 3 |
-| 60,677 | سَنْجَوَيْهِ النَّاهِكِيُّ | 1 | 3 | 3 |
+| 40,741 | وَأَبُو مُسْلِمٍ | 2 | 2 | 2 |
+| 44,305 | أَبَاهُ | 2 | 4 | 4 |
+| 26,043 | عِيسَى بْنُ الأَشْعَثِ | 2 | 4 | 8 |
+| 47,655 | عَبْدِ اللَّهِ بْنِ حُذَيْمٍ | 2 | 5 | 5 |
+| 9,481 | غير معرف | 2 | 7 | 7 |
+| 40,142 | مُحَمَّدِ بْنِ مَطَرٍ | 1 | 2 | 2 |
 | 40,260 | قَيْسٌ السَّعِيدِيُّ | 1 | 4 | 4 |
-| 61,758 | الأَخْنَسِ بْنِ زُهَيْرٍ | 1 | 7 | 7 |
-| 60,136 | مَنْدُوسٍ | 1 | 6 | 6 |
+| 60,677 | سَنْجَوَيْهِ النَّاهِكِيُّ | 1 | 3 | 3 |
 | 45,025 | جَعْفَر بْنِ الْفُرَافِصَةِ الْحَنَفِيِّ | 1 | 4 | 4 |
 | 40,139 | سَعْدِ بْنِ عُثْمَانَ | 1 | 4 | 4 |
-| 40,142 | مُحَمَّدِ بْنِ مَطَرٍ | 1 | 2 | 2 |
+| 45,024 | سَعِيدِ بْنِ عَوْسَجَةَ | 1 | 3 | 3 |
+| 60,136 | مَنْدُوسٍ | 1 | 6 | 6 |
+| 61,758 | الأَخْنَسِ بْنِ زُهَيْرٍ | 1 | 7 | 7 |
 
 Stubs touch 60 chain links. They get ordinal 0 (below every threshold but `all`) and are dropped in `kappa_lower`. Several names are relational (`أبي`, `أبيه`, `أباه`).
 
@@ -450,8 +450,20 @@ Not mergeable without a name-resolution model (out of scope, §6.1). The continu
 | kalimatan-khafifatan | 2852 | 145573 | عمارة بن عمير التيمي (r5885) | عمارة بن القعقاع الضبي (r5866) | أبو زرعة بن عمرو البجلي: compatible (tabaka 3 → 4, gap +1) | incompatible (tabaka 4 → 9, gap +5) | **caught** | caught |
 | la-yuminu-ahadukum (candidate) | 1581 | 238022 | سعيد بن بشير الأزدي (r3306) | سعيد بن أبي عروبة العدوي (r3281) | قتادة بن دعامة السدوسي: compatible (tabaka 4 → 8, gap +4) | compatible (years: d. 168 − b. 132 = 36) | **not caught** | not caught |
 | la-yuminu-ahadukum (candidate) | 1581 | 280018 | سعيد بن بشير الأزدي (r3306) | سعيد بن أبي عروبة العدوي (r3281) | قتادة بن دعامة السدوسي: compatible (tabaka 4 → 8, gap +4) | compatible (years: d. 168 − b. 132 = 36) | **not caught** | not caught |
+| innama-number-class | 319 | 320050 | يحيى بن سعيد القطان (r8271) | يحيى بن سعيد الأنصاري (r8272) | محمد بن إبراهيم القرشي: incompatible (years: d. 119 − b. 120 = -1) | compatible (years: d. 198 − b. 110 = 88) | **caught** | caught |
+| innama-number-class | 319 | 320051 | يحيى بن سعيد القطان (r8271) | يحيى بن سعيد الأنصاري (r8272) | محمد بن إبراهيم القرشي: incompatible (years: d. 119 − b. 120 = -1) | compatible (years: d. 198 − b. 110 = 88) | **caught** | caught |
+| innama-number-class | 319 | 320052 | يحيى بن سعيد القطان (r8271) | يحيى بن سعيد الأنصاري (r8272) | محمد بن إبراهيم القرشي: incompatible (years: d. 119 − b. 120 = -1) | compatible (years: d. 198 − b. 110 = 88) | **caught** | caught |
+| innama-number-class | 319 | 320053 | يحيى بن سعيد القطان (r8271) | يحيى بن سعيد الأنصاري (r8272) | محمد بن إبراهيم القرشي: incompatible (years: d. 119 − b. 120 = -1) | compatible (years: d. 198 − b. 110 = 88) | **caught** | caught |
+| innama-number-class | 319 | 320054 | يحيى بن سعيد القطان (r8271) | يحيى بن سعيد الأنصاري (r8272) | محمد بن إبراهيم القرشي: incompatible (years: d. 119 − b. 120 = -1) | compatible (years: d. 198 − b. 110 = 88) | **caught** | caught |
+| innama-number-class | 319 | 320055 | يحيى بن سعيد القطان (r8271) | يحيى بن سعيد الأنصاري (r8272) | محمد بن إبراهيم القرشي: incompatible (years: d. 119 − b. 120 = -1) | compatible (years: d. 198 − b. 110 = 88) | **caught** | caught |
+| innama-qarain | 319 | 320050 | يحيى بن سعيد القطان (r8271) | يحيى بن سعيد الأنصاري (r8272) | محمد بن إبراهيم القرشي: incompatible (years: d. 119 − b. 120 = -1) | compatible (years: d. 198 − b. 110 = 88) | **caught** | caught |
+| innama-qarain | 319 | 320051 | يحيى بن سعيد القطان (r8271) | يحيى بن سعيد الأنصاري (r8272) | محمد بن إبراهيم القرشي: incompatible (years: d. 119 − b. 120 = -1) | compatible (years: d. 198 − b. 110 = 88) | **caught** | caught |
+| innama-qarain | 319 | 320052 | يحيى بن سعيد القطان (r8271) | يحيى بن سعيد الأنصاري (r8272) | محمد بن إبراهيم القرشي: incompatible (years: d. 119 − b. 120 = -1) | compatible (years: d. 198 − b. 110 = 88) | **caught** | caught |
+| innama-qarain | 319 | 320053 | يحيى بن سعيد القطان (r8271) | يحيى بن سعيد الأنصاري (r8272) | محمد بن إبراهيم القرشي: incompatible (years: d. 119 − b. 120 = -1) | compatible (years: d. 198 − b. 110 = 88) | **caught** | caught |
+| innama-qarain | 319 | 320054 | يحيى بن سعيد القطان (r8271) | يحيى بن سعيد الأنصاري (r8272) | محمد بن إبراهيم القرشي: incompatible (years: d. 119 − b. 120 = -1) | compatible (years: d. 198 − b. 110 = 88) | **caught** | caught |
+| innama-qarain | 319 | 320055 | يحيى بن سعيد القطان (r8271) | يحيى بن سعيد الأنصاري (r8272) | محمد بن إبراهيم القرشي: incompatible (years: d. 119 − b. 120 = -1) | compatible (years: d. 198 − b. 110 = 88) | **caught** | caught |
 
-**10 of 12** chains caught. The al-Qattan chains are caught by years: the data gives al-Taymi d. 119 (Taqrib: 120) and al-Qattan b. 120, so the student was born after the teacher died; PR 1's rule (death ≥ birth) already flagged them because of the 119, and the corrected rule (death − birth ≥ 5) would also catch the Taqrib date. Every documented case was already flagged under PR 1's rule (last column); what changes is that the flags now lower `kappa_lower` through the `nocompat` graph (§8.7). The candidate (Sa'id b. Bashir for Ibn Abi 'Aruba) sits in a plausible generation and is not caught. Cross-name misresolution the rule does not catch remains an unquantified upward bias on κ.
+**22 of 24** chains caught. The al-Qattan chains are caught by years: the data gives al-Taymi d. 119 (Taqrib: 120) and al-Qattan b. 120, so the student was born after the teacher died; PR 1's rule (death ≥ birth) already flagged them because of the 119, and the corrected rule (death − birth ≥ 5) would also catch the Taqrib date. Every documented case was already flagged under PR 1's rule (last column); what changes is that the flags now lower `kappa_lower` through the `nocompat` graph (§8.7). The candidate (Sa'id b. Bashir for Ibn Abi 'Aruba) sits in a plausible generation and is not caught. Cross-name misresolution the rule does not catch remains an unquantified upward bias on κ.
 
 ### 8.5 Continuity: layer gaps and the years rule
 
@@ -536,14 +548,16 @@ The continuity flags feed one quantity: the `nocompat` hypothesis of `kappa_lowe
 
 `kappa_lower_θ` = min of κ_θ over three graphs, stubs dropped in all: **unmerged** (identities as resolved), **merged** (each same-name cluster one node of min ordinal, unnamed persons merged per student) and **nocompat** (unmerged, every continuity-incompatible link removed). `kappa_lower_source_θ` names the first hypothesis attaining the minimum in that order; since removing links never raises κ, `nocompat` there means removing incompatible links lowered κ below both other graphs.
 
-| threshold | groups | lower_below_kappa | nocompat_below_kappa | attained_unmerged | attained_merged | attained_nocompat | kappa_2plus_lower_below_2 | kappa_1plus_lower_0 |
-|---|---|---|---|---|---|---|---|---|
-| all | 20,282 | 2,436 | 2,436 | 17,849 | 1 | 2,432 | 404 | 1,020 |
-| above_matruk | 20,282 | 1,765 | 1,764 | 18,517 | 2 | 1,763 | 303 | 746 |
-| saduq_up | 20,282 | 835 | 827 | 19,447 | 11 | 824 | 131 | 363 |
-| thiqa_up | 20,282 | 569 | 569 | 19,713 | 1 | 568 | 95 | 245 |
+| threshold | groups | lower_below_kappa | nocompat_below_kappa | nocompat_years_below_kappa | attained_unmerged | attained_merged | attained_nocompat | kappa_2plus_lower_below_2 | kappa_1plus_lower_0 |
+|---|---|---|---|---|---|---|---|---|---|
+| all | 20,282 | 2,436 | 2,436 | 732 | 17,849 | 1 | 2,432 | 404 | 1,020 |
+| above_matruk | 20,282 | 1,765 | 1,764 | 538 | 18,517 | 2 | 1,763 | 303 | 746 |
+| saduq_up | 20,282 | 835 | 827 | 327 | 19,447 | 11 | 824 | 131 | 363 |
+| thiqa_up | 20,282 | 569 | 569 | 254 | 19,713 | 1 | 568 | 95 | 245 |
 
 It is a lower bound under those hypotheses, not a guarantee: cross-name misresolution that the continuity rule does not catch (§8.4) remains an unquantified upward bias on κ.
+
+`kappa_nocompat_years_θ` removes only the links the years rule marks incompatible (both dates known: the strong evidence); κ_lower keeps the all-incompatible graph. Both are reported for the paper.
 
 ### 8.8 Summary of modelling consequences
 
@@ -622,6 +636,178 @@ It is a lower bound under those hypotheses, not a guarantee: cross-name misresol
 | no_companion_end | 83 | 110 | 1,511 | 426 | 322 | 79 |
 | broken_only | 2 | 6 | 245 | 93 | 49 | 32 |
 | κ ≥ 1 | 5,957 | 4,519 | 2,217 | 2,025 | 1,567 | 1,039 |
+## 10. Indicative chain-level error rate from the gold set
+
+Every gold entry whose chains were inspected one by one (`deviation_key` and `known_deviations` in `tests/gold/gold.yaml`): chains documented as a cross-name misresolution (`misresolution`) or a dropped link, over the chains in the entry's scope. Other documented deviations (alternative routes the classical sources do not count) are listed but are not errors of the data. The four entries are hand-picked famous reports, so this is an indicative rate for the limitations section, not an estimate for the corpus.
+
+| entry | group | in_scope_chains | misresolution | dropped_link | error_chains | other_documented_routes | error_rate |
+|---|---|---|---|---|---|---|---|
+| innama-al-amal | 319 | 335 | 6 | 2 | 8 | 6 | 0.024 |
+| bay-al-wala | 276 | 318 | 2 | 1 | 3 | 40 | 0.009 |
+| al-din-al-nasiha | 397 | 157 | 0 | 1 | 1 | 0 | 0.006 |
+| kalimatan-khafifatan | 2,852 | 33 | 2 | 0 | 2 | 2 | 0.061 |
+
+Pooled: **14 of 843 in-scope chains (1.66%)** carry a documented misresolution or dropped link; misresolution alone 10 (1.19%).
+
+## 11. Derived grade v2: corroboration
+
+Books used by the qarāʾin and the collection classes, verified: `books.id` 1 = صحيح البخاري; `books.id` 2 = صحيح مسلم.
+
+**Agreement with the source's recorded group grade** (`meaning_groups.matn_no`), over the 20,282 groups with chains. Variants run on the `ibn_hajar` ruleset with one switch changed (config `derive.variants`); they are reported, not used. The gate requires both rulesets ≥ v1.
+
+| grade | agreement_with_matn_no |
+|---|---|
+| v1 (best single chain) | 0.7235 |
+| v2 variant all_light_defects | 0.7032 |
+| v2 variant mursal_shafii | 0.7233 |
+| v2 variant no_level_8 | 0.7215 |
+| v2 variant witness_not_below | 0.7295 |
+| v2 ibn_al_salah | 0.7237 |
+| v2 ibn_hajar | 0.7286 |
+
+**Disagreement table, `ibn_hajar`**: our v2 code (rows) by the source's code (columns):
+
+| v2 code | 0 صحيح | 1 حسن | 2 ضعيف | 3 شديد الضعف | 4 متهم بالوضع | 5 موضوع |
+|---|---|---|---|---|---|---|
+| ours 0 | 5,296 | 504 | 0 | 0 | 0 | 0 |
+| ours 1 | 421 | 3,021 | 346 | 198 | 213 | 151 |
+| ours 2 | 323 | 1,092 | 3,562 | 848 | 615 | 360 |
+| ours 3 | 1 | 11 | 42 | 1,496 | 180 | 99 |
+| ours 4 | 1 | 5 | 19 | 0 | 930 | 67 |
+| ours 5 | 0 | 2 | 4 | 2 | 0 | 473 |
+
+**Disagreement table, `ibn_al_salah`**: our v2 code (rows) by the source's code (columns):
+
+| v2 code | 0 صحيح | 1 حسن | 2 ضعيف | 3 شديد الضعف | 4 متهم بالوضع | 5 موضوع |
+|---|---|---|---|---|---|---|
+| ours 0 | 5,365 | 900 | 0 | 0 | 0 | 0 |
+| ours 1 | 356 | 2,854 | 347 | 201 | 213 | 151 |
+| ours 2 | 319 | 863 | 3,561 | 845 | 615 | 360 |
+| ours 3 | 1 | 11 | 42 | 1,496 | 180 | 99 |
+| ours 4 | 1 | 5 | 19 | 0 | 930 | 67 |
+| ours 5 | 0 | 2 | 4 | 2 | 0 | 473 |
+
+**For comparison, v1**:
+
+| v1 code | 0 صحيح | 1 حسن | 2 ضعيف | 3 شديد الضعف | 4 متهم بالوضع | 5 موضوع |
+|---|---|---|---|---|---|---|
+| ours 0 | 5,601 | 110 | 0 | 1 | 1 | 0 |
+| ours 1 | 117 | 1,904 | 1 | 0 | 0 | 0 |
+| ours 2 | 287 | 2,573 | 3,906 | 859 | 669 | 425 |
+| ours 3 | 24 | 31 | 43 | 1,682 | 208 | 125 |
+| ours 4 | 11 | 9 | 19 | 0 | 1,060 | 79 |
+| ours 5 | 2 | 8 | 4 | 2 | 0 | 521 |
+
+**Rule that fired for the group's v2 chain (`ibn_hajar`)**:
+
+| rule | groups | share |
+|---|---|---|
+| daif | 5,352 | 0.264 |
+| sahih_li_dhatihi | 5,229 | 0.258 |
+| fatal | 3,971 | 0.196 |
+| hasan_li_ghayrihi | 3,159 | 0.156 |
+| hasan_li_dhatihi | 1,191 | 0.059 |
+| not_repairable | 809 | 0.040 |
+| sahih_li_ghayrihi | 571 | 0.028 |
+
+**Divergence class of the witness** (upgraded groups; the witness is an attested chain in 80.6% of them, else a route spliced from several chains):
+
+| divergence | groups |
+|---|---|
+| shahid | 1,581 |
+| mutabaa_tamma | 1,096 |
+| mutabaa_qasira | 991 |
+| wasl | 62 |
+
+**By the weakest narrator's Taqrīb level** in the group's v2 chain (`ibn_hajar`):
+
+| weakest_level | groups | agree_v1 | agree_v2_ibn_hajar |
+|---|---|---|---|
+| 1 | 166 | 0.958 | 0.952 |
+| 2 | 1,380 | 0.958 | 0.932 |
+| 3 | 4,843 | 0.944 | 0.879 |
+| 4 | 2,456 | 0.905 | 0.708 |
+| 5 | 1,102 | 0.207 | 0.597 |
+| 6 | 1,250 | 0.167 | 0.568 |
+| 7 | 1,910 | 0.511 | 0.581 |
+| 8 | 2,626 | 0.583 | 0.581 |
+| 9 | 472 | 0.576 | 0.566 |
+| 10 | 1,829 | 0.825 | 0.818 |
+| 11 | 1,022 | 0.915 | 0.910 |
+| 12 | 481 | 0.983 | 0.983 |
+| unknown | 745 | 0.360 | 0.230 |
+
+**Narrators most often weakest in the disagreeing groups** (`ibn_hajar`):
+
+| narrator | groups_disagreeing |
+|---|---|
+| اسم مبهم (r1131) | 626 |
+| عبد الله بن لهيعة الحضرمي (r5033) | 86 |
+| ابن إسحاق القرشي (r6811) | 78 |
+| الحسن البصري (r1239) | 53 |
+| محمد بن مسلم القرشي (r7270) | 41 |
+| مسلم بن أبي كريمة التميمي (r31544) | 40 |
+| أبو إسحاق السبيعي (r6155) | 38 |
+| إبراهيم بن أبي يحيى الأسلمي (r870) | 35 |
+| بقية بن الوليد الكلاعي (r1919) | 34 |
+| الليث بن أبي سليم القرشي (r6638) | 34 |
+| علي بن زيد القرشي (r5770) | 30 |
+| محمد بن خازم الأعمى (r6936) | 28 |
+| حماد بن سلمة البصري (r2492) | 28 |
+| أحمد بن عبد الجبار العطاردي (r9901) | 26 |
+| الحجاج بن أرطاة النخعي (r2288) | 26 |
+
+**Downgrades.** 372 groups that v1 grades 0 get a higher v2 code under `ibn_hajar` (362 of them recorded 0 by the source). The defects of their v2 chain: mudallis_muanan 271; level_7,mudallis_muanan 33; level_6,mudallis_muanan 18; level_5,mudallis_muanan 16; mursal 9; level_8,mudallis_muanan 6; level_8 4; level_7 3; level_7,level_8,mudallis_muanan 2; level_6 2; level_5,level_6,mudallis_muanan 2; level_5 2; level_5,level_7,mudallis_muanan 1; level_7,mudallis_muanan,mursal 1; level_6,level_8 1; level_6,level_7,level_8,mursal 1. A mudallis's muʿanʿan link is a light defect by the brief's decision, and a light defect, even corroborated, reaches ḥasan li-ghayrihi at most. The source's binary `has_tadlis` does not carry Ibn Hajar's five tiers of mudallisūn, whose first two tiers' ʿan is accepted (DECISIONS.md D36).
+
+## 12. Number class and qarāʾin
+
+Width on the on-path graph at `all`, Taqrīb layers 1–12, compiler roles excluded; tawatur_n = 10. `no route`: no on-path narrator in layers 1–12 (κ_all = 0).
+
+| number_class | groups | share |
+|---|---|---|
+| gharib_mutlaq | 9,434 | 0.465 |
+| gharib_nisbi | 6,121 | 0.302 |
+| aziz | 885 | 0.044 |
+| mashhur | 791 | 0.039 |
+| mutawatir_count | 93 | 0.005 |
+| no route | 2,958 | 0.146 |
+
+**Width reading (rows) against the κ reading (columns)**:
+
+| width \ κ | aziz | gharib | mashhur | mutawatir_count | no route |
+|---|---|---|---|---|---|
+| aziz | 173 | 20 | 647 | 45 | 0 |
+| gharib_mutlaq | 0 | 9,434 | 0 | 0 | 0 |
+| gharib_nisbi | 2,502 | 1,720 | 1,870 | 29 | 0 |
+| mashhur | 4 | 1 | 446 | 340 | 0 |
+| mutawatir_count | 0 | 0 | 2 | 91 | 0 |
+| no route | 0 | 0 | 0 | 0 | 2,958 |
+
+The readings differ in 31.5% of groups. The width reading treats each Taqrīb layer as a cut, but routes skip layers (tabaka steps of 2–4 are normal on this scale, §8.5), so a layer is a cut only when every route has a narrator in it. 4,401 groups read gharīb by width while κ_all ≥ 2: the single narrator sits in a layer other routes jump over (group 273, إن الله لا يقبض العلم انتزاعا, is gharīb nisbī by width because Shaqīq is alone at layer 2, and mashhūr by κ). The converse (κ below the width class) is hidden sharing: the minimum cut mixes narrators of different layers.
+
+
+**Sensitivity to tawatur_n** (the numbers the books report as proposed):
+
+| tawatur_n | mutawatir_count (width) | mutawatir_count (κ_all) | mashhur (width) |
+|---|---|---|---|
+| 4 | 562 | 2,299 | 322 |
+| 5 | 397 | 1,662 | 487 |
+| 10 | 93 | 505 | 791 |
+| 12 | 61 | 330 | 823 |
+| 40 | 4 | 4 | 880 |
+| 70 | 0 | 0 | 884 |
+
+**Qarāʾin flags** (reported, never combined; knowledge yield is not computed):
+
+| flag | groups | share | recorded 0 (صحيح) among them |
+|---|---|---|---|
+| in_sahihayn | 2,690 | 0.133 | 0.935 |
+| in_sahih_class | 6,756 | 0.333 | 0.649 |
+| sound_distinct_routes | 1,557 | 0.077 | 0.978 |
+| huffaz_chain | 733 | 0.036 | 1 |
+
+All three flags together: 537 groups.
+
 ## Appendix A. Full `rawis.rank` vocabulary
 
 | rank_no | rank | n | ordinal |
@@ -1126,4 +1312,4 @@ It is a lower bound under those hypotheses, not a guarantee: cross-name misresol
 | 12 | وضاع رافضي | 1 | 1 |
 | 12 | يكذب ويضع الحديث | 1 | 1 |
 
-_Audit computed in 1.5s._
+_Audit computed in 2.7s._
