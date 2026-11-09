@@ -1,6 +1,6 @@
 # itibar — source audit
 
-Generated 2026-11-08 21:26 by `make audit` (`itibar.audit`) from the Parquet copy of `hadith-kg.db` (Hugging Face `emadjumaah/hadith-kg` @ `8ae7e3d5be28`, sha256 `d528084321e71500…`). Upstream comparison values are from `DATA_REPORT.md` at `emadjumaah/hadith@b5a0cf2`.
+Generated 2026-11-09 03:25 by `make audit` (`itibar.audit`) from the Parquet copy of `hadith-kg.db` (Hugging Face `emadjumaah/hadith-kg` @ `8ae7e3d5be28`, sha256 `d528084321e71500…`). Upstream comparison values are from `DATA_REPORT.md` at `emadjumaah/hadith@b5a0cf2`.
 
 Every number below is recomputed. Where itibar's definition differs from upstream's, both are shown.
 
@@ -277,31 +277,31 @@ A cluster can only change kappa inside a group where two of its members both occ
 
 | id | name | chain_links | min_pos | max_pos |
 |---|---|---|---|---|
-| 40,137 | عَبْدُ اللَّهِ بْنُ عُبَيْدَةَ | 6 | 1 | 6 |
 | 47,654 | كُرَيْبٍ السَّحُولِيِّ | 6 | 6 | 10 |
-| 51,756 | بِنْتِ كُرْزٍ | 5 | 5 | 7 |
+| 40,137 | عَبْدُ اللَّهِ بْنُ عُبَيْدَةَ | 6 | 1 | 6 |
 | 44,306 | مُحَمَّدِ بْنِ عَبْدِ الصَّمَدِ | 5 | 4 | 9 |
-| 44,304 | عَبْدُ الْمُؤْمِنِ | 4 | 2 | 7 |
+| 51,756 | بِنْتِ كُرْزٍ | 5 | 5 | 7 |
 | 50,119 | أَبِي | 4 | 8 | 10 |
+| 44,304 | عَبْدُ الْمُؤْمِنِ | 4 | 2 | 7 |
+| 44,305 | أَبَاهُ | 2 | 4 | 4 |
 | 40,740 | وَمُحَمَّدُ بْنُ الْحُسَيْنِ | 2 | 2 | 2 |
-| 50,437 | السُّمَيْطِ الْبَجَلِيِّ | 2 | 6 | 6 |
-| 50,436 | أَبِيهِ | 2 | 6 | 7 |
+| 47,655 | عَبْدِ اللَّهِ بْنِ حُذَيْمٍ | 2 | 5 | 5 |
 | 40,138 | مُحَمَّدُ بْنُ عَمْرٍو | 2 | 1 | 3 |
+| 9,481 | غير معرف | 2 | 7 | 7 |
+| 50,436 | أَبِيهِ | 2 | 6 | 7 |
 | 47,653 | النُّعْمَانِ بْنِ نُعَيْمٍ | 2 | 5 | 7 |
 | 60,137 | مَخْرَمَةَ الْعَبْدِيِّ | 2 | 5 | 5 |
 | 40,741 | وَأَبُو مُسْلِمٍ | 2 | 2 | 2 |
-| 44,305 | أَبَاهُ | 2 | 4 | 4 |
 | 26,043 | عِيسَى بْنُ الأَشْعَثِ | 2 | 4 | 8 |
-| 47,655 | عَبْدِ اللَّهِ بْنِ حُذَيْمٍ | 2 | 5 | 5 |
-| 9,481 | غير معرف | 2 | 7 | 7 |
+| 50,437 | السُّمَيْطِ الْبَجَلِيِّ | 2 | 6 | 6 |
 | 40,142 | مُحَمَّدِ بْنِ مَطَرٍ | 1 | 2 | 2 |
 | 40,260 | قَيْسٌ السَّعِيدِيُّ | 1 | 4 | 4 |
+| 45,024 | سَعِيدِ بْنِ عَوْسَجَةَ | 1 | 3 | 3 |
 | 60,677 | سَنْجَوَيْهِ النَّاهِكِيُّ | 1 | 3 | 3 |
 | 45,025 | جَعْفَر بْنِ الْفُرَافِصَةِ الْحَنَفِيِّ | 1 | 4 | 4 |
 | 40,139 | سَعْدِ بْنِ عُثْمَانَ | 1 | 4 | 4 |
-| 45,024 | سَعِيدِ بْنِ عَوْسَجَةَ | 1 | 3 | 3 |
-| 60,136 | مَنْدُوسٍ | 1 | 6 | 6 |
 | 61,758 | الأَخْنَسِ بْنِ زُهَيْرٍ | 1 | 7 | 7 |
+| 60,136 | مَنْدُوسٍ | 1 | 6 | 6 |
 
 Stubs touch 60 chain links. They get ordinal 0 (below every threshold but `all`) and are dropped in `kappa_lower`. Several names are relational (`أبي`, `أبيه`, `أباه`).
 
@@ -538,11 +538,11 @@ The continuity flags feed one quantity: the `nocompat` hypothesis of `kappa_lowe
 
 ### 8.6 `max_rank` includes the compiler
 
-| chains | agree_full | agree_derived | compiler_strictly_weakest | other_classes |
-|---|---|---|---|---|
-| 577,020 | 577,020 | 569,379 | 7,641 | 0 |
+| chains | agree_full | agree_derived | compiler_strictly_weakest | book_role_strictly_weakest | other_classes |
+|---|---|---|---|---|---|
+| 577,020 | 577,020 | 569,379 | 7,641 | 0 | 0 |
 
-`agree_full`: our weakest link over the whole stored chain equals `max_rank` (the like-for-like check of our reading). `agree_derived`: the same with the compiler at pos 0 excluded, as the derived grade does; every disagreement is a chain whose compiler is strictly weaker than everyone else in it.
+`agree_full`: our weakest link over the whole stored chain equals `max_rank` (the like-for-like check of our reading). `agree_derived`: the same with the positions in a book role excluded, as the derived grade does (the compiler at pos 0; or a book transmitter at pos 0 and the compiler after him, §11.6); every disagreement is a chain whose excluded book-role narrator is strictly weaker than everyone else in it.
 
 ### 8.7 κ_lower under three hypotheses
 
@@ -649,29 +649,188 @@ Every gold entry whose chains were inspected one by one (`deviation_key` and `kn
 
 Pooled: **14 of 843 in-scope chains (1.66%)** carry a documented misresolution or dropped link; misresolution alone 10 (1.19%).
 
-## 11. Derived grade v2: corroboration
+## 11. Derived grade v2: corroboration, after the PR 5 corrections
 
-Books used by the qarāʾin and the collection classes, verified: `books.id` 1 = صحيح البخاري; `books.id` 2 = صحيح مسلم.
+Books used by the qarāʾin, the collection classes and the Ṣaḥīḥayn convention, verified: `books.id` 1 = صحيح البخاري; `books.id` 2 = صحيح مسلم.
 
-**Agreement with the source's recorded group grade** (`meaning_groups.matn_no`), over the 20,282 groups with chains. Variants run on the `ibn_hajar` ruleset with one switch changed (config `derive.variants`); they are reported, not used. The gate requires both rulesets ≥ v1.
+Agreement with the source's recorded grades is a **reported result, never a gate** (PR 5 removed the v2 ≥ v1 gate: a gate that rewards agreement invites tuning, DECISIONS D37, D63). Nothing below was tuned to it.
+
+### 11.1 The corrections, applied cumulatively
+
+Each row reruns the pipeline (`make stages`, `config/stages/`) with the corrections up to that row switched on, in the brief's order; stage 0 reproduces PR 4 and the last row equals the defaults. *ours 1 / source 3–5*: groups v2 (`ibn_hajar`) places at code 1 that the source records شديد الضعف, متهم بالوضع or موضوع.
+
+| stage | correction | v1 | v2 ibn_hajar | v2 ibn_al_salah | ours 1 / source 3–5 | upgraded groups | groups changed vs previous |
+|---|---|---|---|---|---|---|---|
+| s0_pr4 | PR 4 as merged (derive v2, structure v3) | 0.7235 | 0.7286 | 0.7237 | 562 | 3,730 |  |
+| s1_attested | + §1 a witness is one attested chain | 0.7235 | 0.7341 | 0.7332 | 457 | 3,310 | 526 |
+| s2_tadlis | + §2 tiered tadlīs, hearing check (group), Ṣaḥīḥayn convention | 0.7235 | 0.7415 | 0.7391 | 437 | 2,943 | 403 |
+| s3_siblings | + §3 shawāhid from sibling groups | 0.7235 | 0.7321 | 0.7261 | 536 | 3,461 | 523 |
+| s4_each_defect | + §4 every light defect covered | 0.7235 | 0.7109 | 0.7201 | 486 | 2,855 | 608 |
+| s5_book_roles | + §5 compiler roles per edge, book transmitters | 0.7235 | 0.7109 | 0.7201 | 486 | 2,855 | 0 |
+| s6_kappa_class | + §6 number class on κ (no effect on grades) | 0.7235 | 0.7109 | 0.7201 | 486 | 2,855 | 0 |
+| s7_named_elsewhere | + §8 unnamed person named elsewhere (= PR 5 defaults) | 0.7235 | 0.7121 | 0.7211 | 488 | 2,877 | 34 |
+
+### 11.2 §1 A witness is one attested chain
+
+PR 4 accepted a route spliced from several chains in the union graph: 725 of its 3,730 upgraded groups (19.4%) rested on one. With witnesses restricted to single attested chains, upgraded groups go from 3,730 to 3,310 and the block *ours 1 / source 3–5* from 562 to 457.
+
+`witness_route_exists` (the union graph had a route avoiding the positions, no single chain did), final run: 125 of 5,441 groups whose v2 chain is ḍaʿīf; 1,519 of 24,508 such chains.
+
+### 11.3 §2 Tiered tadlīs, the hearing check, the Ṣaḥīḥayn convention
+
+Ibn Hajar's *Ṭabaqāt al-Mudallisīn* (Shamela 1186, ed. al-Qaryūtī): 152 entries parsed (tiers 1: 33, 2: 33, 3: 50, 4: 12, 5: 24; the book states 152, tier heads 33, 33, 50, 12, 24). Joined to `rawis` by deterministic name matching (README): 92 entries auto-confirmed, 0 by the reviewer, 60 awaiting review in `lists/mudallisin_confirmed.csv`.
+Of the 83 narrators the source flags (`has_tadlis = 1`), 58 are matched to the book (tier 1: 4, 2: 8, 3: 25, 4: 10, 5: 11) and 25 are not (unmatched or pending review; they take `untiered_tadlis`, tier 3). 34 narrators matched to the book are not flagged by the source (`mudallis_set: source_flag` leaves them without a tadlīs defect; variant `mudallis_union` adds them).
+
+Flagged narrators without a confirmed tier: الحسن البصري (r1239), الحكم بن عتيبة الكندي (r1372), المطلب بن عبد الله المخزومي (r1643), شعيب بن رزيق المقدسي (r3809), صدقة بن يسار الجزري (r3928), عبد الرحمن بن يزيد السلمي (r4514), عقبة بن عبد الله الأصم (r5676), علي بن عبد العزيز الفزاري (r5806), عيسى بن طهمان الجشمي (r6314), محمد بن ثور الصنعاني (r6896), محمد بن عيسى النقاش (r7230), محمد بن عيسى البغدادي (r7232), مطرف بن مازن الكناني (r7533), واصل بن عبد الرحمن الرقاشي (r8120), إبراهيم بن زكريا العبدستاني (r11465), جعفر بن محمد المستغفري (r13823), الحكم بن عتيبة العجلي (r15578), عبد الله بن محمد الحارثي (r23172), عبد الله بن مراون الحراني (r23191), عطية بن بقية الحمصي (r23567), محمد بن عبد الملك الواسطي (r29842), محمد بن عمر الأندلسي (r30256), محمد بن محمد البخاري (r30543), محمد بن يوسف المهلبي (r31096), عثمان بن محمد المخرمي (r54113).
+
+
+PR 4 downgraded 271 groups from v1 code 0 only because of a mudallis's ʿan (its binary flag). With tiers, the hearing check and the Ṣaḥīḥayn convention (stage 2), their v2 chains stand as follows (*accepted* = tier 1–2; *accepted_sahihayn* = a chain of al-Bukhārī or Muslim; *covered_tasrih* = the link heard in another chain of the report):
+
+| after §2 | groups |
+|---|---|
+| code 0: accepted | 122 |
+| hasan_li_ghayrihi (code 1.0) | 74 |
+| daif (code 2.0) | 57 |
+| code 0: accepted_sahihayn | 9 |
+| code 0: covered_tasrih | 6 |
+| not_repairable (code 2.0) | 3 |
+
+Chain-level counts in the final run (`ibn_hajar`; a chain counts once per kind): `muanan_accepted_sahihayn_tier_3` 1,552; `muanan_accepted_sahihayn_tier_4` 34; `muanan_accepted_tier_1` 10,733; `muanan_accepted_tier_2` 32,112; `muanan_covered_tasrih_tier_3` 28,113; `muanan_covered_tasrih_tier_4` 4,832; `muanan_covered_tasrih_tier_5` 386; still defects: `mudallis_muanan_tier_3` 34,018; `mudallis_muanan_tier_4` 6,712; `mudallis_muanan_tier_5` 2,643.
+
+- variant hearing anywhere in the corpus (`tasrih_corpus`): agreement 0.7237
+- variant every narrator matched to the book a mudallis (`mudallis_union`): agreement 0.7096
+
+### 11.4 §3 Shawāhid from sibling groups
+
+Floor: idf-weighted Dice ≥ 0.32 on lists.normalize tokens, set by reading 50 candidate pairs (reports/shahid_inspection.md, D58). In the final run 659 of 2,877 upgraded groups have a cross-group witness in their v2 chain; 1,844 chains in all. Of those chains' witnesses, 17.6% come through the same companion as the chain (a mutābaʿa by the *Nuzha*'s definition; classed shāhid because the source files them as another report).
+
+| reading | agreement |
+|---|---|
+| with sibling shawāhid (default) | 0.7121 |
+| in-group witnesses only (`shahid_group`) | 0.7180 |
+| siblings, strict floor 0.38 (`shahid_strict`) | 0.7153 |
+
+The sandals dowry (gold `sandals-asim-b-ubaydallah`, group 2031) is repaired by Sahl b. Saʿd's report in group 763 at overlap 0.333: above the floor, below the strict variant's.
+
+### 11.5 §4 Every light defect covered
+
+| positions to cover | agreement |
+|---|---|
+| each light defect, a witness of its own (`each_defect`, default) | 0.7121 |
+| the weakest light defects, one witness (`weakest`, PR 4) | 0.7334 |
+| every light defect, one witness (`all_light_defects`) | 0.7121 |
+
+Groups whose v2 chain needed more than one witness (one per defect): 941 of 2,492 ḥasan li-ghayrihi groups (ḥasan li-ghayrihi chains in all: 211,522).
+
+### 11.6 §5 Book transmitters and compiler roles
+
+Book transmitters (`bundle.book_transmitter_min_share` = 0.2): a narrator at pos 0 while the book's author (death year = `books.author_death_year` ± 1) sits at pos 1 in at least that share of the book's chains. The next largest share in the corpus is under 0.02. The brief's examples are not of this shape in this data: ʿAbd al-Razzāq himself is at pos 0 of 94.5% of the *Muṣannaf*'s chains (al-Dabarī is not in them), and Aḥmad of 99.4% of the *Musnad*'s (ʿAbdallāh b. Aḥmad's chains with Aḥmad at pos 1 are in ʿAbdallāh's own books, *al-Sunna* and *Faḍāʾil ʿUthmān*, where he is the author).
+
+| book | chains | transmitter at pos 0 | share (transmitter at 0, author at 1) | compiler, PR 4 rule | compiler now | PR 4 misidentified him |
+|---|---|---|---|---|---|---|
+| مسند ابن الجعد (32) | 1,559 | عبد الله بن سابور البغوي (r23051) | 0.459 | عبد الله بن سابور البغوي (r23051) | علي بن الجعد الجوهري (r5730) | yes |
+| الورع لأحمد  رواية المروزي (412) | 108 | محمد بن يحيى الوراق (r30978) | 0.333 | أحمد بن حنبل الشيباني (r488) | أحمد بن حنبل الشيباني (r488) | no |
+
+Compiler roles are per edge for single strands, partial common links and common links (D61); the census and the ranks of al-Zuhrī, Qatāda, al-Aʿmash, Shuʿba and Mālik are in reports/common_links.md.
+
+### 11.7 §7 Whose verdicts are the labels: a sample against the Taqrīb and Taḥrīr al-Taqrīb
+
+40 narrators of al-Bukhārī or Muslim (all of whom the Taqrīb covers), 20 labelled «صدوق حسن الحديث» and 20 with other labels of levels 2–9 (seed in `itibar.provenance`), looked up in Shamela's *Taqrīb al-Tahdhīb* (book 8609) and *Taḥrīr Taqrīb al-Tahdhīb* (book 127715), which reprints each entry and adds its own verdict after «بل:» where it disagrees; raw lines in `lists/source/taqrib_sample.jsonl`. *reading*: the label is Taḥrīr's revision; or, where Taḥrīr keeps Ibn Hajar's verdict, his wording, or the formula «صدوق حسن الحديث» put over it; or neither. A label *is* a wording when one contains the other after normalization; an entry whose tabaqa is more than one layer from the narrator's tabaka, without agreeing on the grandfather, is a namesake. Every row is printed for checking.
+
+| stratum | sampled | read whole in both | Taḥrīr revises Ibn Hajar | Taḥrīr's revision | Ibn Hajar's wording | formula over Ibn Hajar's verdict | neither |
+|---|---|---|---|---|---|---|---|
+| «صدوق حسن الحديث» | 20 | 15 | 6 | 6 | 0 | 9 | 0 |
+| other labels | 20 | 14 | 1 | 1 | 12 | 0 | 1 |
+
+| rawi | source label | Taqrīb (Ibn Hajar) | Taḥrīr «بل:» | entry | Taqrīb page | reading |
+|---|---|---|---|---|---|---|
+| r2504 | صدوق حسن الحديث |  |  |  |  | not found by name search |
+| r808 | صدوق حسن الحديث | إبراهيم ابن المنذر ابن عبد الله ابن المنذر ابن المغيرة ابن عبد الله ابن خالد ابن حزام الأسدي الحزامي بالزاي صدوق تكلم فيه أحمد لأجل القرآن |  | ٢٥٣ | https://shamela.ws/book/8609/20 | formula over Ibn Hajar's verdict |
+| r6616 | صدوق حسن الحديث | كليب ابن وائل التيمي البكري المدني نزيل الكوفة صدوق |  | ٥٦٦٣ | https://shamela.ws/book/8609/388 | formula over Ibn Hajar's verdict |
+| r3607 | صدوق حسن الحديث | سليمان ابن عبد الرحمن ابن عيسى التميمي الدمشقي ابن بنت شرحبيل أبو أيوب صدوق يخطىء |  | ٢٥٨٨ | https://shamela.ws/book/8609/179 | not read: Taḥrīr's entry continues on the next page |
+| r8526 | صدوق حسن الحديث | يعقوب ابن عاصم ابن عروة ابن مسعود الثقفي أخو نافع مقبول | صدوقٌ حسن الحديث | ٧٨٢٠ | https://shamela.ws/book/8609/534 | Taḥrīr's revision |
+| r1954 | صدوق حسن الحديث | بكير ابن مسمار الزهري المدني أبو محمد أخو مهاجر صدوق |  | ٧٦٦ | https://shamela.ws/book/8609/54 | formula over Ibn Hajar's verdict |
+| r5548 | صدوق حسن الحديث | عثمان ابن غياث بمعجمة ومثلثة الراسبي أو الزهراني البصري ثقة ورمي بالإرجاء |  | ٤٥٠٨ | https://shamela.ws/book/8609/312 | formula over Ibn Hajar's verdict |
+| r4585 | صدوق حسن الحديث | عبد العزيز ابن عثمان ابن جبلة بفتح الجيم والموحدة ابن أبي رواد الأزدي مولاهم أبو الفضل المروزي لقبه شاذان وهو أخو عبدان مقبول | صدوقٌ حسن الحديث | ٤١١٢ | https://shamela.ws/book/8609/284 | Taḥrīr's revision |
+| r2477 | صدوق حسن الحديث | حكيم ابن معاوية ابن حيدة القشيري والد بهز صدوق |  | ١٤٧٨ | https://shamela.ws/book/8609/103 | formula over Ibn Hajar's verdict |
+| r206 | صدوق حسن الحديث |  |  |  |  | not found by name search |
+| r6146 | صدوق حسن الحديث | عمرو ابن عاصم ابن عبيد الله الكلابي القيسي أبو عثمان البصري صدوق في حفظه شيء | صدوقٌ حسن الحديث | ٥٠٥٥ | https://shamela.ws/book/8609/349 | Taḥrīr's revision |
+| r1301 | صدوق حسن الحديث | الحسن ابن مدرك ابن بشير السدوسي أبو علي البصري الطحان لا بأس به ونسبه أبو داود إلى تلقين المشايخ |  | ١٢٨٥ | https://shamela.ws/book/8609/90 | formula over Ibn Hajar's verdict |
+| r2654 | صدوق حسن الحديث | خالد ابن سعيد ابن عمرو ابن سعيد ابن العاص أخو إسحاق ابن سعيد صدوق |  | ١٦٣٩ | https://shamela.ws/book/8609/114 | formula over Ibn Hajar's verdict |
+| r6726 | صدوق حسن الحديث |  |  |  |  | not found by name search |
+| r2683 | صدوق حسن الحديث | خالد ابن ميسرة الطفاوي أبو حاتم البصري العطار صالح الحديث | صدوق حسن الحديث | ١٦٨١ | https://shamela.ws/book/8609/117 | Taḥrīr's revision |
+| r2338 | صدوق حسن الحديث | حرب ابن ميمون الأكبر أبو الخطاب الأنصاري مولاهم البصري صدوق رمي بالقدر |  | ١١٦٨ | https://shamela.ws/book/8609/81 | formula over Ibn Hajar's verdict |
+| r3840 | صدوق حسن الحديث | شيبان ابن فروخ أبي شيبة الحبطي بمهملة وموحدة مفتوحتين الأبلي بضم الهمزة والموحدة وتشديد اللام أبو محمد صدوق يهم ورمي بالقدر قال أبو حاتم اضطر الناس إليه أخيرا | صدوق حسن الحديث | ٢٨٣٤ | https://shamela.ws/book/8609/195 | Taḥrīr's revision |
+| r3670 | صدوق حسن الحديث | سهل ابن حماد أبو عتاب بمهملة ومثناة ثم موحدة الدلال البصري صدوق |  | ٢٦٥٤ | https://shamela.ws/book/8609/183 | formula over Ibn Hajar's verdict |
+| r4564 | صدوق حسن الحديث | عبد العزيز ابن المطلب ابن عبد الله ابن حنطب المخزومي أبو طالب المدني صدوق |  | ٤١٢٤ | https://shamela.ws/book/8609/285 | not read: Taḥrīr's entry continues on the next page |
+| r5545 | صدوق حسن الحديث | عثمان ابن عمر ابن موسى ابن عبيد الله ابن معمر التيمي المدني قاضيها مقبول | صدوقٌ حسن الحديث | ٤٥٠٥ | https://shamela.ws/book/8609/312 | Taḥrīr's revision |
+| r4298 | مختلف في صحبته | عبد الرحمن ابن الأسود ابن عبد يغوث ابن وهب ابن عبد مناف ابن زهرة الزهري ولد على عهد النبي صَلَّى اللهُ عَلَيْهِ وَسَلَّمَ ومات أبوه في ذلك الزمان فعد لذلك في الصحابة وقال العجلي من كبار التابعين خ د ق |  | ٣٨٠١ | https://shamela.ws/book/8609/262 | neither |
+| r2485 | ثقة | حماد ابن إسماعيل ابن علية البصري نزيل بغداد ثقة |  | ١٤٨٨ | https://shamela.ws/book/8609/103 | Ibn Hajar's wording |
+| r5688 | ثقة ثبت |  |  |  |  | not found by name search |
+| r6013 | ثقة | عمر ابن نافع العدوي مولى ابن عمر ثقة |  | ٤٩٧٣ | https://shamela.ws/book/8609/343 | Ibn Hajar's wording |
+| r4432 | مقبول |  |  | ٣٩٣٥ | https://shamela.ws/book/8609/271 | not read: the entry found is a namesake (tabaqa) |
+| r8098 | ثقة | هناد ابن السري بكسر الراء الخفيفة ابن مصعب التميمي أبو السري الكوفى ثقة |  | ٧٣٢٠ | https://shamela.ws/book/8609/500 | Ibn Hajar's wording |
+| r6810 | ثقة | محمد ابن إسحاق ابن منصور أبو عبد الله ابن أبي يعقوب الكرماني نزيل البصرة ثقة |  | ٥٧٢٤ | https://shamela.ws/book/8609/393 | Ibn Hajar's wording |
+| r7352 | ثقة | محمود ابن غيلان العدوي مولاهم أبو أحمد المروزي نزيل بغداد ثقة |  | ٦٥١٦ | https://shamela.ws/book/8609/448 | Ibn Hajar's wording |
+| r1086 | ثقة | عمر ابن سعيد ابن أبي حسين النوفلي المكي ثقة |  | ٤٩٠٥ | https://shamela.ws/book/8609/339 | Ibn Hajar's wording |
+| r2146 | ثقة | جعفر ابن حيان السعدي أبو الأشهب العطاردي البصري مشهور بكنيته ثقة |  | ٩٣٥ | https://shamela.ws/book/8609/66 | not read: Taḥrīr's entry continues on the next page |
+| r2122 | ثقة | جرير ابن عبد الحميد ابن قرط بضم القاف وسكون الراء بعدها طاء مهملة الضبي الكوفي نزيل الري وقاضيها ثقة صحيح الكتاب قيل كان في آخر عمره يهم من حفظه مات سنة ثمان وثمانين وله إحدى وسبعون سنة ع |  | ٩١٦ | https://shamela.ws/book/8609/65 | Ibn Hajar's wording |
+| r6782 | ثقة | محمد ابن أحمد ابن محمد ابن الحجاج ابن ميسرة الكريزي بتقديم الراء مصغر أبو يوسف الصيدلاني الرقي ثقة حافظ |  | ٥٧١٣ | https://shamela.ws/book/8609/393 | Ibn Hajar's wording |
+| r2949 | ثقة |  |  |  |  | not found by name search |
+| r1877 | ثقة | بشر ابن شعيب ابن أبي حمزة [بن] دينار القرشي مولاهم أبو القاسم الحمصي ثقة |  | ٦٨٨ | https://shamela.ws/book/8609/49 | Ibn Hajar's wording |
+| r5593 | ثقة | عروة ابن الحارث الهمداني الكوفي أبو فروة الأكبر ثقة |  | ٤٥٥٩ | https://shamela.ws/book/8609/315 | Ibn Hajar's wording |
+| r7988 | ثقة | هارون ابن معروف المروزي أبو علي الخزاز [بمعجمات] الضرير نزيل بغداد ثقة |  | ٧٢٤٢ | https://shamela.ws/book/8609/495 | Ibn Hajar's wording |
+| r4716 | ثقة ثبت فقيه عالم جواد مجاهد جمعت فيه خصال الخير | عبد الله ابن المبارك المروزي مولى بني حنظلة ثقة ثبت فقيه عالم جواد مجاهد جمعت فيه خصال الخير |  | ٣٥٧٠ | https://shamela.ws/book/8609/246 | not read: found in the Taqrīb only |
+| r1621 | ثقة | المثنى ابن سعيد الضبعي بضم المعجمة وفتح الموحدة أبو سعيد البصري القسام القصير ثقة قال أبو حاتم هو أوثق من الذي قبله |  | ٦٤٧٠ | https://shamela.ws/book/8609/445 | Ibn Hajar's wording |
+| r3343 | ثقة | سعيد ابن سنان البرجمي بضم الموحدة والجيم بينهما راء ساكنة أبو سنان الشيباني الأصغر الكوفي نزيل الري صدوق له أوهام | ثقةٌ | ٢٣٣٢ | https://shamela.ws/book/8609/163 | Taḥrīr's revision |
+| r3483 | ثقة |  |  |  |  | not found by name search |
+
+### 11.8 §8 The unnamed person
+
+In PR 4, 569 disagreeing groups had the unnamed person (`اسم مبهم`) among the weakest positions of their v2 chain: 188 only in the companion slot (read as mursal, D36), 381 below it, of which 21 have another chain of the report naming a narrator between the same teacher and student.
+
+| where | named_elsewhere | groups |
+|---|---|---|
+| mid | 0 | 360 |
+| mid | 1 | 21 |
+| top | 0 | 188 |
+
+By the source's recorded grade:
+
+| position | source 0 | source 1 | source 2 | source 3 | source 4 | source 5 |
+|---|---|---|---|---|---|---|
+| mid | 73 | 92 | 0 | 108 | 70 | 38 |
+| top | 53 | 63 | 5 | 37 | 21 | 9 |
+
+Effect: agreement 0.7121 with `unknown_repair: named_elsewhere`, 0.7109 without (`unknown_none`). Chains whose unnamed person is named elsewhere: 2,717.
+
+### 11.9 The final grade
+
+**Agreement with `meaning_groups.matn_no`** over the 20,282 groups with chains (variants run on `ibn_hajar` with one switch changed, `derive.variants`):
 
 | grade | agreement_with_matn_no |
 |---|---|
 | v1 (best single chain) | 0.7235 |
-| v2 variant all_light_defects | 0.7032 |
-| v2 variant mursal_shafii | 0.7233 |
-| v2 variant no_level_8 | 0.7215 |
-| v2 variant witness_not_below | 0.7295 |
-| v2 ibn_al_salah | 0.7237 |
-| v2 ibn_hajar | 0.7286 |
+| v2 variant all_light_defects | 0.7121 |
+| v2 variant mudallis_union | 0.7096 |
+| v2 variant mursal_shafii | 0.7083 |
+| v2 variant no_level_8 | 0.7099 |
+| v2 variant shahid_group | 0.7180 |
+| v2 variant shahid_strict | 0.7153 |
+| v2 variant tasrih_corpus | 0.7237 |
+| v2 variant unknown_none | 0.7109 |
+| v2 variant weakest | 0.7334 |
+| v2 variant witness_not_below | 0.7117 |
+| v2 ibn_al_salah | 0.7211 |
+| v2 ibn_hajar | 0.7121 |
 
 **Disagreement table, `ibn_hajar`**: our v2 code (rows) by the source's code (columns):
 
 | v2 code | 0 صحيح | 1 حسن | 2 ضعيف | 3 شديد الضعف | 4 متهم بالوضع | 5 موضوع |
 |---|---|---|---|---|---|---|
-| ours 0 | 5,296 | 504 | 0 | 0 | 0 | 0 |
-| ours 1 | 421 | 3,021 | 346 | 198 | 213 | 151 |
-| ours 2 | 323 | 1,092 | 3,562 | 848 | 615 | 360 |
+| ours 0 | 5,427 | 427 | 0 | 0 | 0 | 0 |
+| ours 1 | 345 | 2,629 | 421 | 167 | 191 | 130 |
+| ours 2 | 268 | 1,561 | 3,487 | 879 | 637 | 381 |
 | ours 3 | 1 | 11 | 42 | 1,496 | 180 | 99 |
 | ours 4 | 1 | 5 | 19 | 0 | 930 | 67 |
 | ours 5 | 0 | 2 | 4 | 2 | 0 | 473 |
@@ -680,9 +839,9 @@ Books used by the qarāʾin and the collection classes, verified: `books.id` 1 =
 
 | v2 code | 0 صحيح | 1 حسن | 2 ضعيف | 3 شديد الضعف | 4 متهم بالوضع | 5 موضوع |
 |---|---|---|---|---|---|---|
-| ours 0 | 5,365 | 900 | 0 | 0 | 0 | 0 |
-| ours 1 | 356 | 2,854 | 347 | 201 | 213 | 151 |
-| ours 2 | 319 | 863 | 3,561 | 845 | 615 | 360 |
+| ours 0 | 5,458 | 726 | 0 | 0 | 0 | 0 |
+| ours 1 | 325 | 2,792 | 432 | 175 | 199 | 132 |
+| ours 2 | 257 | 1,099 | 3,476 | 871 | 629 | 379 |
 | ours 3 | 1 | 11 | 42 | 1,496 | 180 | 99 |
 | ours 4 | 1 | 5 | 19 | 0 | 930 | 67 |
 | ours 5 | 0 | 2 | 4 | 2 | 0 | 473 |
@@ -702,111 +861,113 @@ Books used by the qarāʾin and the collection classes, verified: `books.id` 1 =
 
 | rule | groups | share |
 |---|---|---|
-| daif | 5,352 | 0.264 |
-| sahih_li_dhatihi | 5,229 | 0.258 |
-| fatal | 3,971 | 0.196 |
-| hasan_li_ghayrihi | 3,159 | 0.156 |
-| hasan_li_dhatihi | 1,191 | 0.059 |
-| not_repairable | 809 | 0.040 |
-| sahih_li_ghayrihi | 571 | 0.028 |
+| sahih_li_dhatihi | 5,469 | 0.270 |
+| daif | 5,441 | 0.268 |
+| fatal | 3,977 | 0.196 |
+| hasan_li_ghayrihi | 2,492 | 0.123 |
+| hasan_li_dhatihi | 1,391 | 0.069 |
+| not_repairable | 1,127 | 0.056 |
+| sahih_li_ghayrihi | 385 | 0.019 |
 
-**Divergence class of the witness** (upgraded groups; the witness is an attested chain in 80.6% of them, else a route spliced from several chains):
+**Divergence class of the summary witness** (upgraded groups; the witness covering the topmost position, D41):
 
 | divergence | groups |
 |---|---|
-| shahid | 1,581 |
-| mutabaa_tamma | 1,096 |
-| mutabaa_qasira | 991 |
-| wasl | 62 |
+| shahid | 1,937 |
+| mutabaa_tamma | 561 |
+| mutabaa_qasira | 287 |
+| wasl | 92 |
 
 **By the weakest narrator's Taqrīb level** in the group's v2 chain (`ibn_hajar`):
 
 | weakest_level | groups | agree_v1 | agree_v2_ibn_hajar |
 |---|---|---|---|
-| 1 | 166 | 0.958 | 0.952 |
-| 2 | 1,380 | 0.958 | 0.932 |
-| 3 | 4,843 | 0.944 | 0.879 |
-| 4 | 2,456 | 0.905 | 0.708 |
-| 5 | 1,102 | 0.207 | 0.597 |
-| 6 | 1,250 | 0.167 | 0.568 |
-| 7 | 1,910 | 0.511 | 0.581 |
-| 8 | 2,626 | 0.583 | 0.581 |
-| 9 | 472 | 0.576 | 0.566 |
+| 1 | 167 | 0.958 | 0.946 |
+| 2 | 1,508 | 0.946 | 0.934 |
+| 3 | 4,955 | 0.934 | 0.884 |
+| 4 | 2,447 | 0.899 | 0.721 |
+| 5 | 1,307 | 0.157 | 0.484 |
+| 6 | 1,364 | 0.127 | 0.445 |
+| 7 | 1,539 | 0.606 | 0.520 |
+| 8 | 2,418 | 0.615 | 0.552 |
+| 9 | 479 | 0.574 | 0.564 |
 | 10 | 1,829 | 0.825 | 0.818 |
 | 11 | 1,022 | 0.915 | 0.910 |
 | 12 | 481 | 0.983 | 0.983 |
-| unknown | 745 | 0.360 | 0.230 |
+| unknown | 766 | 0.351 | 0.244 |
 
 **Narrators most often weakest in the disagreeing groups** (`ibn_hajar`):
 
 | narrator | groups_disagreeing |
 |---|---|
-| اسم مبهم (r1131) | 626 |
-| عبد الله بن لهيعة الحضرمي (r5033) | 86 |
-| ابن إسحاق القرشي (r6811) | 78 |
-| الحسن البصري (r1239) | 53 |
-| محمد بن مسلم القرشي (r7270) | 41 |
+| اسم مبهم (r1131) | 631 |
+| ابن إسحاق القرشي (r6811) | 98 |
+| عبد الله بن لهيعة الحضرمي (r5033) | 93 |
+| الحسن البصري (r1239) | 67 |
+| بقية بن الوليد الكلاعي (r1919) | 62 |
+| أبو إسحاق السبيعي (r6155) | 50 |
+| سماك بن حرب الذهلي (r3638) | 47 |
+| الحجاج بن أرطاة النخعي (r2288) | 44 |
 | مسلم بن أبي كريمة التميمي (r31544) | 40 |
-| أبو إسحاق السبيعي (r6155) | 38 |
+| محمد بن مسلم القرشي (r7270) | 38 |
+| الليث بن أبي سليم القرشي (r6638) | 37 |
+| علي بن زيد القرشي (r5770) | 36 |
 | إبراهيم بن أبي يحيى الأسلمي (r870) | 35 |
-| بقية بن الوليد الكلاعي (r1919) | 34 |
-| الليث بن أبي سليم القرشي (r6638) | 34 |
-| علي بن زيد القرشي (r5770) | 30 |
-| محمد بن خازم الأعمى (r6936) | 28 |
-| حماد بن سلمة البصري (r2492) | 28 |
-| أحمد بن عبد الجبار العطاردي (r9901) | 26 |
-| الحجاج بن أرطاة النخعي (r2288) | 26 |
+| إسماعيل بن عياش العنسي (r1050) | 34 |
+| ابن جريج المكي (r5223) | 32 |
 
-**Downgrades.** 372 groups that v1 grades 0 get a higher v2 code under `ibn_hajar` (362 of them recorded 0 by the source). The defects of their v2 chain: mudallis_muanan 271; level_7,mudallis_muanan 33; level_6,mudallis_muanan 18; level_5,mudallis_muanan 16; mursal 9; level_8,mudallis_muanan 6; level_8 4; level_7 3; level_7,level_8,mudallis_muanan 2; level_6 2; level_5,level_6,mudallis_muanan 2; level_5 2; level_5,level_7,mudallis_muanan 1; level_7,mudallis_muanan,mursal 1; level_6,level_8 1; level_6,level_7,level_8,mursal 1. A mudallis's muʿanʿan link is a light defect by the brief's decision, and a light defect, even corroborated, reaches ḥasan li-ghayrihi at most. The source's binary `has_tadlis` does not carry Ibn Hajar's five tiers of mudallisūn, whose first two tiers' ʿan is accepted (DECISIONS.md D36).
+**Downgrades.** 231 groups that v1 grades 0 get a higher v2 code under `ibn_hajar` (223 of them recorded 0 by the source). The defects of their v2 chain: mudallis_muanan_tier_3 186; mursal 11; none 8; level_5 5; level_8 5; mudallis_muanan_tier_4 4; level_6 3; level_8,mursal 2; level_5,mudallis_muanan_tier_3 1; level_5,mursal 1; level_7 1; level_7,mursal 1.
 
 ## 12. Number class and qarāʾin
 
-Width on the on-path graph at `all`, Taqrīb layers 1–12, compiler roles excluded; tawatur_n = 10. `no route`: no on-path narrator in layers 1–12 (κ_all = 0).
+`number_class` on κ_all (structure version 4, D60): 1 gharīb, 2 ʿazīz, 3–9 mashhūr, ≥ 10 mutawātir by count; gharīb muṭlaq when a companion is among the cut vertices. `no route`: κ_all = 0.
 
 | number_class | groups | share |
 |---|---|---|
-| gharib_mutlaq | 9,434 | 0.465 |
-| gharib_nisbi | 6,121 | 0.302 |
-| aziz | 885 | 0.044 |
-| mashhur | 791 | 0.039 |
-| mutawatir_count | 93 | 0.005 |
+| gharib_mutlaq | 10,425 | 0.514 |
+| gharib_nisbi | 750 | 0.037 |
+| aziz | 2,679 | 0.132 |
+| mashhur | 2,965 | 0.146 |
+| mutawatir_count | 505 | 0.025 |
 | no route | 2,958 | 0.146 |
 
-**Width reading (rows) against the κ reading (columns)**:
+**The topmost cut vertex of the gharīb groups**: companion 10,425; narrator 736; compiler 14 (*compiler*: every route ends in one compiler's books, so the tafarrud is his).
 
-| width \ κ | aziz | gharib | mashhur | mutawatir_count | no route |
-|---|---|---|---|---|---|
-| aziz | 173 | 20 | 647 | 45 | 0 |
-| gharib_mutlaq | 0 | 9,434 | 0 | 0 | 0 |
-| gharib_nisbi | 2,502 | 1,720 | 1,870 | 29 | 0 |
-| mashhur | 4 | 1 | 446 | 340 | 0 |
-| mutawatir_count | 0 | 0 | 2 | 91 | 0 |
-| no route | 0 | 0 | 0 | 0 | 2,958 |
+**The width reading (rows, diagnostic, `number_class_width`) against the κ reading (columns)**:
 
-The readings differ in 31.5% of groups. The width reading treats each Taqrīb layer as a cut, but routes skip layers (tabaka steps of 2–4 are normal on this scale, §8.5), so a layer is a cut only when every route has a narrator in it. 4,401 groups read gharīb by width while κ_all ≥ 2: the single narrator sits in a layer other routes jump over (group 273, إن الله لا يقبض العلم انتزاعا, is gharīb nisbī by width because Shaqīq is alone at layer 2, and mashhūr by κ). The converse (κ below the width class) is hidden sharing: the minimum cut mixes narrators of different layers.
+| width \ κ | aziz | gharib_mutlaq | gharib_nisbi | mashhur | mutawatir_count | no route |
+|---|---|---|---|---|---|---|
+| aziz | 177 | 15 | 5 | 651 | 45 | 0 |
+| gharib_mutlaq | 0 | 9,433 | 1 | 0 | 0 | 0 |
+| gharib_nisbi | 2,498 | 977 | 743 | 1,859 | 29 | 0 |
+| mashhur | 4 | 0 | 1 | 453 | 340 | 0 |
+| mutawatir_count | 0 | 0 | 0 | 2 | 91 | 0 |
+| no route | 0 | 0 | 0 | 0 | 0 | 2,958 |
+
+The readings differ in 31.5% of groups. The width reading treats each Taqrīb layer as a cut, but routes skip layers (tabaka steps of 2–4 are normal on this scale, §8.5), so a layer is a cut only when every route has a narrator in it: 4,386 groups read gharīb by width while κ_all ≥ 2. Tafarrud is one man through whom every route passes, which is a cut vertex; hence the κ reading is the class.
 
 
 **Sensitivity to tawatur_n** (the numbers the books report as proposed):
 
-| tawatur_n | mutawatir_count (width) | mutawatir_count (κ_all) | mashhur (width) |
+| tawatur_n | mutawatir_count (κ_all) | mashhur (κ_all) | mutawatir_count (width) |
 |---|---|---|---|
-| 4 | 562 | 2,299 | 322 |
-| 5 | 397 | 1,662 | 487 |
-| 10 | 93 | 505 | 791 |
-| 12 | 61 | 330 | 823 |
-| 40 | 4 | 4 | 880 |
-| 70 | 0 | 0 | 884 |
+| 4 | 2,299 | 1,171 | 563 |
+| 5 | 1,662 | 1,808 | 399 |
+| 10 | 505 | 2,965 | 93 |
+| 12 | 330 | 3,140 | 61 |
+| 40 | 4 | 3,466 | 4 |
+| 70 | 0 | 3,470 | 0 |
 
-**Qarāʾin flags** (reported, never combined; knowledge yield is not computed):
+**Qarāʾin flags** (reported, never combined; knowledge yield is not computed; `huffaz_chain` now excludes gharīb by κ):
 
 | flag | groups | share | recorded 0 (صحيح) among them |
 |---|---|---|---|
 | in_sahihayn | 2,690 | 0.133 | 0.935 |
 | in_sahih_class | 6,756 | 0.333 | 0.649 |
 | sound_distinct_routes | 1,557 | 0.077 | 0.978 |
-| huffaz_chain | 733 | 0.036 | 1 |
+| huffaz_chain | 1,185 | 0.058 | 0.992 |
 
-All three flags together: 537 groups.
+All three flags together: 657 groups.
 
 ## Appendix A. Full `rawis.rank` vocabulary
 
@@ -1312,4 +1473,4 @@ All three flags together: 537 groups.
 | 12 | وضاع رافضي | 1 | 1 |
 | 12 | يكذب ويضع الحديث | 1 | 1 |
 
-_Audit computed in 2.7s._
+_Audit computed in 9.1s._

@@ -1,0 +1,74 @@
+# Cross-group witness candidates read to set derive.corroboration.shahid_min_overlap
+# (`python -m itibar.siblings inspect` regenerates reports/shahid_inspection.md from the
+# two deterministic samples and these labels; DECISIONS D58).
+#
+# Each pair: a chain with light defects only and no witness in its own meaning group,
+# and an attested light-or-better chain of a sibling group that avoids its positions to
+# cover. Labels, read against Ibn Hajar's definition of the shahid («يشبهه في اللفظ
+# والمعنى أو في المعنى فقط», Nuzhat al-Nazar):
+#   same      the witness carries the chain's report, in wording or in meaning
+#   partial   the witness carries one component of the chain's matn (a clause, one
+#             item of a list) or the same topic with different content
+#   different neither
+# Sample 1: 30 pairs, three per decile of the idf-weighted overlap coefficient.
+# Sample 2: 20 pairs, four per band of 0.06 of the idf-weighted Dice coefficient between
+# 0.20 and 0.50 (bands fixed before reading).
+sample_1:
+  seed: 20261109
+  measure: coefficient
+  pairs:
+    "425607-273220": {label: different, note: "Qur'an recited with i'rab vs. wealth sent down for prayer and zakat"}
+    "425607-190046": {label: different, note: "reciting the Qur'an vs. prayer times"}
+    "61972-436013": {label: different, note: "kinship of the Prophet vs. i'tikaf in the last ten nights"}
+    "377598-326748": {label: different, note: "grieving over the world vs. a reading of Malik yawm al-din"}
+    "248685-510259": {label: different, note: "khutbat al-haja verses vs. 'some poetry is wisdom'"}
+    "428358-5615": {label: different, note: "the muqtasimun (tafsir) vs. Ibn Mas'ud's reading of al-Layl"}
+    "444002-348835": {label: different, note: "fasting and the Qur'an intercede vs. adorn the Qur'an with your voices"}
+    "448627-393746": {label: different, note: "a detailed list of campaigns vs. 'he fought nineteen campaigns and made one hajj'"}
+    "450800-67658": {label: different, note: "the Prophet described in the Torah vs. 'I am as My servant thinks of Me'"}
+    "340986-96722": {label: different, note: "turning his face from the new moon vs. the Bedouin who saw the crescent"}
+    "180354-410585": {label: partial, note: "Quraysh have the right to rule while they keep to the truth vs. rule stays in Quraysh"}
+    "26962-3302": {label: partial, note: "a long du'a vs. another du'a; shared: refuge from the punishment of the grave"}
+    "248182-259889": {label: partial, note: "quiet recitation of named suras in zuhr and 'asr vs. he recited in every rak'a of zuhr and 'asr"}
+    "508061-517155": {label: different, note: "Abu Bakr and 'Umar like Harun to Musa vs. the wolf and the cow"}
+    "428358-445447": {label: different, note: "the muqtasimun (tafsir) vs. 'his character was the Qur'an'"}
+    "257327-273656": {label: same, note: "he shook women's hands with a cloth on his hand / from under a cloth"}
+    "26962-206122": {label: different, note: "a du'a vs. Surat al-Mulk saves from the punishment of the grave"}
+    "566600-31230": {label: same, note: "the dying Jewish boy whom the Prophet visited, told by another companion"}
+    "61972-486331": {label: partial, note: "kinship of the Prophet (with 'I precede you at the Basin') vs. 'I precede you at the Basin'"}
+    "396739-396737": {label: partial, note: "'do not begin with your mouth' plus a wudu' description vs. a wudu' description"}
+    "26962-7306": {label: partial, note: "a long du'a vs. 'he sought refuge from the punishment of the grave'"}
+    "358545-216504": {label: partial, note: "tafsir on the Throne over the water vs. 'God was and there was nothing besides Him, and His Throne was on the water'"}
+    "358545-296976": {label: partial, note: "as above, another wording"}
+    "448627-267375": {label: different, note: "a detailed list of campaigns vs. 'he fought nineteen campaigns'"}
+    "216442-195517": {label: partial, note: "the four phrases weigh more than Uhud vs. 'say: subhan Allah, al-hamdu li-llah ...'"}
+    "257327-486602": {label: different, note: "he shook women's hands through a cloth vs. 'he did not shake women's hands' (token overlap cannot see the negation)"}
+    "448627-320271": {label: different, note: "a detailed list of campaigns vs. 'I fought sixteen campaigns with him'"}
+    "412039-113255": {label: different, note: "the woman assaulted at dawn vs. 'take him and stone him' (a phrase of other stories)"}
+    "378389-438815": {label: same, note: "'the best of you are those who, when seen, God is remembered' (the wording in fragment)"}
+    "216442-147807": {label: partial, note: "the four phrases weigh more than Uhud vs. the four phrases"}
+sample_2:
+  seed: 20261110
+  measure: dice
+  range: [0.2, 0.5]
+  pairs:
+    "430215-213688": {label: different, note: "a tafsir of 3:118 (the Khawarij) vs. a tafsir of 5:93"}
+    "144714-352483": {label: partial, note: "a tahlil formula with its reward vs. whoever dies testifying to tawhid enters Paradise"}
+    "426568-308535": {label: different, note: "asking for the kingdoms of Persia and Rome (3:26) vs. the tahlil and its reward"}
+    "45992-56738": {label: same, note: "the Prophet's description: opening blind eyes, deaf ears and sealed hearts (in the Torah, in the second)"}
+    "166426-123751": {label: partial, note: "his fast on named days vs. 'he fasted three days a month, any days'"}
+    "464350-69740": {label: partial, note: "a list of prohibitions vs. one of its items (beasts with fangs)"}
+    "554034-551026": {label: same, note: "the people of Paradise are those whose ears are filled with praise"}
+    "454356-390081": {label: different, note: "leading the prayer leaning on Abu Bakr vs. sitting in prayer leaning on one's hand"}
+    "87497-309121": {label: partial, note: "'do not begin with your mouth' plus a wudu' description vs. a wudu' description"}
+    "87497-435193": {label: partial, note: "as above, another description"}
+    "153342-440584": {label: same, note: "choose for your offspring; avoid this colour, it is a deformed one"}
+    "430215-378872": {label: different, note: "a tafsir of 3:118 (the Khawarij) vs. a tafsir of 3:7"}
+    "464350-156314": {label: partial, note: "a list of prohibitions vs. two of its items (fangs, talons)"}
+    "390389-13409": {label: partial, note: "his night prayer and his fasting vs. his fasting only"}
+    "464350-440675": {label: partial, note: "a list of prohibitions vs. two of its items"}
+    "460136-398454": {label: same, note: "he entered the House and prayed in it"}
+    "464350-115229": {label: partial, note: "a list of prohibitions vs. two of its items"}
+    "166426-36634": {label: same, note: "three days a month: the first Monday, then Thursday"}
+    "464350-52278": {label: partial, note: "a list of prohibitions vs. two of its items"}
+    "464350-115226": {label: partial, note: "a list of prohibitions vs. two of its items"}

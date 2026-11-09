@@ -5,6 +5,10 @@ Per narrator, over every meaning group's bundle: groups on path; groups where he
 is a cut vertex at `all` and at `thiqa_up`; groups where he is a common link;
 groups where he lies on a route that bypasses the group's common links; and, for
 a mudallis, the share of his incoming links (as the student) that are mu'an'an.
+A group where he appears only as a book transmitter (bundle.book_transmitters) is
+not counted for him, except in `groups_book_transmitter_role`; compiler roles are
+per edge (structure.compiler_terminal), so a compiler's narrator-role branches count
+for partial common links and common links.
 Collection classes for the distributions: groups with a chain in al-Bukhari or
 Muslim (in_sahihayn), with a chain in a tasnif_no = 1 book (in_sahih_class), all.
 """
@@ -31,15 +35,19 @@ def build(con=None) -> pd.DataFrame:
     rawis = con.sql("SELECT id, name, nickname, death_year, birth_year, tabaka, rank_no, has_tadlis, is_stub FROM rawis").df()
     d.register("rawis", rawis)
     q = """
-    WITH nn AS (SELECT group_id, node, rawi_id, on_path, cut_vertex, common_link, in_bypass, pcl_k2, compiler_role FROM n
+    WITH n0 AS (SELECT group_id, node, rawi_id, on_path, cut_vertex, common_link, in_bypass, pcl_k2, compiler_role,
+                       coalesce(book_transmitter_role, false) AS bt, coalesce(narrator_role, true) AS nr FROM n
                 WHERE kind = 'narrator'),
+         btg AS (SELECT rawi_id, count(DISTINCT group_id) AS groups_book_transmitter_role FROM n0
+                 WHERE on_path AND bt AND NOT nr GROUP BY 1),
+         nn AS (SELECT * FROM n0 WHERE nr OR NOT bt),
          thq AS (SELECT group_id, unnest(cut_vertices_thiqa_up) AS node FROM r WHERE status = 'ok'),
          agg AS (SELECT rawi_id,
                         count(DISTINCT group_id) FILTER (WHERE on_path) AS groups_on_path,
                         count(DISTINCT group_id) FILTER (WHERE cut_vertex) AS groups_cut_all,
                         count(DISTINCT group_id) FILTER (WHERE common_link) AS groups_common_link,
                         count(DISTINCT group_id) FILTER (WHERE pcl_k2) AS groups_pcl_k2,
-                        count(DISTINCT group_id) FILTER (WHERE on_path AND compiler_role) AS groups_compiler_role,
+                        count(DISTINCT group_id) FILTER (WHERE on_path AND compiler_role AND NOT bt) AS groups_compiler_role,
                         count(DISTINCT group_id) FILTER (WHERE in_bypass) AS groups_in_bypass,
                         count(DISTINCT group_id) AS groups_in_bundle
                  FROM nn GROUP BY 1),
@@ -54,11 +62,13 @@ def build(con=None) -> pd.DataFrame:
            w.has_tadlis::BOOLEAN AS mudallis, w.is_stub::BOOLEAN AS stub,
            a.groups_in_bundle, a.groups_on_path, a.groups_cut_all, coalesce(c.groups_cut_thiqa_up, 0) AS groups_cut_thiqa_up,
            a.groups_common_link, a.groups_pcl_k2, a.groups_in_bypass, a.groups_compiler_role,
+           coalesce(b.groups_book_transmitter_role, 0) AS groups_book_transmitter_role,
            coalesce(i.incoming_links, 0) AS incoming_links, coalesce(i.incoming_muanan, 0) AS incoming_muanan,
            coalesce(i.incoming_word_known, 0) AS incoming_word_known,
            CASE WHEN w.has_tadlis = 1 AND coalesce(i.incoming_word_known, 0) > 0
                 THEN i.incoming_muanan / i.incoming_word_known END AS muanan_share
     FROM agg a LEFT JOIN rawis w ON w.id = a.rawi_id LEFT JOIN cth c USING (rawi_id) LEFT JOIN inc i USING (rawi_id)
+         LEFT JOIN btg b USING (rawi_id)
     ORDER BY a.groups_common_link DESC, a.groups_on_path DESC, a.rawi_id"""
     df = d.sql(q).df()
     out = paths.OUT_DIR / "narrators.parquet"
@@ -161,16 +171,20 @@ def report(df: pd.DataFrame | None = None, con=None) -> str:
     mrow = df[df["rawi_id"] == SANITY["Malik"]]
     if not mrow.empty:
         m = mrow.iloc[0]
-        L += [(f"Mālik is the exception: he is a partial common link in only {int(m['groups_pcl_k2']):,} of his "
-               f"{int(m['groups_on_path']):,} on-path groups, because in {int(m['groups_compiler_role']):,} of them "
-               "his node is also"),
-              "the compiler of the *Muwaṭṭaʾ* (his own book sits in the group), and D14 makes a narrator acting as a",
-              "compiler a terminal: never a single strand, never a partial common link. The same holds for other",
-              ("compiler-narrators (ʿAbd al-Razzāq: compiler role in "
-               f"{int(df.loc[df['rawi_id'] == 4533, 'groups_compiler_role'].sum()):,} of "
-               f"{int(df.loc[df['rawi_id'] == 4533, 'groups_on_path'].sum()):,} groups). Counting a compiler's narrator-role"),
-              "branches is the alternative recorded in DECISIONS.md D51; it would change partial common links across",
-              "the corpus and is left for a later structure version.", ""]
+        L += [("Compiler roles are per edge (structure version 4, DECISIONS D61): a narrator who compiled a book in the "
+               "group is a terminal"),
+              "only on his edge into that book, and his edges as a teacher count like anyone's. Mālik is a partial common",
+              (f"link in {int(m['groups_pcl_k2']):,} of his {int(m['groups_on_path']):,} on-path groups and the compiler of "
+               f"the *Muwaṭṭaʾ* in {int(m['groups_compiler_role']):,} of them;"),
+              "his own book is one qualifying branch and each student who carries the report into another book is another.",
+              ("Structure version 3 made his whole node terminal whenever the *Muwaṭṭaʾ* was in the group, which put him "
+               "131st (D51, superseded)."), ""]
+    bt = df[df["groups_book_transmitter_role"] > 0].sort_values("groups_book_transmitter_role", ascending=False)
+    if len(bt):
+        L += ["**Book transmitters** (`bundle.book_transmitters`, audit §11.5) are left out of these counts in the groups "
+              "where they appear only in that role: "
+              + "; ".join(f"{r.nickname} (r{r.rawi_id}) {int(r.groups_book_transmitter_role):,} groups"
+                          for r in bt.itertuples(index=False)) + ".", ""]
     # distributions
     L += ["## Death years and tabaka of common links, by collection class", "",
           "Counted over (group, common link) pairs; death years AH as recorded in `rawis.death_year`.", ""]

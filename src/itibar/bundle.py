@@ -15,6 +15,13 @@ Node ids (strings, stable across runs):
 
 Edges run teacher -> student: sanad_rawis pos+1 -> pos; then pos 0 -> compiler
 -> book; and PROPHET -> last narrator only when that narrator is a companion.
+
+Book roles, per chain occurrence: the book's compiler at pos 0; its book transmitter
+at pos 0 (books.transmitter_rawi) and, with him, the compiler at pos 1. A narrator in
+a role is exempt from grade thresholds on his role edges (into the book: his compiler
+node, or the transmitter) and is excluded from the chain grade there; his other
+occurrences are ordinary narrator occurrences (`role_edges`, `role_in`, `nr_in`,
+`nr_out` record which is which, for single strands and partial common links).
 """
 
 from __future__ import annotations
@@ -48,6 +55,18 @@ class ChainInfo:
     self_loops: int
     compiler_at_pos0: bool
     connected: bool                  # companion end, no break marker: one unbroken PROPHET->book route
+    transmitter_at_pos0: bool = False   # pos 0 is the book's transmitter
+    compiler_pos: int | None = None     # position of the book's compiler in the chain (0, 1 after a transmitter)
+
+    @property
+    def role_positions(self) -> tuple[int, ...]:
+        """Positions in a book role: excluded from the chain grade, exempt from thresholds."""
+        out = []
+        if self.compiler_at_pos0 or self.transmitter_at_pos0:
+            out.append(0)
+        if self.compiler_pos == 1:
+            out.append(1)
+        return tuple(out)
 
 
 @dataclass
@@ -61,13 +80,23 @@ class Bundle:
     succ: dict[str, set[str]] = field(default_factory=lambda: defaultdict(set))
     pred: dict[str, set[str]] = field(default_factory=lambda: defaultdict(set))
     chains: list[ChainInfo] = field(default_factory=list)
-    compiler_rawi_nodes: set[str] = field(default_factory=set)  # r-nodes at pos 0 that compiled that book
+    compiler_rawi_nodes: set[str] = field(default_factory=set)  # r-nodes that compiled a book of the group (pos 0, or pos 1 after its transmitter)
+    transmitter_nodes: set[str] = field(default_factory=set)    # r-nodes at pos 0 as a book's transmitter
+    role_edges: set[tuple[str, str]] = field(default_factory=set)   # (u, v) where u is in a book role: his edge into the book
+    role_in: set[tuple[str, str]] = field(default_factory=set)      # (u, v) where v is in a book role in that occurrence
+    nr_in: dict[str, set[str]] = field(default_factory=lambda: defaultdict(set))   # narrator-role in-neighbours
+    nr_out: dict[str, set[str]] = field(default_factory=lambda: defaultdict(set))  # narrator-role out-neighbours
+    nr_nodes: set[str] = field(default_factory=set)             # nodes with at least one narrator-role occurrence
     self_loops: int = 0
 
     @property
+    def role_nodes(self) -> set[str]:
+        return self.compiler_rawi_nodes | self.transmitter_nodes
+
+    @property
     def exempt(self) -> set[str]:
-        """Nodes kept at every threshold: compilers in their compiler role."""
-        return {n for n, k in self.kind.items() if k == "compiler"} | self.compiler_rawi_nodes
+        """Nodes kept at every threshold: compilers and book transmitters in their role."""
+        return {n for n, k in self.kind.items() if k == "compiler"} | self.role_nodes
 
     @property
     def terminals(self) -> set[str]:
@@ -114,6 +143,24 @@ def build(group_id: int, chains: list[Chain], corpus: Corpus) -> Bundle:
                 if rid < len(nar.is_stub) and nar.is_stub[rid]:
                     has_stub = True
             nodes.append(nid)
+        # book roles in this chain
+        crawi = books.compiler_rawi.get(ch.book_id)
+        trawi = books.transmitter_rawi.get(ch.book_id)
+        transmitter_at_pos0 = trawi is not None and r[0] == trawi
+        compiler_at_pos0 = (not transmitter_at_pos0) and crawi == r[0]
+        compiler_pos = 0 if compiler_at_pos0 else (1 if transmitter_at_pos0 and n > 1 and r[1] == crawi else None)
+        role_pos = {0} if (compiler_at_pos0 or transmitter_at_pos0) else set()
+        if compiler_pos == 1:
+            role_pos.add(1)
+        if compiler_at_pos0:
+            B.compiler_rawi_nodes.add(nodes[0])
+        if transmitter_at_pos0:
+            B.transmitter_nodes.add(nodes[0])
+        if compiler_pos == 1:
+            B.compiler_rawi_nodes.add(nodes[1])
+        for p in range(n):
+            if p not in role_pos:
+                B.nr_nodes.add(nodes[p])
         loops = 0
         for p in range(n - 1):
             u, v = nodes[p + 1], nodes[p]
@@ -122,6 +169,14 @@ def build(group_id: int, chains: list[Chain], corpus: Corpus) -> Bundle:
                 continue
             w = ch.words.get(p + 1)
             B.add_edge(u, v, (ch.sanad_id, ch.book_id) + (w if w else (None, None, None)))
+            if p in role_pos:
+                B.role_in.add((u, v))
+            else:
+                B.nr_in[v].add(u)
+            if p + 1 in role_pos:
+                B.role_edges.add((u, v))
+            else:
+                B.nr_out[u].add(v)
         B.self_loops += loops
         # bottom: pos 0 -> compiler -> book
         comp = f"c{books.author_no[ch.book_id]}"
@@ -130,10 +185,11 @@ def build(group_id: int, chains: list[Chain], corpus: Corpus) -> Bundle:
         bnode = f"b{ch.book_id}"
         B.kind[bnode] = "book"
         B.book[bnode] = ch.book_id
-        compiler_at_pos0 = books.compiler_rawi.get(ch.book_id) == r[0]
-        if compiler_at_pos0:
-            B.compiler_rawi_nodes.add(nodes[0])
         B.add_edge(nodes[0], comp, (ch.sanad_id, ch.book_id, None, None, None))
+        if 0 in role_pos:
+            B.role_edges.add((nodes[0], comp))
+        else:
+            B.nr_out[nodes[0]].add(comp)
         B.add_edge(comp, bnode, (ch.sanad_id, ch.book_id, None, None, None))
         # top: PROPHET -> companion
         last = r[-1]
@@ -141,10 +197,12 @@ def build(group_id: int, chains: list[Chain], corpus: Corpus) -> Bundle:
                      and bool(nar.is_companion[last]))
         if ends_comp:
             B.add_edge(PROPHET, nodes[-1], (ch.sanad_id, ch.book_id, None, None, None))
+            B.nr_in[nodes[-1]].add(PROPHET)
+            B.nr_out[PROPHET].add(nodes[-1])
         B.chains.append(ChainInfo(
             sanad_id=ch.sanad_id, hadith_id=ch.hadith_id, book_id=ch.book_id, nodes=nodes, rawis=r,
             ends_companion=ends_comp, gaps=gaps, has_mubham=has_mubham, has_stub=has_stub,
             self_loops=loops, compiler_at_pos0=compiler_at_pos0,
-            connected=ends_comp and not gaps,
+            connected=ends_comp and not gaps, transmitter_at_pos0=transmitter_at_pos0, compiler_pos=compiler_pos,
         ))
     return B

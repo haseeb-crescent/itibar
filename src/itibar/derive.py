@@ -1,7 +1,8 @@
 """Derived grade v1: a mechanical reading of the classical narrator verdicts.
 
-Chain grade  = minimum narrator ordinal over the chain, excluding the book's
-               compiler when it sits at pos 0 (break markers are not narrators).
+Chain grade  = minimum narrator ordinal over the chain, excluding the positions in a
+               book role: the book's compiler at pos 0, or its book transmitter at
+               pos 0 and the compiler at pos 1 (break markers are not narrators).
 Chain code   = that ordinal's code in the source's matn_no scale; a chain that
                does not reach PROPHET through a companion, or contains a break
                marker, cannot be placed above `discontinuity_cap_code`.
@@ -38,14 +39,15 @@ class ChainGrade:
     agree_derived: bool
     disagreement_class: str | None
     compiler_rank_no: int | None
+    book_role_positions: tuple[int, ...] = ()
 
 
 def grade_chain(ch: Chain, info: ChainInfo, corpus: Corpus) -> ChainGrade:
     cfg = config.load("structure")["derive"]
     nar, scale = corpus.narrators, corpus.scale
     r = ch.rawis
-    excl0 = bool(cfg["exclude_compiler"]) and info.compiler_at_pos0
-    graded = [p for p in range(len(r)) if not (p == 0 and excl0) and not nar.is_gap(r[p])]
+    excl = set(info.role_positions) if bool(cfg["exclude_compiler"]) else set()
+    graded = [p for p in range(len(r)) if p not in excl and not nar.is_gap(r[p])]
     ords = [int(nar.ordinal[r[p]]) for p in graded]
     ordinal = min(ords) if ords else 0
     weakest = [p for p, o in zip(graded, ords) if o == ordinal]
@@ -57,16 +59,19 @@ def grade_chain(ch: Chain, info: ChainInfo, corpus: Corpus) -> ChainGrade:
         code, capped = int(cap), True
     rn = [int(nar.rank_no[x]) for x in r]
     full = max(rn)
-    der_pos = [p for p in range(len(r)) if not (p == 0 and excl0)]
+    der_pos = [p for p in range(len(r)) if p not in excl]
     derived_rn = max(rn[p] for p in der_pos) if der_pos else full
     agree_full = ch.max_rank is not None and full == ch.max_rank
     agree_derived = ch.max_rank is not None and derived_rn == ch.max_rank
+    role_rn = max((rn[p] for p in excl), default=None)
     cls = None
     if not agree_derived:
         if ch.max_rank is None:
             cls = "max_rank_missing"
-        elif excl0 and rn[0] == ch.max_rank and rn[0] > derived_rn:
+        elif excl == {0} and info.compiler_at_pos0 and rn[0] == ch.max_rank and rn[0] > derived_rn:
             cls = "compiler_strictly_weakest"
+        elif excl and role_rn == ch.max_rank and role_rn > derived_rn:
+            cls = "book_role_strictly_weakest"
         elif not agree_full:
             cls = "source_disagrees_with_its_own_rows"
         else:
@@ -76,7 +81,9 @@ def grade_chain(ch: Chain, info: ChainInfo, corpus: Corpus) -> ChainGrade:
         code_raw=code_raw, code=code, capped=capped, continuous=continuous,
         weakest_rank_no_full=full, weakest_rank_no_derived=derived_rn, max_rank=ch.max_rank,
         agree_full=agree_full, agree_derived=agree_derived, disagreement_class=cls,
-        compiler_rank_no=rn[0] if excl0 else None,
+        compiler_rank_no=(rn[info.compiler_pos] if info.compiler_pos is not None and info.compiler_pos in excl
+                          else (rn[0] if 0 in excl else None)),
+        book_role_positions=tuple(sorted(excl)),
     )
 
 
@@ -143,6 +150,8 @@ def receipt(B: Bundle, corpus: Corpus, chains: list[Chain], cgrades: list[ChainG
         "check": "chain grade",
         "rule": ("minimum narrator ordinal over the chain"
                  + (", compiler at pos 0 excluded" if info.compiler_at_pos0 and cfg["exclude_compiler"] else "")
+                 + (", book transmitter at pos 0 excluded" if info.transmitter_at_pos0 and cfg["exclude_compiler"] else "")
+                 + (", compiler at pos 1 excluded" if info.compiler_pos == 1 and cfg["exclude_compiler"] else "")
                  + "; ordinal = 13 - rawis.rank_no; undescribed/unnamed = 0; break markers are not narrators"),
         "data": {"narrators": narrators, "weakest_positions": best.weakest_positions},
         "result": f"ordinal {best.ordinal} ({scale.name_of_ordinal(best.ordinal)})",

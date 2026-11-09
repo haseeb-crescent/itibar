@@ -73,7 +73,7 @@ def evaluate(entry: dict, con=None, corpus: load.Corpus | None = None) -> Result
     kept = [c for c in chains if c.sanad_id not in listed]
     mg = con.sql(f"SELECT * FROM meaning_groups WHERE id = {gid}").df()
     mgd = mg.iloc[0].to_dict() if len(mg) else {}
-    out = pipeline.analyse_group(gid, kept, corpus, mgd)
+    out = pipeline.analyse_group(gid, kept, corpus, mgd, sibling_index_for(gid, kept, con, corpus))
     rec = out["record"]
     if rec.get("status") != "ok":
         res.failures.append(f"no analysable chains in scope (status {rec.get('status')})")
@@ -135,7 +135,7 @@ def evaluate(entry: dict, con=None, corpus: load.Corpus | None = None) -> Result
         if d != v:
             F.append(f"death_year({node}) = {d}, expected {v}")
     # ---- bucket 2: number class, qara'in, derived grade v2, lists
-    for k in ("number_class", "number_class_kappa", "in_sahihayn", "in_sahih_class", "huffaz_chain",
+    for k in ("number_class", "number_class_width", "in_sahihayn", "in_sahih_class", "huffaz_chain",
               "sound_distinct_routes"):
         if f"{k}_eq" in exp and rec.get(k) != exp[f"{k}_eq"]:
             F.append(f"{k} = {rec.get(k)}, expected {exp[f'{k}_eq']}")
@@ -182,10 +182,31 @@ def evaluate(entry: dict, con=None, corpus: load.Corpus | None = None) -> Result
             if w and (len(weak) != 1 or f"r{weak[0]}" != w["node"]
                       or int(corpus.narrators.rank_no[weak[0]]) != int(w["level"])):
                 F.append(f"chain_v2 weakest {chain_obs['weakest']} levels {chain_obs['weakest_level']}, expected {w}")
-            for rs in ruleset_names():
+            for rs in ruleset_names() + [k for k in cv if k.startswith("alt_")]:
                 for k, v in (cv.get(rs) or {}).items():
                     if b.get(f"{k}_v2_{rs}") != v:
                         F.append(f"chain_v2 {k}_v2_{rs} = {b.get(f'{k}_v2_{rs}')}, expected {v}")
+    # one chain by sanad id: its v2 rule, defects, notes (defects_eq, notes_include, rule, code)
+    cc = exp.get("chain_check")
+    if cc:
+        row = next((r for r in out["chains"] if r["sanad_id"] == int(cc["sanad_id"])), None)
+        if row is None:
+            F.append(f"chain_check: sanad {cc['sanad_id']} not in scope")
+        else:
+            chain_obs = chain_obs or {}
+            chain_obs.update({"check_sanad": row["sanad_id"],
+                              **{f"{k}_{rs}": row.get(f"{k}_v2_{rs}") for rs in ruleset_names()
+                                 for k in ("rule", "code", "defects", "notes")}})
+            for rs in ruleset_names():
+                want = cc.get(rs) or {}
+                for k in ("rule", "code"):
+                    if k in want and row.get(f"{k}_v2_{rs}") != want[k]:
+                        F.append(f"chain_check {k}_v2_{rs} = {row.get(f'{k}_v2_{rs}')}, expected {want[k]}")
+                if "defects_eq" in want and list(row.get(f"defects_v2_{rs}") or []) != list(want["defects_eq"]):
+                    F.append(f"chain_check defects_v2_{rs} = {row.get(f'defects_v2_{rs}')}, expected {want['defects_eq']}")
+                miss = [x for x in want.get("notes_include") or [] if x not in list(row.get(f"notes_v2_{rs}") or [])]
+                if miss:
+                    F.append(f"chain_check notes_v2_{rs} {row.get(f'notes_v2_{rs}')} lack {miss}")
     lm = exp.get("list_match")
     if lm:
         import csv
@@ -205,12 +226,32 @@ def evaluate(entry: dict, con=None, corpus: load.Corpus | None = None) -> Result
                                "n_common_links", "n_cut_vertices")},
         "cut_vertices": list(rec["cut_vertices"]),
         "cut_vertices_thiqa_up": list(rec["cut_vertices_thiqa_up"]),
-        **{k: rec.get(k) for k in ("number_class", "number_class_kappa", "min_width", "in_sahihayn", "huffaz_chain")},
+        **{k: rec.get(k) for k in ("number_class", "number_class_width", "gharib_cut_kind", "min_width", "in_sahihayn",
+                                   "huffaz_chain")},
         "tafarrud_layers": list(rec.get("tafarrud_layers") or []),
         **{f"{k}_v2_{rs}": rec.get(f"{k}_v2_{rs}") for rs in ruleset_names() for k in ("code", "rule", "divergence")},
         "chain_v2": chain_obs,
     }
     return res
+
+
+_SIB_CACHE: dict = {}
+
+
+def sibling_index_for(gid: int, own: list, con, corpus):
+    """The sibling index the full run would give group `gid` (its sibling groups' chains
+    classified in their own groups), or None when no ruleset searches siblings."""
+    from itibar import corroborate, siblings
+    params = corroborate.rulesets()
+    if not corroborate.uses_siblings(params):
+        return None
+    sib = siblings.sibling_groups(con, [gid]).get(gid, ())
+    key = (gid, tuple(c.sanad_id for c in own))
+    if key not in _SIB_CACHE:
+        gc = load.chains_by_group(con, list(sib)) if sib else {}
+        gc[gid] = own
+        _SIB_CACHE[key] = pipeline.sibling_index(gc, [gid], corpus, params, con)
+    return _SIB_CACHE[key]
 
 
 def ruleset_names() -> list[str]:
@@ -221,7 +262,8 @@ def ruleset_names() -> list[str]:
 def whole_group(gid: int, con, corpus) -> dict:
     chains = load.chains_by_group(con, [gid]).get(gid, [])
     mg = con.sql(f"SELECT * FROM meaning_groups WHERE id = {gid}").df()
-    rec = pipeline.analyse_group(gid, chains, corpus, mg.iloc[0].to_dict())["record"]
+    rec = pipeline.analyse_group(gid, chains, corpus, mg.iloc[0].to_dict(),
+                                 sibling_index_for(gid, chains, con, corpus))["record"]
     return {k: rec.get(k) for k in ("n_chains", "kappa_all", "kappa_above_matruk", "kappa_saduq_up",
                                     "kappa_thiqa_up", "kappa_nocompat_all", "kappa_lower_all", "kappa_lower_source_all",
                                     "companions", "sahaba_qty")}
@@ -260,15 +302,18 @@ def report() -> tuple[str, bool]:
     lines += ["", "## Bucket-2 mechanisms (scoped values)", "",
               "Number class on Taqrīb layers 1–12 (width, and κ_all with the same cut points); derived grade v2 under",
               "both rulesets for the group's v2 chain; for chain-level entries, the selected chains' best chain.", "",
-              "| entry | number class | by κ | tafarrud layers | in Ṣaḥīḥayn | v2 ibn_hajar | v2 ibn_al_salah | chain-level |",
+              "| entry | number class (κ) | by width | tafarrud layers (width) | in Ṣaḥīḥayn | v2 ibn_hajar | v2 ibn_al_salah | chain-level |",
               "|---|---|---|---|---|---|---|---|"]
     for e in entries():
         o = obs_by.get(e["id"], {})
         cv = o.get("chain_v2") or {}
         chain = (f"sanad {cv['sanad_id']}: weakest {cv['weakest']} (level {cv['weakest_level']}); "
                  f"ibn_hajar {cv.get('rule_ibn_hajar')} → {cv.get('code_ibn_hajar')} ({cv.get('divergence_ibn_hajar')}); "
-                 f"ibn_al_salah {cv.get('rule_ibn_al_salah')} → {cv.get('code_ibn_al_salah')}") if cv else ""
-        lines.append(f"| {e['id']} | {o.get('number_class')} | {o.get('number_class_kappa')} | {o.get('tafarrud_layers')} | "
+                 f"ibn_al_salah {cv.get('rule_ibn_al_salah')} → {cv.get('code_ibn_al_salah')}") if cv.get("sanad_id") else ""
+        if cv.get("check_sanad"):
+            chain += (f" sanad {cv['check_sanad']}: ibn_hajar {cv.get('rule_ibn_hajar')}, defects {cv.get('defects_ibn_hajar')}, "
+                      f"notes {cv.get('notes_ibn_hajar')}")
+        lines.append(f"| {e['id']} | {o.get('number_class')} | {o.get('number_class_width')} | {o.get('tafarrud_layers')} | "
                      f"{o.get('in_sahihayn')} | {o.get('rule_v2_ibn_hajar')} → {o.get('code_v2_ibn_hajar')} | "
                      f"{o.get('rule_v2_ibn_al_salah')} → {o.get('code_v2_ibn_al_salah')} | {chain} |")
     lines += ["", "## Whole-group records", ""] + detail + [""]

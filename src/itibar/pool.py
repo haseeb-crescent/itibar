@@ -79,7 +79,7 @@ def analyse(group_ids: list[int], con=None, corpus: load.Corpus | None = None, l
         "min_width": S.min_width,
         "tafarrud_layers": S.tafarrud_layers,
         "number_class": S.number_class,
-        "number_class_kappa": S.number_class_kappa,
+        "number_class_width": S.number_class_width,
         "companions": len(comp_direct),
         "companions_chain_end": len(comp_end),
         "companion_ids": [int(v[1:]) for v in comp_direct],
@@ -115,10 +115,10 @@ def card(res: dict) -> str:
     for th in ("all", "above_matruk", "saduq_up", "thiqa_up"):
         L.append(f"| {th} | {res[f'kappa_{th}']} | {res[f'kappa_lower_{th}']} |")
     L.append("")
-    L.append(f"- number class (width, Taqrib layers 1–12): **{res['number_class']}** "
-             f"(min width {res['min_width']}, tafarrud layers {res['tafarrud_layers']}); "
-             f"by κ_all: **{res['number_class_kappa']}** (tawatur_n = {res['tawatur_n']})")
-    L.append("- width by layer (1–12, compiler roles excluded): "
+    L.append(f"- number class (κ_all): **{res['number_class']}** (tawatur_n = {res['tawatur_n']}); "
+             f"by width (Taqrib layers 1–12, diagnostic): {res['number_class_width']} "
+             f"(min width {res['min_width']}, tafarrud layers {res['tafarrud_layers']})")
+    L.append("- width by layer (1–12, narrator roles only): "
              + ", ".join(f"{k}: {v}" for k, v in res["width_number"].items()))
     if res.get("cut_vertex_names"):
         L.append("- cut vertices: " + " → ".join(str(x) for x in res["cut_vertex_names"]))

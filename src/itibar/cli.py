@@ -130,9 +130,10 @@ def show(gid: int, file=sys.stdout) -> None:
         p(f"   … {len(wp) - 16} more layers")
     p(f"   Taqrib layers 1–12: max width {rec['width_taqrib_max']}, min {rec['width_taqrib_min']}")
     p("")
-    p(f" number class (narrowest Taqrib layer 1–12, compiler roles excluded): {rec.get('number_class')} "
-      f"(min width {rec.get('min_width')}, tafarrud layers {list(rec.get('tafarrud_layers') or [])}); "
-      f"by κ_all: {rec.get('number_class_kappa')}"
+    p(f" number class (κ_all): {rec.get('number_class')}"
+      + (f" (topmost cut vertex: {rec.get('gharib_cut_kind')})" if rec.get("gharib_cut_kind") else "")
+      + f"; by width (narrowest Taqrib layer 1–12, diagnostic): {rec.get('number_class_width')} "
+      f"(min width {rec.get('min_width')}, tafarrud layers {list(rec.get('tafarrud_layers') or [])})"
       + ("   ← the two readings differ" if rec.get("number_class_disagree") else ""))
     p(f" qarāʾin (flags only; knowledge yield is not computed): in the Ṣaḥīḥayn {rec.get('in_sahihayn')}, "
       f"in a ṣaḥīḥ-class book {rec.get('in_sahih_class')}, ≥3 distinct ṣadūq+ routes {rec.get('sound_distinct_routes')}, "
@@ -161,8 +162,9 @@ def show(gid: int, file=sys.stdout) -> None:
         wit = rec.get(f"witness_sanad_v2_{rs}")
         p(f" derived grade v2 ({rs}): {rec.get(f'rule_v2_{rs}')} → code {code} ({hk.get(code, '')}) · chain "
           f"{rec.get(f'best_sanad_v2_{rs}')}"
-          + (f" · witness {'sanad ' + str(wit) if wit is not None else 'a spliced route'} ({rec.get(f'divergence_v2_{rs}')})"
-             if rec.get(f"divergence_v2_{rs}") else ""))
+          + (f" · witness {'sanad ' + str(wit) if wit is not None else 'a spliced route'} ({rec.get(f'divergence_v2_{rs}')}"
+             + (f", from group {rec.get(f'witness_group_v2_{rs}')}" if rec.get(f"witness_cross_group_v2_{rs}") else "")
+             + ")" if rec.get(f"divergence_v2_{rs}") else ""))
     alts = {k[len('code_v2_alt_'):]: v for k, v in rec.items() if k.startswith("code_v2_alt_")}
     if alts:
         p("   variants on ibn_hajar: " + ", ".join(f"{k} {v}" for k, v in alts.items()))

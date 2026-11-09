@@ -7,7 +7,7 @@ import pytest
 
 pytestmark = pytest.mark.gate
 
-DOCUMENTED_CLASSES = {"compiler_strictly_weakest"}
+DOCUMENTED_CLASSES = {"compiler_strictly_weakest", "book_role_strictly_weakest"}
 
 
 def test_weakest_link_matches_max_rank(chains_table):
@@ -30,6 +30,9 @@ def test_every_derived_disagreement_is_documented(chains_table):
     cw = bad[bad["disagreement_class"] == "compiler_strictly_weakest"]
     assert (cw["compiler_rank_no"] == cw["max_rank"]).all()
     assert (cw["weakest_rank_no_derived"] < cw["max_rank"]).all()
+    br = bad[bad["disagreement_class"] == "book_role_strictly_weakest"]
+    assert br["transmitter_at_pos0"].all()            # a book transmitter (and the compiler after him) excluded
+    assert (br["weakest_rank_no_derived"] < br["max_rank"]).all()
 
 
 def test_companion_count_within_upstream_band(records):
@@ -69,8 +72,8 @@ def test_kappa_lower_is_the_minimum_over_three_hypotheses(records):
         assert set(r[f"kappa_lower_source_{th}"]) <= {"unmerged", "merged", "nocompat"}, th
         nc = r[r[f"kappa_lower_source_{th}"] == "nocompat"]
         assert (nc[f"kappa_lower_{th}"] == nc[f"kappa_nocompat_{th}"]).all(), th
-    assert (records["structure_version"] == 3).all()
-    assert (records["derive_version"] == 2).all()
+    assert (records["structure_version"] == 4).all()
+    assert (records["derive_version"] == 3).all()
     # dropping only the years-incompatible links removes a subset of what nocompat drops
     for th in ("all", "above_matruk", "saduq_up", "thiqa_up"):
         assert (r[f"kappa_nocompat_{th}"] <= r[f"kappa_nocompat_years_{th}"]).all(), th
@@ -127,7 +130,7 @@ def test_outputs_issue_no_verdict_words(records):
     """itibar reports structure and derives grades mechanically; its own text
     never uses verdict words (source labels are quoted in Arabic)."""
     for col in ("receipt", "receipt_v2", "derived_level", "status", "rule_v2_ibn_hajar", "rule_v2_ibn_al_salah",
-                "divergence_v2_ibn_hajar", "number_class"):
+                "divergence_v2_ibn_hajar", "number_class", "number_class_width", "gharib_cut_kind"):
         vals = records[col].dropna().astype(str)
         hits = vals[vals.str.contains(VERDICT_WORDS)]
         assert hits.empty, (col, hits.head(3).tolist())
@@ -135,31 +138,24 @@ def test_outputs_issue_no_verdict_words(records):
     assert [s["check"] for s in rc][:3] == ["chains read", "best chain selection", "chain grade"]
 
 
-def test_v2_agreement_is_at_least_v1_under_both_rulesets(records):
-    """The corroborated grade must agree with the source's recorded group grade at
-    least as often as the best-single-chain grade, under every ruleset. Nothing is
-    tuned to make this pass (README, reports/audit.md section 11). A corpus-level
-    property: on the CI fixture (a few hundred sampled groups) a two-group swing
-    decides it, so it is enforced on the full corpus only."""
-    if len(records) < 20000:
-        pytest.skip(f"corpus-level gate; {len(records)} records is a sample (run on the full corpus)")
-    r = records[records["status"] == "ok"]
-    v1 = (r["derived_code"] == r["matn_no_group"]).mean()
-    for rs in ("ibn_hajar", "ibn_al_salah"):
-        v2 = (r[f"code_v2_{rs}"] == r["matn_no_group"]).mean()
-        assert v2 >= v1, (rs, round(v2, 4), round(v1, 4))
-
-
 def test_v2_rules_are_consistent(chains_table, records):
-    """Unrepairable and fatal chains keep their v1 code; an upgrade always names
-    its witness (an attested chain or a route) and its divergence class; codes
-    follow the rule."""
+    """Fatal chains keep their v1 code and unrepairable ones max(v1 code, 2); an upgrade
+    always names an attested witness chain and its divergence class, a witness from
+    another group is always a shahid; codes follow the rule; light defects and notes are
+    disjoint (an 'an accepted or covered is not a defect). No agreement gate: agreement
+    with the recorded grades is a reported result (reports/audit.md, section 11)."""
     t = chains_table
     for rs in ("ibn_hajar", "ibn_al_salah"):
-        kept = t[t[f"rule_v2_{rs}"].isin(["fatal", "not_repairable"])]
-        assert (kept[f"code_v2_{rs}"] == kept["chain_code"]).all(), rs
+        fatal = t[t[f"rule_v2_{rs}"] == "fatal"]
+        assert (fatal[f"code_v2_{rs}"] == fatal["chain_code"]).all(), rs
+        nr = t[t[f"rule_v2_{rs}"] == "not_repairable"]
+        assert (nr[f"code_v2_{rs}"] == nr["chain_code"].clip(lower=2)).all(), rs
         up = t[t[f"rule_v2_{rs}"].isin(["hasan_li_ghayrihi", "sahih_li_ghayrihi"])]
         assert up[f"divergence_v2_{rs}"].notna().all(), rs
+        assert up[f"witness_sanad_v2_{rs}"].notna().all(), rs        # derive.corroboration.witness: attested
+        cross = t[t[f"witness_group_v2_{rs}"].notna()]
+        assert (cross[f"divergence_v2_{rs}"] == "shahid").all(), rs
+        assert (cross["group_id"] != cross[f"witness_group_v2_{rs}"]).all(), rs
         codes = {"sahih_li_dhatihi": 0, "sahih_li_ghayrihi": 0, "hasan_li_dhatihi": 1, "hasan_li_ghayrihi": 1,
                  "daif": 2}
         for rule, code in codes.items():
@@ -169,18 +165,25 @@ def test_v2_rules_are_consistent(chains_table, records):
 
 
 def test_number_class_follows_its_definition(records):
-    """number_class is read off min_width with the configured cut points; gharib
-    splits by whether layer 1 is a tafarrud layer; the kappa reading uses kappa_all."""
+    """number_class is kappa_all with the configured cut points, gharib split by whether
+    a companion is among the cut vertices (gharib_cut_kind); number_class_width is read
+    off min_width, gharib split by whether layer 1 is a tafarrud layer."""
+    import math
+
     from itibar import structure
     N = structure.tawatur_n()
     r = records[records["status"] == "ok"]
-    for mw, taf, nc in zip(r["min_width"], r["tafarrud_layers"], r["number_class"]):
-        import math
+    for mw, taf, nc in zip(r["min_width"], r["tafarrud_layers"], r["number_class_width"]):
         exp = structure.number_class(None if math.isnan(mw) else int(mw), list(taf) if taf is not None else [], N)
         nc = nc if isinstance(nc, str) else None
         assert nc == exp, (mw, taf, nc, exp)
-    for k, nk in zip(r["kappa_all"], r["number_class_kappa"]):
-        assert (nk if isinstance(nk, str) else None) == structure.class_of_count(int(k), N)
+    for k, nk, kind in zip(r["kappa_all"], r["number_class"], r["gharib_cut_kind"]):
+        c = structure.class_of_count(int(k), N)
+        nk = nk if isinstance(nk, str) else None
+        if c == "gharib":
+            assert nk == ("gharib_mutlaq" if kind == "companion" else "gharib_nisbi"), (k, nk, kind)
+        else:
+            assert nk == c, (k, nk)
 
 
 def test_qarain_flags_follow_their_definitions(records):

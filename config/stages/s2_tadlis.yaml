@@ -1,0 +1,9 @@
+# Stage 2: + tiered tadlis, the hearing check at group scope, the Sahihayn convention (section 2).
+structure:
+  bundle: {book_transmitters: false}
+  structure: {compiler_terminal: node}
+  number_class: {basis: width}
+  derive:
+    corroboration: {witness: attested, avoid: weakest, shahid_scope: group, unknown_repair: none}
+    tadlis: {tiers: true, tasrih_scope: group, sahihayn_muanan_accepted: true}
+    variants: null
