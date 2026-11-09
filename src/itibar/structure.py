@@ -31,9 +31,25 @@ def ordinal_of(B: Bundle, corpus: Corpus, node: str) -> int:
     return 99
 
 
+def per_edge_roles() -> bool:
+    """structure.compiler_terminal: edge (PR 5) or node (PR 4)."""
+    return config.load("structure")["structure"].get("compiler_terminal", "edge") == "edge"
+
+
+def role_edge_ok(B: Bundle, u: str, v: str, per_edge: bool | None = None) -> bool:
+    """May a narrator in a book role who fails a threshold keep the edge u -> v? Per
+    edge (PR 5): only his edges into the book (his own compiler node, or the book's
+    transmitter). PR 4: any edge into a compiler node."""
+    per_edge = per_edge_roles() if per_edge is None else per_edge
+    if per_edge:
+        return (u, v) in B.role_edges
+    return B.kind.get(v) == "compiler"
+
+
 def threshold_succ(B: Bundle, corpus: Corpus, min_ordinal: int) -> dict[str, set[str]]:
     """Subgraph of nodes passing the threshold, plus book -> SINK edges."""
     exempt = B.exempt
+    per_edge = per_edge_roles()
 
     def keep(v: str) -> bool:
         k = B.kind[v]
@@ -44,15 +60,15 @@ def threshold_succ(B: Bundle, corpus: Corpus, min_ordinal: int) -> dict[str, set
         return ordinal_of(B, corpus, v) >= min_ordinal
 
     ok = {v for v in B.kind if keep(v)}
-    # A compiler who fails the threshold keeps only his compiler role: edges into
-    # compiler nodes (his books). His links as a teacher in other chains are graded.
-    compiler_only = {v for v in B.compiler_rawi_nodes if ordinal_of(B, corpus, v) < min_ordinal}
+    # A compiler (or book transmitter) who fails the threshold keeps only his book role:
+    # his edges into the book. His links as a teacher in other chains are graded.
+    compiler_only = {v for v in B.role_nodes if ordinal_of(B, corpus, v) < min_ordinal}
     succ = {}
     for u, vs in B.succ.items():
         if u not in ok:
             continue
         if u in compiler_only:
-            succ[u] = {v for v in vs if v in ok and B.kind[v] == "compiler"}
+            succ[u] = {v for v in vs if v in ok and role_edge_ok(B, u, v, per_edge)}
         else:
             succ[u] = {v for v in vs if v in ok}
     for v in ok:
@@ -130,13 +146,15 @@ def lower_succ(B: Bundle, corpus: Corpus, min_ordinal: int, merge: bool = True,
         if mv is not None:
             members[mv].append(v)
     keep, compiler_only = set(), set()
+    roles = B.role_nodes
+    per_edge = per_edge_roles()
     for mv, vs in members.items():
         kinds = {B.kind[v] for v in vs}
         passes = all(ordinal_of(B, corpus, v) >= min_ordinal for v in vs
                      if B.kind[v] in NARRATOR_KINDS)
         if kinds & {"prophet", "book", "compiler"} or passes:
             keep.add(mv)
-        elif any(v in B.compiler_rawi_nodes for v in vs):
+        elif any(v in roles for v in vs):
             keep.add(mv)
             compiler_only.add(mv)
     succ: dict[str, set[str]] = defaultdict(set)
@@ -146,7 +164,7 @@ def lower_succ(B: Bundle, corpus: Corpus, min_ordinal: int, merge: bool = True,
         mu, mv = m(u), m(v)
         if mu is None or mv is None or mu == mv or mu not in keep or mv not in keep:
             continue
-        if mu in compiler_only and B.kind[v] != "compiler":
+        if mu in compiler_only and not role_edge_ok(B, u, v, per_edge):
             continue
         succ[mu].add(mv)
     for mv in keep:
@@ -251,11 +269,14 @@ class Structure:
     bypass_chains: int
     backward_edges: int
     has_cycle: bool
-    width_number: dict[int, int] = field(default_factory=dict)   # layers 1..12, compiler roles excluded
+    width_number: dict[int, int] = field(default_factory=dict)   # layers 1..12, narrator roles only
     min_width: int | None = None
     tafarrud_layers: list[int] = field(default_factory=list)
-    number_class: str | None = None
-    number_class_kappa: str | None = None
+    number_class: str | None = None           # per number_class.basis (kappa: PR 5)
+    number_class_width: str | None = None     # the width reading (diagnostic)
+    number_class_kappa: str | None = None     # the kappa reading, gharib split by the cut vertex
+    gharib_cut_kind: str | None = None        # kappa = 1: companion | narrator | compiler (topmost cut vertex kind)
+    narrator_role: set[str] = field(default_factory=set)   # on-path narrators with a narrator-role occurrence
     bypass_nodes: set[str] = field(default_factory=set)
     edge_continuity: dict[tuple[str, str], str] = field(default_factory=dict)
     edge_basis: dict[tuple[str, str], str] = field(default_factory=dict)    # years | tabaka | unknown | n/a
@@ -419,15 +440,36 @@ def number_class(min_width: int | None, tafarrud_layers: list[int], N: int | Non
     return c
 
 
-def number_profile(B: Bundle, on: set[str], layer: dict[str, int]) -> tuple[dict[int, int], int | None, list[int]]:
-    """Width by layer over on-path narrators, Taqrib layers 1..taqrib_max_layer,
-    compiler-role nodes excluded; min_width over the layers that have any; the
-    layers of width 1."""
+def number_class_kappa(kappa_all: int | None, cut_vertices: list[str], B: Bundle, corpus: Corpus,
+                       N: int | None = None) -> tuple[str | None, str | None]:
+    """number_class on kappa_all: gharib_mutlaq when a companion is among the cut
+    vertices (the tafarrud is at the root, where the companion is), else gharib_nisbi.
+    Returns (class, kind of the topmost cut vertex: companion | narrator | compiler)."""
+    c = class_of_count(kappa_all, N)
+    if c != "gharib":
+        return c, None
+    nar = corpus.narrators
+
+    def kind(v: str) -> str:
+        k = B.kind.get(v)
+        if k == "narrator" and nar.is_companion[B.rawi[v]]:
+            return "companion"
+        return "narrator" if k in NARRATOR_KINDS else "compiler"
+
+    kinds = [kind(v) for v in cut_vertices]
+    return ("gharib_mutlaq" if "companion" in kinds else "gharib_nisbi"), (kinds[0] if kinds else None)
+
+
+def number_profile(B: Bundle, on: set[str], layer: dict[str, int],
+                   narrator_role: set[str] | None = None) -> tuple[dict[int, int], int | None, list[int]]:
+    """Width by layer over on-path narrators, Taqrib layers 1..taqrib_max_layer, counting
+    a narrator only in a narrator role (`narrator_role`; PR 4: compiler-role nodes
+    excluded); min_width over the layers that have any; the layers of width 1."""
     taqrib_max = int(config.load("structure")["layers"]["taqrib_max_layer"])
     exempt = B.exempt
     w: Counter = Counter()
     for v in on:
-        if B.kind.get(v) in NARRATOR_KINDS and v not in exempt:
+        if B.kind.get(v) in NARRATOR_KINDS and (v in narrator_role if narrator_role is not None else v not in exempt):
             L = layer.get(v)
             if L is not None and 1 <= L <= taqrib_max:
                 w[L] += 1
@@ -494,9 +536,24 @@ def analyse(B: Bundle, corpus: Corpus) -> Structure:
 
     on, sub = on_path_subgraph(succ_all)
     layer, lsource, backward = layers(B, corpus, on)
-    terminals = B.terminals
-    narr_on = {v for v in on if B.kind.get(v) in NARRATOR_KINDS and v not in terminals}
     pred_on = reverse(sub)
+    per_edge = per_edge_roles()
+    if per_edge:
+        # Compiler roles per edge (PR 5): a narrator who compiled a book of the group (or
+        # transmitted it) is terminal only on his edges into that book; his narrator-role
+        # occurrences count like anyone's. In-degree for single strands counts his
+        # narrator-role in-edges only, so the many teachers feeding his own book do not
+        # make him a branching point.
+        terminals = {n for n, k in B.kind.items() if k in ("compiler", "book")}
+        narr_on = {v for v in on if B.kind.get(v) in NARRATOR_KINDS}
+        nr_in_on = {v: {u for u in B.nr_in.get(v, ()) if u in on and v in sub.get(u, ())} for v in narr_on}
+        has_nr = {v for v in narr_on if v in B.nr_nodes
+                  and (nr_in_on[v] or any(w in sub.get(v, ()) for w in B.nr_out.get(v, ())))}
+    else:
+        terminals = B.terminals
+        narr_on = {v for v in on if B.kind.get(v) in NARRATOR_KINDS and v not in terminals}
+        nr_in_on = {v: pred_on.get(v, set()) for v in narr_on}
+        has_nr = set(narr_on)
     # width profile: on-path narrators (incl. compiler narrators) by layer
     width: Counter = Counter()
     for v in on:
@@ -507,10 +564,10 @@ def analyse(B: Bundle, corpus: Corpus) -> Structure:
     # cut vertices: cuttable dominators of SINK in the on-path graph
     cut_vertices, has_cycle = dominator_cut_vertices(sub, unc)
     # single strands
-    ss = {v for v in narr_on if len(pred_on.get(v, ())) == 1 and len(sub.get(v, ())) == 1}
+    ss = {v for v in has_nr if len(nr_in_on[v]) == 1 and len(sub.get(v, ())) == 1}
     # PCL: branches whose sub-bundle reaches a book through a non-single-strand
     # narrator, or that reach a compiler/book directly
-    nss = {v for v in narr_on if v not in ss}
+    nss = {v for v in has_nr if v not in ss}
     G2, C2, order2, member2 = condensation_order(sub, narr_on)
     down_c: dict[int, bool] = {}
     comp_nodes = defaultdict(list)
@@ -526,13 +583,15 @@ def analyse(B: Bundle, corpus: Corpus) -> Structure:
         down_c[c] = val
     down = {v: down_c[member2[v]] for v in narr_on}
 
-    def qualifies(w: str) -> bool:
+    def qualifies(u: str, w: str) -> bool:
         if w in terminals:
+            return True
+        if per_edge and (u, w) in B.role_in:      # the student compiled (or transmitted) the book himself
             return True
         return down.get(w, False)
 
     pcl: dict[int, set[str]] = {}
-    nq = {v: sum(1 for w in sub.get(v, ()) if qualifies(w)) for v in narr_on}
+    nq = {v: sum(1 for w in sub.get(v, ()) if qualifies(v, w)) for v in narr_on}
     for k in cfg["pcl_k"]:
         pcl[k] = {v for v, q in nq.items() if q >= k}
     # common links: PCL(k) with no PCL ancestor
@@ -568,8 +627,11 @@ def analyse(B: Bundle, corpus: Corpus) -> Structure:
         bypass, bcapped = paths_total, paths_capped
     cls = set(common_links)
     bypass_chains = sum(1 for c in B.chains if c.connected and not (cls & set(c.nodes)))
-    width_number, min_width, tafarrud = number_profile(B, on, layer)
+    width_number, min_width, tafarrud = number_profile(B, on, layer, has_nr if per_edge else None)
     N = tawatur_n()
+    nc_width = number_class(min_width, tafarrud, N)
+    nc_kappa, cut_kind = number_class_kappa(kappa["all"], cut_vertices, B, corpus, N)
+    nc_basis = config.load("structure")["number_class"].get("basis", "kappa")
     return Structure(
         on_path=on, layer=layer, layer_source=lsource, width=dict(sorted(width.items())), width_taqrib=width_taqrib,
         kappa=kappa, kappa_lower=kappa_lower, kappa_lower_source=lower_source, kappa_nocompat=kappa_nocompat,
@@ -579,7 +641,8 @@ def analyse(B: Bundle, corpus: Corpus) -> Structure:
         paths_total=paths_total, paths_capped=paths_capped, paths_approx=approx,
         bypass_chains=bypass_chains, backward_edges=backward, has_cycle=has_cycle,
         width_number=width_number, min_width=min_width, tafarrud_layers=tafarrud,
-        number_class=number_class(min_width, tafarrud, N), number_class_kappa=class_of_count(kappa["all"], N),
+        number_class=nc_kappa if nc_basis == "kappa" else nc_width, number_class_width=nc_width,
+        number_class_kappa=nc_kappa, gharib_cut_kind=cut_kind, narrator_role=has_nr,
         bypass_nodes=bypass_nodes(sub, on, common_links, B),
         edge_continuity=cont, edge_basis=basis, edge_muanan=mu,
     )

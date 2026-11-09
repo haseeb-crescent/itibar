@@ -325,17 +325,21 @@ entries:
     chain_v2:
       path: [r4095, r4879, r4069]          # 'Amir b. Rabi'a -> 'Abdullah b. 'Amir -> 'Asim b. 'Ubaydallah (rank_no 8, ضعيف الحديث)
       weakest: {node: r4069, level: 8}
-      ibn_hajar: {code: 2, rule: daif}
-      ibn_al_salah: {code: 2, rule: daif}
+      ibn_hajar: {code: 1, rule: hasan_li_ghayrihi, divergence: shahid}
+      ibn_al_salah: {code: 1, rule: hasan_li_ghayrihi, divergence: shahid}
+      alt_shahid_group: {code: 2}          # no witness inside the meaning group
   classical_claim: "hasan li-ghayrihi (corroboration fires)"
   classical_claim_holds_in_group: false
+  classical_claim_holds_with_siblings: true
   notes: >
-    The brief expected corroboration to fire here. It cannot inside this meaning group: 47 of its 51
-    chains pass through 'Asim, and the other four carry a different report (Maymuna bint Kardam,
-    through unnamed persons). The routes al-Tirmidhi relies on are his "fi al-bab" reports from other
-    companions, which are separate reports (other meaning groups). The bundle is per meaning group,
-    so the assertion pins what the data supports: 'Asim at level 8, no witness avoiding him, da'if
-    under both rulesets. See DECISIONS.md D54.
+    Inside the meaning group corroboration cannot fire: 47 of its 51 chains pass through 'Asim, and the
+    other four carry a different report (Maymuna bint Kardam, through unnamed persons); the shahid_group
+    variant keeps code 2 (PR 4's assertion, D54). The routes al-Tirmidhi relies on are his "fi al-bab"
+    reports from other companions, filed by the source as other meaning groups under the same topic
+    (أقل المهر). With shahid_scope siblings (D58) the witness is sanad 261755 of group 763 (Sahl b. Sa'd's
+    report, Musannaf Ibn Abi Shayba): «زوج رجلا امرأة على أن يعلمها سورة من القرآن», a man married for a
+    minimal dowry, approved — al-Tirmidhi's Sahl b. Sa'd. Its matn overlap with the 'Asim chain's matn is
+    0.333 (idf-weighted Dice), above the floor 0.32 and below the strict variant's 0.38 (code 2 there).
 
 - id: maqbul-repaired
   group_id: 3487
@@ -398,7 +402,9 @@ entries:
     - {work: "Nuzhat al-Nazar (al-gharib; al-fard al-mutlaq vs al-nisbi), ed. 'Itr pp. 50, 56", author: "Ibn Hajar", confidence: high,
        url: "https://shamela.ws/book/1565/52", claim: "tafarrud at the root of the chain, where the companion is: al-fard al-mutlaq"}
   expect:
-    number_class_eq: gharib_mutlaq
+    number_class_eq: gharib_mutlaq          # kappa = 1 with 'Umar among the cut vertices
+    cut_vertices_include: {all: [r5913]}
+    number_class_width_eq: gharib_mutlaq    # the width reading agrees (layer 1 a tafarrud layer)
     tafarrud_layers_include: [1]
 
 - id: la-yuminu-number-class
@@ -411,8 +417,8 @@ entries:
        claim: "not narrated by fewer than two from fewer than two: Anas and Abu Hurayra; Qatada and 'Abd al-'Aziz b. Suhayb; Shu'ba and Sa'id; Isma'il b. 'Ulayya and 'Abd al-Warith"}
   scope: {companions: [720, 4396], threshold: all}   # the two companions Ibn Hajar names
   expect:
-    number_class_eq: aziz
-    number_class_kappa_eq: aziz
+    number_class_eq: aziz                   # kappa_all = 2
+    number_class_width_eq: aziz
   notes: >
     Scoped to Anas and Abu Hurayra, the companions of Ibn Hajar's example; the whole group folds in
     other reports (7 companions) and reads gharib_nisbi by width only because layer 2 has one
@@ -440,11 +446,13 @@ entries:
        url: "https://shamela.ws/book/22870/263", claim: "مشهور بين أهل الحديث وغيرهم: المسلم من سلم المسلمون من لسانه ويده"}
   scope: {threshold: all}
   expect:
-    number_class_eq: mashhur
+    number_class_width_eq: mashhur
+    number_class_eq: mutawatir_count        # kappa_all = 19 (structure version 4: the class is read on kappa)
   notes: >
     Ibn al-Salah's mashhur is fame; Ibn Hajar's is a count (more than two at every layer, short of
     tawatur). By width the narrowest Taqrib layer has 9 narrators (mashhur at N = 10); kappa_all is
-    19, so number_class_kappa reads mutawatir_count, and al-Kattani lists it as mutawatir (entry 10).
+    19, so the class on kappa (the default since structure version 4, D60) is mutawatir_count, and
+    al-Kattani lists it as mutawatir (entry 10). The width assertion is kept as the diagnostic.
 
 # ---------------------------------------------------------------- qara'in
 
@@ -470,6 +478,53 @@ entries:
   expect:
     number_class_eq: gharib_mutlaq
     in_sahihayn_eq: false
+
+# ---------------------------------------------------------------- tadlis (PR 5)
+
+- id: muanan-tier-2-in-muslim
+  group_id: 3
+  title: "Jarir's mash on the khuffayn in Muslim — al-A'mash 'an Ibrahim, a tier-2 mudallis's 'an"
+  class: tadlis-tier-2
+  source:
+    - {work: "Tabaqat al-Mudallisin (Ta'rif Ahl al-Taqdis), introduction and tier 2 no. 55, ed. al-Qaryuti pp. 13, 33", author: "Ibn Hajar", confidence: high,
+       url: "https://shamela.ws/book/1186/9",
+       claim: "tier 2: من احتمل الائمة تدليسه وأخرجوا له في الصحيح لامامته وقلة تدليسه في جنب ما روى; al-A'mash (سليمان بن مهران الاعمش) is in it"}
+    - {work: "Sahih Muslim, Kitab al-Tahara (Jarir's mash)", author: "Muslim", confidence: high,
+       claim: "Muslim <- Muhammad b. al-'Ala' <- Abu Mu'awiya <- al-A'mash 'an Ibrahim 'an Hammam: Jarir urinated, made wudu' and wiped over his khuffayn"}
+  scope: {threshold: all}
+  expect:
+    chain_check:
+      sanad_id: 9756                       # Muslim <- Ibn al-'Ala' <- Abu Mu'awiya <- al-A'mash 'an Ibrahim <- Hammam <- Jarir
+      ibn_hajar: {rule: sahih_li_dhatihi, code: 0, defects_eq: [], notes_include: [muanan_accepted_tier_2]}
+      ibn_al_salah: {rule: sahih_li_dhatihi, code: 0, defects_eq: []}
+  notes: >
+    Under PR 4 (the source's binary has_tadlis) al-A'mash's 'an from Ibrahim was a light defect and this
+    chain of Muslim could reach hasan li-ghayrihi at most (one of the 271 'an-only downgrades). Ibn Hajar
+    puts al-A'mash in tier 2, whose 'an the imams accepted; the chain is also in a Sahih. Abu Mu'awiya
+    (tier 2, 'an from al-A'mash) is accepted for the same reason.
+
+- id: muanan-tier-3-covered-by-tasrih
+  group_id: 7
+  title: "من مات وهو يشهد أن لا إله إلا الله — Qatada 'an Anas in the Musnad, hearing stated in the Sahihayn's chains"
+  class: tadlis-tier-3-tasrih
+  source:
+    - {work: "Tabaqat al-Mudallisin, introduction and tier 3 no. 92, ed. al-Qaryuti pp. 13, 43", author: "Ibn Hajar", confidence: high,
+       url: "https://shamela.ws/book/1186/9",
+       claim: "tier 3: من أكثر من التدليس فلم يحتج الائمة من أحاديثهم الا بما صرحوا فيه بالسماع; Qatada b. Di'ama al-Sadusi is in it"}
+    - {work: "Sahih al-Bukhari (Kitab al-'Ilm) and Sahih Muslim (Kitab al-Iman), Mu'adh's hadith", author: "al-Bukhari; Muslim", confidence: high,
+       claim: "Qatada: حدثنا أنس بن مالك — Mu'adh behind the Prophet on the mount"}
+  scope: {threshold: all}
+  expect:
+    chain_check:
+      sanad_id: 74843                      # Ahmad <- Ghundar <- Shu'ba <- Qatada 'an Anas <- Mu'adh (Musnad Ahmad)
+      ibn_hajar: {rule: sahih_li_dhatihi, code: 0, defects_eq: [], notes_include: [muanan_covered_tasrih_tier_3]}
+      ibn_al_salah: {rule: sahih_li_dhatihi, code: 0, defects_eq: []}
+  notes: >
+    Qatada (tier 3) narrates from Anas with 'an in Ahmad's chain, where Shu'ba adds «لم أسأل قتادة أنه
+    سمعه عن أنس». The same link Qatada <- Anas carries an explicit hearing word in other chains of the same
+    report: «حدثنا» in al-Bukhari's (sanad 159) and Muslim's (sanad 8909), «سمعت» in Ibn Manda's al-Iman
+    (sanads 360990, 360992) and al-Bayhaqi's. With tasrih_scope group the 'an is covered and the chain has
+    no defect; under PR 4 it was a light defect.
 
 # ---------------------------------------------------------------- lists
 

@@ -130,14 +130,17 @@ def test_mursal_rules():
 
 
 def test_mudallis_muanan_is_a_light_defect():
+    """An untiered flagged mudallis (treated as tier 3, derive.tadlis.untiered_tadlis) outside
+    the Sahihayn: his 'an is a light defect. Tiers are tested in test_pr5.py."""
     D = 50
     people = base_people() | {D: {"rank_no": 3, "tabaka": 4, "tadlis": 1}}
-    a = chain(1, A1, D, T, C1, words={2: ("عن", "عن", "an")})
-    out = run([a], people, books(A1))
+    bks = {3: {"author_no": 100, "compiler_rawi": A1}, 4: {"author_no": 101, "compiler_rawi": A2}}
+    a = chain(3, A1, D, T, C1, words={2: ("عن", "عن", "an")})
+    out = run([a], people, bks)
     r = row(out, a.sanad_id)
-    assert r["defects_v2_ibn_hajar"] == ["mudallis_muanan"] and r["code_v2_ibn_hajar"] == 2
-    b = chain(2, A2, S, T, C1)
-    out = run([a, b], people, books(A1, A2))
+    assert r["defects_v2_ibn_hajar"] == ["mudallis_muanan_tier_3"] and r["code_v2_ibn_hajar"] == 2
+    b = chain(4, A2, S, T, C1)
+    out = run([a, b], people, bks)
     assert row(out, a.sanad_id)["code_v2_ibn_hajar"] == 1
 
 
@@ -148,8 +151,9 @@ def test_weakest_positions_versus_every_light_defect():
     b = chain(2, A2, X, Z, T, C1)                        # avoids Y, shares X
     out = run([a, b], people, books(A1, A2))
     r = row(out, a.sanad_id)
-    assert r["weak_nodes_v2_ibn_hajar"] == [f"r{Y}"]
-    assert r["code_v2_ibn_hajar"] == 1
+    assert r["weak_nodes_v2_ibn_hajar"] == [f"r{X}", f"r{Y}"]   # each_defect: both must be covered
+    assert r["code_v2_ibn_hajar"] == 2
+    assert r["code_v2_alt_weakest"] == 1                         # PR 4: the weakest only
     assert r["code_v2_alt_all_light_defects"] == 2
 
 
@@ -160,7 +164,7 @@ def test_group_v2_takes_the_best_chain_and_receipt_names_the_rule():
     out = run([a, b], base_people() | {W: level(6)}, books(A1, A2))
     rec = out["record"]
     assert rec["code_v2_ibn_hajar"] == 0 and rec["rule_v2_ibn_hajar"] == "sahih_li_dhatihi"
-    assert rec["derive_version"] == 2 and rec["structure_version"] == 3
+    assert rec["derive_version"] == 3 and rec["structure_version"] == 4
     rc = json.loads(rec["receipt_v2"])
     assert set(rc) == {"ibn_hajar", "ibn_al_salah"}
     assert rc["ibn_hajar"][-1]["rule"] == "sahih_li_dhatihi"
@@ -189,7 +193,7 @@ def test_number_class_on_bundles_and_qarain():
     # two companions, two teachers, two students at each layer: 'aziz both ways
     out = run([chain(1, A1, S, T, C1), chain(2, A2, S2, T2, C2)], people, books(A1, A2))
     r = out["record"]
-    assert (r["number_class"], r["number_class_kappa"]) == ("aziz", "aziz")
+    assert (r["number_class"], r["number_class_width"]) == ("aziz", "aziz")
     assert r["huffaz_chain"] is False                    # thiqa (level 3) is not a hafiz-imam (level <= 2)
     people2 = people | {T: level(2, 3), T2: level(2, 3), S: level(2, 5), S2: level(2, 5)}
     r = run([chain(1, A1, S, T, C1), chain(2, A2, S2, T2, C2)], people2, books(A1, A2))["record"]

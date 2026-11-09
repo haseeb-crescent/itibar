@@ -1,0 +1,11 @@
+# Stage 0: PR 4 as merged (derive version 2, structure version 3). Every PR 5 correction
+# off. The stages below switch them on cumulatively, in the brief's order; the audit's
+# section 11 tabulates each stage against the source's recorded grades.
+structure:
+  bundle: {book_transmitters: false}
+  structure: {compiler_terminal: node}
+  number_class: {basis: width}
+  derive:
+    corroboration: {witness: route, avoid: weakest, shahid_scope: group, unknown_repair: none}
+    tadlis: {tiers: false, tasrih_scope: none, sahihayn_muanan_accepted: false}
+    variants: null

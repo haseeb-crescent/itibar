@@ -10,19 +10,25 @@ import time
 from collections import Counter
 from concurrent.futures import ProcessPoolExecutor
 
+import pickle
+
 import pyarrow as pa
 import pyarrow.parquet as pq
 
 from itibar import bundle as bundle_mod
-from itibar import config, corroborate, data, derive, load, paths, structure
+from itibar import config, corroborate, data, derive, load, matn, paths, siblings, structure
 from itibar.bundle import PROPHET
 
 _CORPUS: load.Corpus | None = None
+_SIBLINGS: siblings.SiblingIndex | None = None
 
 
-def _init_worker() -> None:
-    global _CORPUS
+def _init_worker(sibling_path: str | None = None) -> None:
+    global _CORPUS, _SIBLINGS
     _CORPUS = load.corpus()
+    if sibling_path:
+        with open(sibling_path, "rb") as f:
+            _SIBLINGS = pickle.load(f)
 
 
 def _mode(xs):
@@ -47,7 +53,43 @@ def kappa_zero_reason(kappa_all: int | None, chains: list) -> str | None:
     return "other"
 
 
-def analyse_group(gid: int, chains: list[load.Chain], corpus: load.Corpus, mg: dict) -> dict:
+def witness_rows(gid: int, chains: list[load.Chain], corpus: load.Corpus,
+                 params: dict[str, corroborate.Params]) -> list[tuple]:
+    """The sibling-index rows of one group: per chain (group, sanad, hadith, chain ordinal,
+    light bits, hasan bits, companion rawi id, nodes), bits over `params` in order."""
+    if not chains:
+        return []
+    B = bundle_mod.build(gid, chains, corpus)
+    info_by = {c.sanad_id: c for c in B.chains}
+    cgr = [derive.grade_chain(c, info_by[c.sanad_id], corpus) for c in chains]
+    classes = corroborate.classify_group(B, corpus, chains, cgr, params)
+    bits = corroborate.witness_bits(classes, params, list(params))
+    out = []
+    for c, g, (lb, hb) in zip(chains, cgr, bits):
+        if not (lb or hb):
+            continue
+        info = info_by[c.sanad_id]
+        out.append((gid, c.sanad_id, c.hadith_id, g.ordinal, lb, hb, c.rawis[-1] if info.ends_companion else None,
+                    [v for v in info.nodes if B.kind[v] in ("narrator", "mubham")]))
+    return out
+
+
+def sibling_index(group_chains: dict[int, list[load.Chain]], gids: list[int], corpus: load.Corpus,
+                  params: dict[str, corroborate.Params], con=None) -> siblings.SiblingIndex:
+    """A sibling index for groups `gids` (in-process; the pipeline builds the whole
+    corpus's in its first pass). `group_chains` must hold the chains of their siblings."""
+    con = con or data.views()
+    sib = siblings.sibling_groups(con, gids)
+    need = sorted({s for g in gids for s in sib.get(g, ())})
+    rows = []
+    for s in need:
+        rows.extend(witness_rows(s, group_chains.get(s, []), corpus, params))
+    hids = {r[2] for r in rows} | {c.hadith_id for g in gids for c in group_chains.get(g, [])}
+    return siblings.SiblingIndex.build(rows, sib, list(params), matn.Matns(hids))
+
+
+def analyse_group(gid: int, chains: list[load.Chain], corpus: load.Corpus, mg: dict,
+                  sibling_idx: siblings.SiblingIndex | None = None) -> dict:
     """Returns {'record': {...}, 'nodes': [...], 'edges': [...], 'chains': [...]}."""
     _load_side_tables()
     scale, nar = corpus.scale, corpus.narrators
@@ -81,7 +123,7 @@ def analyse_group(gid: int, chains: list[load.Chain], corpus: load.Corpus, mg: d
     steps = derive.receipt(B, corpus, chains, cgr, best, fell_back, mg.get("matn_no"))
     # ---- derived grade v2 (corroboration), every ruleset and variant
     params = corroborate.rulesets()
-    v2 = corroborate.grade_group(B, corpus, chains, cgr, params)
+    v2 = corroborate.grade_group(B, corpus, chains, cgr, params, siblings=sibling_idx)
     infos = [info_by[c.sanad_id] for c in chains]
     v2_rec: dict = {}
     v2_receipts: dict = {}
@@ -98,6 +140,10 @@ def analyse_group(gid: int, chains: list[load.Chain], corpus: load.Corpus, mg: d
             f"witness_sanad_v2_{name}": v.witness_sanad if v else None,
             f"witness_attested_v2_{name}": v.witness_attested if v else None,
             f"divergence_v2_{name}": v.divergence if v else None,
+            f"witness_route_exists_v2_{name}": v.route_exists if v else None,
+            f"witness_cross_group_v2_{name}": v.cross_group if v else None,
+            f"witness_group_v2_{name}": v.witness_group if v else None,
+            f"n_witnesses_v2_{name}": len(v.witnesses) if v else None,
             f"agree_v2_{name}_vs_group": (v.code == mg.get("matn_no")) if v else None,
         })
         v2_receipts[name] = corroborate.receipt(name, params[name], i, verdicts, chains, cgr, B, corpus)
@@ -174,10 +220,11 @@ def analyse_group(gid: int, chains: list[load.Chain], corpus: load.Corpus, mg: d
         "min_width": S.min_width,
         "tafarrud_layers": S.tafarrud_layers,
         "number_class": S.number_class,
-        "number_class_kappa": S.number_class_kappa,
-        "number_class_disagree": (None if S.number_class is None and S.number_class_kappa is None else
-                                  (S.number_class or "").replace("_mutlaq", "").replace("_nisbi", "")
-                                  != (S.number_class_kappa or "")),
+        "number_class_width": S.number_class_width,
+        "gharib_cut_kind": S.gharib_cut_kind,
+        "number_class_disagree": (None if S.number_class_width is None and S.number_class_kappa is None else
+                                  (S.number_class_width or "").replace("_mutlaq", "").replace("_nisbi", "")
+                                  != (S.number_class_kappa or "").replace("_mutlaq", "").replace("_nisbi", "")),
         "in_sahihayn": in_sahihayn,
         "in_sahih_class": in_sahih_class,
         "sound_distinct_routes": S.kappa[qcfg["sound_threshold"]] >= int(qcfg["sound_distinct_routes_min"]),
@@ -271,7 +318,8 @@ def analyse_group(gid: int, chains: list[load.Chain], corpus: load.Corpus, mg: d
             "on_path": v in on, "single_strand": v in S.single_strand,
             "pcl_k2": v in S.pcl.get(2, ()), "pcl_k3": v in S.pcl.get(3, ()),
             "common_link": v in cls, "cut_vertex": v in css, "in_bypass": v in S.bypass_nodes,
-            "compiler_role": v in B.exempt,
+            "compiler_role": v in B.exempt, "book_transmitter_role": v in B.transmitter_nodes,
+            "narrator_role": v in S.narrator_role,
         })
     edges_rows = []
     for (u, v), e in B.edges.items():
@@ -299,13 +347,17 @@ def analyse_group(gid: int, chains: list[load.Chain], corpus: load.Corpus, mg: d
                 v2c[f"divergence_v2_{name}"] = vv.divergence
                 v2c[f"weak_nodes_v2_{name}"] = vv.weak_nodes
                 v2c[f"defects_v2_{name}"] = vv.defects
+                v2c[f"notes_v2_{name}"] = vv.notes
+                v2c[f"witness_group_v2_{name}"] = vv.witness_group
+                v2c[f"route_exists_v2_{name}"] = vv.route_exists
         chain_rows.append({
             "sanad_id": c.sanad_id, "group_id": gid, "hadith_id": c.hadith_id, "book_id": c.book_id,
             "length": len(c.rawis), "ends_companion": info.ends_companion,
             "gap_irsal": info.gaps.get("irsal", 0), "gap_inqita": info.gaps.get("inqita", 0),
             "gap_taliq": info.gaps.get("taliq", 0), "has_mubham": info.has_mubham,
             "has_stub": info.has_stub, "connected": info.connected,
-            "compiler_at_pos0": info.compiler_at_pos0, "self_loops": info.self_loops,
+            "compiler_at_pos0": info.compiler_at_pos0, "transmitter_at_pos0": info.transmitter_at_pos0,
+            "book_role_positions": list(g.book_role_positions), "self_loops": info.self_loops,
             "n_words": len(c.words),
             "chain_ordinal": g.ordinal, "chain_code_raw": g.code_raw, "chain_code": g.code,
             "chain_capped": g.capped, "weakest_positions": g.weakest_positions,
@@ -340,7 +392,15 @@ def _load_side_tables() -> None:
 
 def _work(batch: list[tuple[int, list[load.Chain], dict]]) -> list[dict]:
     _load_side_tables()
-    return [analyse_group(gid, chs, _CORPUS, mg) for gid, chs, mg in batch]
+    return [analyse_group(gid, chs, _CORPUS, mg, _SIBLINGS) for gid, chs, mg in batch]
+
+
+def _flags_work(batch: list[tuple[int, list[load.Chain], dict]]) -> list[tuple]:
+    params = corroborate.rulesets()
+    out = []
+    for gid, chs, _ in batch:
+        out.extend(witness_rows(gid, chs, _CORPUS, params))
+    return out
 
 
 def _batches(items, max_chains: int = 4000):
@@ -356,7 +416,7 @@ def _batches(items, max_chains: int = 4000):
 
 
 def run(group_ids: list[int] | None = None, workers: int | None = None, out_dir=None,
-        quiet: bool = False) -> dict:
+        quiet: bool = False, records_only: bool = False) -> dict:
     t0 = time.time()
     out_dir = out_dir or paths.OUT_DIR
     con = data.views()
@@ -372,12 +432,47 @@ def run(group_ids: list[int] | None = None, workers: int | None = None, out_dir=
     workers = workers or max(1, (os.cpu_count() or 2) - 2)
     results: list[dict] = []
     done = 0
+    params = corroborate.rulesets()
+    sib_path = None
+    t_sib = 0.0
+    if corroborate.uses_siblings(params):
+        # first pass: which chains can lend a witness, under every parameter set
+        ts = time.time()
+        matn.ensure(con)
+        sib_groups = siblings.sibling_groups(con, list(mg_rows) if group_ids is not None else None)
+        lend = {s for v in sib_groups.values() for s in v}
+        if group_ids is not None:            # a sample: its siblings' chains are needed too
+            extra = sorted(lend - set(by_group))
+            if extra:
+                by_group.update(load.chains_by_group(con, extra))
+        flag_items = [(g, by_group.get(g, []), None) for g in sorted(lend) if by_group.get(g)]
+        flag_items.sort(key=lambda it: -len(it[1]))
+        rows: list[tuple] = []
+        if workers == 1:
+            _init_worker()
+            for b in _batches(flag_items):
+                rows.extend(_flags_work(b))
+        else:
+            with ProcessPoolExecutor(max_workers=workers, initializer=_init_worker) as ex:
+                for res in ex.map(_flags_work, list(_batches(flag_items))):
+                    rows.extend(res)
+        hids = {r[2] for r in rows} | {c.hadith_id for g in sib_groups for c in by_group.get(g, [])}
+        idx = siblings.SiblingIndex.build(rows, sib_groups, list(params), matn.Matns(hids))
+        sib_path = out_dir / ".siblings.pkl"
+        out_dir.mkdir(parents=True, exist_ok=True)
+        with open(sib_path, "wb") as f:
+            pickle.dump(idx, f, protocol=pickle.HIGHEST_PROTOCOL)
+        t_sib = time.time() - ts
+        if not quiet:
+            print(f"  sibling index: {len(rows):,} lending chains in {len(lend):,} groups, {t_sib:.1f}s",
+                  file=sys.stderr)
     if workers == 1:
-        _init_worker()
+        _init_worker(str(sib_path) if sib_path else None)
         for b in _batches(items):
             results.extend(_work(b))
     else:
-        with ProcessPoolExecutor(max_workers=workers, initializer=_init_worker) as ex:
+        with ProcessPoolExecutor(max_workers=workers, initializer=_init_worker,
+                                 initargs=(str(sib_path) if sib_path else None,)) as ex:
             last = 0.0
             for res in ex.map(_work, list(_batches(items))):
                 results.extend(res)
@@ -385,8 +480,11 @@ def run(group_ids: list[int] | None = None, workers: int | None = None, out_dir=
                 if not quiet and (time.time() - last > 5 or done == len(items)):
                     last = time.time()
                     print(f"  groups {done:,}/{len(items):,}  {time.time() - t0:6.1f}s", file=sys.stderr)
-    write(results, out_dir)
-    return {"groups": len(results), "load_s": round(t_load, 1), "total_s": round(time.time() - t0, 1)}
+    write(results, out_dir, bundles=not records_only)
+    if sib_path is not None:
+        sib_path.unlink(missing_ok=True)
+    return {"groups": len(results), "load_s": round(t_load, 1), "siblings_s": round(t_sib, 1),
+            "total_s": round(time.time() - t0, 1)}
 
 
 _WIDTH = pa.list_(pa.struct([("layer", pa.int16()), ("width", pa.int32())]))
@@ -399,14 +497,14 @@ RECORD_SCHEMA_OVERRIDES = {
 }
 
 
-def write(results: list[dict], out_dir) -> None:
+def write(results: list[dict], out_dir, bundles: bool = True) -> None:
     recs = sorted((r["record"] for r in results), key=lambda r: r["group_id"])
     for r in recs:
         for k in ("bypass_paths", "paths_total"):
             if k in r and r[k] is not None:
                 import decimal
                 r[k] = decimal.Decimal(r[k])
-    cols = sorted({k for r in recs for k in r}, key=lambda k: list(_ORDER).index(k) if k in _ORDER else 999)
+    cols = sorted({k for r in recs for k in r}, key=lambda k: (_ORDER.index(k) if k in _ORDER else 999, k))
     arrays = {}
     for k in cols:
         vals = [r.get(k) for r in recs]
@@ -417,6 +515,8 @@ def write(results: list[dict], out_dir) -> None:
     chains = [c for r in results for c in r["chains"]]
     chains.sort(key=lambda c: c["sanad_id"])
     pq.write_table(pa.Table.from_pylist(chains), out_dir / "chains.parquet", compression="zstd")
+    if not bundles:
+        return
     bdir = out_dir / "bundles"
     if bdir.exists():
         shutil.rmtree(bdir)
@@ -442,7 +542,8 @@ _ORDER = [
     "kappa_nocompat_all", "kappa_nocompat_above_matruk", "kappa_nocompat_saduq_up", "kappa_nocompat_thiqa_up",
     "kappa_nocompat_years_all", "kappa_nocompat_years_above_matruk", "kappa_nocompat_years_saduq_up",
     "kappa_nocompat_years_thiqa_up", "kappa_lower_splice",
-    "width_number", "min_width", "tafarrud_layers", "number_class", "number_class_kappa", "number_class_disagree",
+    "width_number", "min_width", "tafarrud_layers", "number_class", "number_class_width", "gharib_cut_kind",
+    "number_class_disagree",
     "in_sahihayn", "in_sahih_class", "sound_distinct_routes", "huffaz_chain", "n_huffaz_chains",
     "cut_set_all", "cut_set_thiqa_up", "disjoint_routes_all",
     "companions", "companions_on_path", "companions_chain_end", "companions_upstream_def", "sahaba_qty", "repeat_qty",
@@ -459,11 +560,13 @@ _ORDER = [
     "n_backward_edges", "n_self_loops", "has_cycle", "n_takhrij",
     "derived_ordinal", "derived_level", "derived_code", "derived_best_sanad_id", "derived_best_continuous",
     "derived_fell_back", "widest_path_ordinal", "receipt",
-    "code_v2_ibn_hajar", "rule_v2_ibn_hajar", "best_sanad_v2_ibn_hajar", "witness_sanad_v2_ibn_hajar",
-    "witness_attested_v2_ibn_hajar", "divergence_v2_ibn_hajar", "agree_v2_ibn_hajar_vs_group",
-    "code_v2_ibn_al_salah", "rule_v2_ibn_al_salah", "best_sanad_v2_ibn_al_salah", "witness_sanad_v2_ibn_al_salah",
-    "witness_attested_v2_ibn_al_salah", "divergence_v2_ibn_al_salah", "agree_v2_ibn_al_salah_vs_group",
-    "code_v2_alt_mursal_shafii", "code_v2_alt_no_level_8", "code_v2_alt_witness_not_below", "code_v2_alt_all_light_defects",
+    *[f"{k}_v2_{rs}" for rs in ("ibn_hajar", "ibn_al_salah") for k in (
+        "code", "rule", "best_sanad", "witness_sanad", "witness_attested", "divergence", "witness_route_exists",
+        "witness_cross_group", "witness_group", "n_witnesses")],
+    "agree_v2_ibn_hajar_vs_group", "agree_v2_ibn_al_salah_vs_group",
+    "code_v2_alt_weakest", "code_v2_alt_all_light_defects", "code_v2_alt_shahid_group", "code_v2_alt_tasrih_corpus",
+    "code_v2_alt_mudallis_union", "code_v2_alt_unknown_none", "code_v2_alt_mursal_shafii", "code_v2_alt_no_level_8",
+    "code_v2_alt_witness_not_below",
     "v2_differs_from_v1", "v2_by_corroboration", "receipt_v2",
     "matn_no_group", "hadith_matn_no_mode", "sanad_matn_no_mode", "hadith_matn_no_counts",
     "sanad_matn_no_counts", "agree_derived_vs_group", "agree_derived_vs_hadith_mode",
@@ -476,8 +579,9 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--groups", type=int, nargs="*")
     ap.add_argument("--workers", type=int)
+    ap.add_argument("--records-only", action="store_true", help="skip the bundle partitions (stage runs)")
     a = ap.parse_args()
-    print(run(a.groups, a.workers))
+    print(run(a.groups, a.workers, records_only=a.records_only))
 
 
 if __name__ == "__main__":
