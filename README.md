@@ -1,5 +1,54 @@
 # itibar
 
+**The transmission network behind the hadith, computed.**
+
+A hadith is a report of something the Prophet Muhammad said or did. Each one comes with its
+*isnad*: the chain of people who passed it down, from the Prophet's companions to the scholars
+who wrote it into the hadith collections. Most reports survive through many chains. Classical
+hadith critics judged a report partly by gathering all of its chains side by side, a step they
+called *i'tibar*, to see whether it reached the books through many independent lines or hung on
+a single person. They did this by hand, one report at a time.
+
+itibar does it for the whole corpus: 715,790 narrations with 577,024 recorded chains through
+49,844 narrators. For each of the 20,745 reports it merges every chain into one graph and measures it:
+
+- **Independent routes (κ).** How many lines of transmission share no narrator at all, computed
+  exactly as a minimum vertex cut (Menger's theorem). It is recomputed at each level of the
+  classical narrator ratings, from everyone down to only those rated trustworthy.
+- **Bottlenecks.** The narrators that every route passes through.
+- **Common links.** The narrator at which a report first fans out to many students.
+- **A derived grade with a receipt.** The grade the classical narrator ratings imply, with every
+  step written out.
+
+The machinery issues no verdicts of its own and uses no machine learning. Every number traces to
+the source data. The whole corpus runs in about 25 seconds on a laptop, deterministically, from
+open data.
+
+### Checked against the classical scholars
+
+The textbook example, used as such by Ibn al-Salah, is *"Actions are only by intentions"*
+(إنما الأعمال بالنيات). Ibn Hajar records that, through 'Umar, it passed through exactly one person
+per generation for four generations, 'Umar → 'Alqama → Muhammad b. Ibrahim al-Taymi → Yahya b. Sa'id al-Ansari
+(d. 143 AH), and only then spread to many students. On its chains through 'Umar, itibar finds
+those same four narrators as the bottleneck on every route (κ = 1), with at least 25 students
+below Yahya. The 14 chains in the data that break the pattern are each listed with the reason.
+
+The gold set holds 22 cases like this from the classical literature: narrow reports that classical
+works trace through specific narrators, and *mutawatir* reports carried by ten or more
+companions. The test suite asserts every one, the narrow cases down to the exact narrators.
+
+### What it finds
+
+Of the 20,282 reports with chains, 55% pass through a single person somewhere on every route
+(κ = 1). 505 have ten or more fully independent routes; keeping only narrators rated *thiqa*
+(trustworthy), 102 still do. Full results are [below](#results-at-a-glance-full-corpus).
+
+**Next:** corroboration (how independent supporting routes strengthen a report) and aligning each
+report's text variants against its chains. The end products are an open dataset, a paper, and a
+queryable site.
+
+## Technical summary
+
 Corpus-scale isnad-bundle analysis. For every report (meaning group) in a 715,790-hadith corpus,
 itibar overlays every chain into one graph from the Prophet to the books — the *isnad bundle* —
 and computes its structure (width by generation, vertex connectivity at narrator-grade
@@ -277,6 +326,8 @@ Per chain (`out/chains.parquet`): `agree_full` = our weakest link over the whole
   recorded values untouched; no verdict words.
 
 ## Results at a glance (full corpus)
+
+![κ across 20,282 meaning groups by narrator-grade threshold, and the share of groups by κ](figures/fig1_kappa.png)
 
 20,282 groups with chains. κ_everyone: 0 in 14.6% (no unbroken companion-ending route in this
 data: 2,531 groups with no companion-ending chain, 427 where every such chain is broken), 1 in
