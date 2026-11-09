@@ -15,7 +15,7 @@ import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 from matplotlib.colors import LinearSegmentedColormap  # noqa: E402
 
-from itibar import paths  # noqa: E402
+from itibar import config, paths  # noqa: E402
 
 # reference palette (dataviz skill, light mode): sequential blue ramp + text tokens
 BLUE = {100: "#cde2fb", 150: "#b7d3f6", 200: "#9ec5f4", 250: "#86b6ef", 300: "#6da7ec", 350: "#5598e7",
@@ -96,7 +96,6 @@ def fig1(out_dir) -> pd.DataFrame:
 
 WIDTH_BINS = [(0, 0, "0"), (1, 1, "1"), (2, 2, "2"), (3, 4, "3–4"), (5, 8, "5–8"), (9, 16, "9–16"),
               (17, 32, "17–32"), (33, 10**9, "33+")]
-MAX_LAYER = 16
 
 
 def fig2(out_dir) -> pd.DataFrame:
@@ -111,42 +110,50 @@ def fig2(out_dir) -> pd.DataFrame:
     cats = [("al-Bukhari", r["bukhari"] == 1), ("Muslim", r["muslim"] == 1),
             ("other Sahih / mustakhraj (tasnif 1)", (r["sahih"] == 1) & (r["bukhari"] == 0) & (r["muslim"] == 0)),
             ("rest of the corpus", r["sahih"] == 0)]
+    # The CSV keeps every layer; the plot keeps Taqrib's generations only (1..12):
+    # layers 13+ are later compilers and quoters and count how many books carry a
+    # report, not how it was transmitted.
+    plot_max = int(config.load("structure")["layers"]["taqrib_max_layer"])
+    all_max = max(e["layer"] for prof in r["width_profile"] for e in prof)
     rows = []
     mats = []
     for name, mask in cats:
         sub = r[mask]
-        W = np.zeros((len(sub), MAX_LAYER), dtype=int)
+        W = np.zeros((len(sub), all_max), dtype=int)
         for i, prof in enumerate(sub["width_profile"]):
             for e in prof:
-                if 1 <= e["layer"] <= MAX_LAYER:
+                if e["layer"] >= 1:
                     W[i, e["layer"] - 1] = e["width"]
-        M = np.zeros((len(WIDTH_BINS), MAX_LAYER))
+        M = np.zeros((len(WIDTH_BINS), all_max))
         for j, (lo, hi, lab) in enumerate(WIDTH_BINS):
             M[j] = ((W >= lo) & (W <= hi)).mean(axis=0)
-            for L in range(MAX_LAYER):
-                rows.append({"panel": name, "groups": len(sub), "layer": L + 1, "width_bin": lab, "share": M[j, L]})
-        med = np.median(W, axis=0)
-        mats.append((name, len(sub), M, med))
+            for L in range(all_max):
+                rows.append({"panel": name, "groups": len(sub), "layer": L + 1, "width_bin": lab, "share": M[j, L],
+                             "plotted": L + 1 <= plot_max})
+        mats.append((name, len(sub), M[:, :plot_max]))
     cmap = LinearSegmentedColormap.from_list("seq", [SURFACE] + [BLUE[k] for k in (100, 200, 300, 400, 500, 600, 700)])
     fig, axes = plt.subplots(1, 4, figsize=(13, 4.0), sharey=True)
-    for ax, (name, ng, M, med) in zip(axes, mats):
+    for ax, (name, ng, M) in zip(axes, mats):
         im = ax.imshow(M, origin="lower", aspect="auto", cmap=cmap, vmin=0, vmax=0.6,
-                       extent=(0.5, MAX_LAYER + 0.5, -0.5, len(WIDTH_BINS) - 0.5))
+                       extent=(0.5, plot_max + 0.5, -0.5, len(WIDTH_BINS) - 0.5))
         ax.set_title(f"{name}\n{ng:,} groups", fontsize=9)
-        ax.set_xticks(range(1, MAX_LAYER + 1, 3))
+        ax.set_xticks(range(1, plot_max + 1, 2))
         ax.set_xlabel("layer (tabaka)")
         ax.tick_params(length=0)
         for s in ax.spines.values():
             s.set_visible(False)
     axes[0].set_yticks(range(len(WIDTH_BINS)), [b[2] for b in WIDTH_BINS])
     axes[0].set_ylabel("narrators on path at that layer (width)")
-    fig.subplots_adjust(left=0.06, right=0.9, bottom=0.17, top=0.8, wspace=0.08)
-    cax = fig.add_axes((0.915, 0.17, 0.01, 0.63))
+    fig.subplots_adjust(left=0.06, right=0.9, bottom=0.22, top=0.8, wspace=0.08)
+    cax = fig.add_axes((0.915, 0.22, 0.01, 0.58))
     cb = fig.colorbar(im, cax=cax)
     cb.set_label("share of groups (column sums to 1)", color=INK2)
     cb.outline.set_visible(False)
-    fig.suptitle("Width by tabaka: groups recorded in the Sahihayn vs the rest", x=0.01, ha="left",
-                 fontweight="bold", fontsize=10)
+    fig.suptitle(f"Width by tabaka, Taqrib layers 1–{plot_max}: groups recorded in the Sahihayn vs the rest", x=0.01,
+                 ha="left", fontweight="bold", fontsize=10)
+    fig.text(0.01, 0.045, f"Layers {plot_max + 1}+ are omitted: they are later compilers and quoters, and count how many "
+             "books carry a report, not how it was transmitted (the CSV keeps every layer).",
+             fontsize=7, color=MUTED)
     fig.text(0.01, 0.005, "A group appears in every panel whose books record it (al-Bukhari and Muslim overlap). "
              "Width counts distinct narrators on a PROPHET→book route. Source: hadith-kg (CC-BY-4.0).",
              fontsize=7, color=MUTED)

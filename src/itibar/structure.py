@@ -1,7 +1,8 @@
 """Structural analysis of one bundle: layers, width profile, kappa at grade
-thresholds (and its pessimistic bound kappa_lower), cut vertices, single
-strands, partial common links, common links, bypass paths, terminus and
-per-edge continuity. Every quantity is defined in README.md."""
+thresholds (and kappa_lower, the minimum of kappa over three stated identity and
+continuity hypotheses), cut vertices, single strands, partial common links,
+common links, bypass paths, terminus and per-edge continuity. Every quantity is
+defined in README.md."""
 
 from __future__ import annotations
 
@@ -92,13 +93,21 @@ def uncuttable(B: Bundle) -> set[str]:
     return {PROPHET, SINK} | {n for n, k in B.kind.items() if k == "book"}
 
 
-def lower_succ(B: Bundle, corpus: Corpus, min_ordinal: int, merge: bool = True
+def lower_succ(B: Bundle, corpus: Corpus, min_ordinal: int, merge: bool = True,
+               drop_edges: set[tuple[str, str]] | frozenset = frozenset()
                ) -> tuple[dict[str, set[str]], set[str]]:
-    """Graph for kappa_lower: stubs dropped and, when `merge`, each homonym
-    cluster merged into one node (min ordinal of its members) and unnamed persons
-    merged per student. Merging is not monotone — it can splice a dead-end
-    half-route of one person onto a half-route of another and so *create* a
-    route — so kappa_lower takes the minimum of the merged and unmerged graphs."""
+    """One hypothesis graph for kappa_lower. Stubs are always dropped.
+
+      merge=True     each same-(name, nickname) cluster merged into one node (min
+                     ordinal of its members), unnamed persons merged per student
+      merge=False    identities as resolved by the source
+      drop_edges     bundle edges removed (the nocompat hypothesis: every link
+                     the continuity rule marks incompatible), with merge=False
+
+    Merging is not monotone: it can splice a dead-end half-route of one person
+    onto a half-route of another and so *create* a route. Dropping edges is
+    monotone (never raises kappa). kappa_lower is the minimum over the three
+    graphs; it is a lower bound under those hypotheses, not a guarantee."""
     nar = corpus.narrators
 
     def m(v: str) -> str | None:
@@ -132,6 +141,8 @@ def lower_succ(B: Bundle, corpus: Corpus, min_ordinal: int, merge: bool = True
             compiler_only.add(mv)
     succ: dict[str, set[str]] = defaultdict(set)
     for (u, v) in B.edges:
+        if (u, v) in drop_edges:
+            continue
         mu, mv = m(u), m(v)
         if mu is None or mv is None or mu == mv or mu not in keep or mv not in keep:
             continue
@@ -217,8 +228,11 @@ class Structure:
     layer: dict[str, int]
     layer_source: dict[str, str]
     width: dict[int, int]
+    width_taqrib: dict[int, int]
     kappa: dict[str, int]
     kappa_lower: dict[str, int]
+    kappa_lower_source: dict[str, str]      # unmerged | merged | nocompat (first attaining the minimum)
+    kappa_nocompat: dict[str, int]
     kappa_lower_splice: dict[str, bool]
     cut_set: dict[str, list[str]]
     routes_all: list[list[str]]
@@ -237,6 +251,7 @@ class Structure:
     backward_edges: int
     has_cycle: bool
     edge_continuity: dict[tuple[str, str], str] = field(default_factory=dict)
+    edge_basis: dict[tuple[str, str], str] = field(default_factory=dict)    # years | tabaka | unknown | n/a
     edge_muanan: dict[tuple[str, str], str] = field(default_factory=dict)  # yes | no | unknown_word | n/a
 
 
@@ -309,26 +324,54 @@ def layers(B: Bundle, corpus: Corpus, on_path: set[str]) -> tuple[dict[str, int]
     return layer, source, backward
 
 
-def continuity(B: Bundle, corpus: Corpus) -> tuple[dict, dict]:
+@dataclass(frozen=True)
+class ContinuityRule:
+    window: frozenset[int]          # accepted tabaka(student) - tabaka(teacher)
+    min_hearing_age: int            # death(teacher) - birth(student) must reach this
+
+    @staticmethod
+    def load() -> ContinuityRule:
+        c = config.load("structure")["continuity"]
+        return ContinuityRule(frozenset(int(x) for x in c["tabaka_window"]), int(c["min_hearing_age"]))
+
+
+def link_continuity(nar, teacher: int, student: int, rule: ContinuityRule | None = None) -> tuple[str, str]:
+    """Continuity of one link teacher -> student (rawi ids). Returns (verdict, basis):
+
+      years    both death(teacher) and birth(student) known:
+               compatible iff death(teacher) - birth(student) >= min_hearing_age
+      tabaka   otherwise, both tabakas known (> 0):
+               compatible iff tabaka(student) - tabaka(teacher) in the window
+      unknown  otherwise
+      n/a      either end is a placeholder (break marker, unnamed person)
+
+    The one definition used for bundle edges, the nocompat graph of kappa_lower
+    and the drop_incompatible scope."""
+    rule = rule or ContinuityRule.load()
+    if nar.placeholder_role.get(teacher) or nar.placeholder_role.get(student):
+        return "n/a", "n/a"
+    du, bv = int(nar.death[teacher]), int(nar.birth[student])
+    if du >= 0 and bv >= 0:
+        return ("compatible" if du - bv >= rule.min_hearing_age else "incompatible"), "years"
+    tu, tv = int(nar.tabaka[teacher]), int(nar.tabaka[student])
+    if tu > 0 and tv > 0:
+        return ("compatible" if (tv - tu) in rule.window else "incompatible"), "tabaka"
+    return "unknown", "unknown"
+
+
+def continuity(B: Bundle, corpus: Corpus) -> tuple[dict, dict, dict]:
+    """Per edge: continuity verdict, its basis, and the mu'an'an-by-a-mudallis flag."""
     cfg = config.load("structure")["continuity"]
-    window = set(cfg["tabaka_window"])
+    rule = ContinuityRule.load()
     muanan = set(cfg["muanan_words"])
     nar = corpus.narrators
-    cont, mu = {}, {}
+    cont, basis, mu = {}, {}, {}
     for (u, v), e in B.edges.items():
         if B.kind[u] != "narrator" or B.kind[v] != "narrator":
-            cont[(u, v)] = "n/a"
-            mu[(u, v)] = "n/a"
+            cont[(u, v)] = basis[(u, v)] = mu[(u, v)] = "n/a"
             continue
-        ru, rv = B.rawi[u], B.rawi[v]
-        du, bv = int(nar.death[ru]), int(nar.birth[rv])
-        tu, tv = int(nar.tabaka[ru]), int(nar.tabaka[rv])
-        if du >= 0 and bv >= 0:
-            cont[(u, v)] = "compatible" if du >= bv else "incompatible"
-        elif tu > 0 and tv > 0:
-            cont[(u, v)] = "compatible" if (tv - tu) in window else "incompatible"
-        else:
-            cont[(u, v)] = "unknown"
+        cont[(u, v)], basis[(u, v)] = link_continuity(nar, B.rawi[u], B.rawi[v], rule)
+        rv = B.rawi[v]
         if nar.has_tadlis[rv]:
             words = [o[2] for o in e.occurrences]
             known = [w for w in words if w is not None]
@@ -340,14 +383,20 @@ def continuity(B: Bundle, corpus: Corpus) -> tuple[dict, dict]:
                 mu[(u, v)] = "unknown_word"
         else:
             mu[(u, v)] = "not_mudallis"
-    return cont, mu
+    return cont, basis, mu
+
+
+LOWER_HYPOTHESES = ("unmerged", "merged", "nocompat")
 
 
 def analyse(B: Bundle, corpus: Corpus) -> Structure:
     cfg = config.load("structure")["structure"]
     scale = corpus.scale
     unc = uncuttable(B)
+    cont, basis, mu = continuity(B, corpus)
+    incompatible = {e for e, v in cont.items() if v == "incompatible"}
     kappa, kappa_lower, cut_set, cut_by, lower_splice = {}, {}, {}, {}, {}
+    lower_source, kappa_nocompat = {}, {}
     routes_all: list[list[str]] = []
     succ_all = None
     for name, theta in scale.thresholds.items():
@@ -361,11 +410,19 @@ def analyse(B: Bundle, corpus: Corpus) -> Structure:
         cut_set[name] = fr.cut
         if name == "all":
             routes_all = [[v for v in r if v != SINK] for r in fr.routes]
-        lsucc, lunc = lower_succ(B, corpus, theta, merge=True)
-        merged = vertex_connectivity(lsucc, PROPHET, SINK, lunc).value
         usucc, uunc = lower_succ(B, corpus, theta, merge=False)
         unmerged = vertex_connectivity(usucc, PROPHET, SINK, uunc).value
-        kappa_lower[name] = min(merged, unmerged)
+        lsucc, lunc = lower_succ(B, corpus, theta, merge=True)
+        merged = vertex_connectivity(lsucc, PROPHET, SINK, lunc).value
+        if incompatible and unmerged > 0:
+            nsucc, nunc = lower_succ(B, corpus, theta, merge=False, drop_edges=incompatible)
+            nocompat = vertex_connectivity(nsucc, PROPHET, SINK, nunc).value
+        else:                     # dropping edges never raises kappa: nothing to drop, or already 0
+            nocompat = unmerged
+        values = dict(zip(LOWER_HYPOTHESES, (unmerged, merged, nocompat)))
+        kappa_lower[name] = min(values.values())
+        lower_source[name] = next(h for h in LOWER_HYPOTHESES if values[h] == kappa_lower[name])
+        kappa_nocompat[name] = nocompat
         lower_splice[name] = merged > unmerged
 
     on, sub = on_path_subgraph(succ_all)
@@ -378,6 +435,8 @@ def analyse(B: Bundle, corpus: Corpus) -> Structure:
     for v in on:
         if B.kind.get(v) in NARRATOR_KINDS:
             width[layer[v]] += 1
+    taqrib_max = int(config.load("structure")["layers"]["taqrib_max_layer"])
+    width_taqrib = {L: w for L, w in sorted(width.items()) if 1 <= L <= taqrib_max}
     # cut vertices: cuttable dominators of SINK in the on-path graph
     cut_vertices, has_cycle = dominator_cut_vertices(sub, unc)
     # single strands
@@ -442,15 +501,15 @@ def analyse(B: Bundle, corpus: Corpus) -> Structure:
         bypass, bcapped = paths_total, paths_capped
     cls = set(common_links)
     bypass_chains = sum(1 for c in B.chains if c.connected and not (cls & set(c.nodes)))
-    cont, mu = continuity(B, corpus)
     return Structure(
-        on_path=on, layer=layer, layer_source=lsource, width=dict(sorted(width.items())),
-        kappa=kappa, kappa_lower=kappa_lower, kappa_lower_splice=lower_splice, cut_set=cut_set, routes_all=routes_all,
+        on_path=on, layer=layer, layer_source=lsource, width=dict(sorted(width.items())), width_taqrib=width_taqrib,
+        kappa=kappa, kappa_lower=kappa_lower, kappa_lower_source=lower_source, kappa_nocompat=kappa_nocompat,
+        kappa_lower_splice=lower_splice, cut_set=cut_set, routes_all=routes_all,
         cut_vertices=cut_vertices, cut_vertices_by=cut_by, single_strand=ss, pcl=pcl, common_links=common_links,
         cl_in_cycle=cl_in_cycle, bypass_paths=bypass, bypass_capped=bcapped,
         paths_total=paths_total, paths_capped=paths_capped, paths_approx=approx,
         bypass_chains=bypass_chains, backward_edges=backward, has_cycle=has_cycle,
-        edge_continuity=cont, edge_muanan=mu,
+        edge_continuity=cont, edge_basis=basis, edge_muanan=mu,
     )
 
 
