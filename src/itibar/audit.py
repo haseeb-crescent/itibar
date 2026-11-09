@@ -8,8 +8,11 @@ it is compared against (column "upstream")."""
 from __future__ import annotations
 
 import time
+from collections import Counter
 
-from itibar import config, data, grades, paths
+import pandas as pd
+
+from itibar import config, data, grades, load, paths, structure
 
 UPSTREAM = {  # DATA_REPORT.md @ emadjumaah/hadith b5a0cf2
     "hadiths": 715_790, "sanads": 577_024, "sanad_rawis": 4_414_211, "rawis": 49_844,
@@ -38,7 +41,9 @@ def md_table(df, floatfmt: str = "{:,.3f}") -> str:
     for row in df.itertuples(index=False):
         cells = []
         for v in row:
-            if isinstance(v, float):
+            if v is pd.NA or v is pd.NaT:
+                cells.append("")
+            elif isinstance(v, float):
                 cells.append("" if v != v else (f"{v:,.0f}" if v.is_integer() else floatfmt.format(v)))
             elif isinstance(v, int):
                 cells.append(f"{v:,}")
@@ -53,6 +58,69 @@ def check(label: str, ours: int, upstream: int | None) -> str:
         return f"| {label} | {ours:,} | | |"
     mark = "match" if ours == upstream else f"**differs ({ours - upstream:+,})**"
     return f"| {label} | {ours:,} | {upstream:,} | {mark} |"
+
+
+def companion_sql(scale: grades.GradeScale, rank_no: str = "rank_no", rank: str = "rank") -> str:
+    """SQL predicate mirroring GradeScale.is_companion."""
+    q = lambda xs: ",".join("'" + x + "'" for x in sorted(xs)) or "NULL"
+    ranks = ",".join(str(r) for r in sorted(scale.companion_rank_nos))
+    return (f"(coalesce({rank}, '') IN ({q(scale.companion_label_overrides)}) OR ({rank_no} IN ({ranks}) "
+            f"AND coalesce({rank}, '') NOT IN ({q(scale.companion_exclude_labels)})))")
+
+
+PR1_RULE = structure.ContinuityRule(window=frozenset(range(5)), min_hearing_age=0)
+
+
+def link_detail(nar: load.Narrators, teacher: int, student: int, rule: structure.ContinuityRule) -> str:
+    verdict, basis = structure.link_continuity(nar, teacher, student, rule)
+    if basis == "years":
+        d, b = int(nar.death[teacher]), int(nar.birth[student])
+        return f"{verdict} (years: d. {d} − b. {b} = {d - b})"
+    if basis == "tabaka":
+        tu, tv = int(nar.tabaka[teacher]), int(nar.tabaka[student])
+        return f"{verdict} (tabaka {tu} → {tv}, gap {tv - tu:+d})"
+    return verdict
+
+
+def misresolution_table(c, nar: load.Narrators, nick: dict) -> tuple[str, int, int]:
+    """For every cross-name misresolution documented in tests/gold/gold.yaml (and
+    every candidate), check each chain's links into and out of the wrongly
+    resolved narrator against the continuity rule. Returns (markdown, caught, total)."""
+    from itibar import gold
+
+    rule = structure.ContinuityRule.load()
+    rows = [("| gold entry | group | sanad | resolved (in the data) | intended | link above: teacher → resolved | "
+             "link below: resolved → student | verdict | PR 1 rule |"), "|" + "---|" * 9]
+    caught = total = 0
+    for e in gold.entries():
+        gid = int(e["group_id"])
+        cases = [(d["misresolution"], [int(s) for s in d["sanad_ids"]], "documented")
+                 for d in e.get("known_deviations") or [] if d.get("misresolution")]
+        for cm in e.get("candidate_misresolution") or []:
+            res, teacher = int(cm["resolved"][1:]), int(cm["teacher"][1:])
+            sids = [r[0] for r in c.sql(f"""SELECT DISTINCT a.sanad_id FROM sanad_rawis a
+                JOIN sanad_rawis b ON b.sanad_id = a.sanad_id AND b.pos = a.pos + 1
+                JOIN sanads s ON s.id = a.sanad_id JOIN hadiths h ON h.id = s.hadith_id
+                WHERE h.group_id = {gid} AND a.rawi_id = {res} AND b.rawi_id = {teacher} ORDER BY 1""").fetchall()]
+            cases.append((cm, sids, "candidate"))
+        for mis, sids, status in cases:
+            res, intended = int(mis["resolved"][1:]), int(mis["intended"][1:])
+            for sid in sids:
+                ch = [r[0] for r in c.sql(f"SELECT rawi_id FROM sanad_rawis WHERE sanad_id = {sid} ORDER BY pos").fetchall()]
+                for pos in [i for i, r in enumerate(ch) if r == res]:
+                    above = link_detail(nar, ch[pos + 1], res, rule) if pos + 1 < len(ch) else "—"
+                    below = link_detail(nar, res, ch[pos - 1], rule) if pos > 0 else "—"
+                    hit = above.startswith("incompatible") or below.startswith("incompatible")
+                    old = [structure.link_continuity(nar, ch[pos + 1], res, PR1_RULE)[0] if pos + 1 < len(ch) else "",
+                           structure.link_continuity(nar, res, ch[pos - 1], PR1_RULE)[0] if pos > 0 else ""]
+                    total += 1
+                    caught += hit
+                    teacher = nick.get(ch[pos + 1], "") if pos + 1 < len(ch) else ""
+                    rows.append(f"| {e['id']}{' (candidate)' if status == 'candidate' else ''} | {gid} | {sid} | "
+                                f"{nick.get(res, res)} (r{res}) | {nick.get(intended, intended)} (r{intended}) | "
+                                f"{teacher}: {above} | {below} | **{'caught' if hit else 'not caught'}** | "
+                                f"{'caught' if 'incompatible' in old else 'not caught'} |")
+    return "\n".join(rows), caught, total
 
 
 def build() -> str:
@@ -122,16 +190,17 @@ def build() -> str:
 
     w("### sahaba_qty spot check (10 most-narrated groups)\n")
     w("`upstream` = distinct chain-end narrators with rank exactly `صحابي`; `itibar` = distinct companions "
-      "(rank_no 1 minus the labels that deny companionship) at chain ends; `on path` = companions narrating "
+      "(rank_no 1 minus the labels that deny companionship, plus the young-companion labels at any rank_no) at "
+      "chain ends; `on path` = companions narrating "
       "directly from PROPHET on an unbroken route to a book (`records.companions`; requires `make bundles`).\n")
     rec_exists = (paths.records_path()).exists()
     on_path_sql = (f"(SELECT companions FROM read_parquet('{paths.records_path().as_posix()}') r WHERE r.group_id = g.id)"
                    if rec_exists else "NULL")
-    excl = ",".join("'" + x + "'" for x in scale.companion_exclude_labels)
+    is_comp = companion_sql(scale)
     sq = df(f"""SELECT g.id AS group_id, g.sahaba_qty AS declared,
             (SELECT count(DISTINCT e.rawi_id) FROM chain_end e WHERE e.group_id = g.id AND e.rank = 'صحابي') AS upstream,
-            (SELECT count(DISTINCT e.rawi_id) FROM chain_end e WHERE e.group_id = g.id AND e.rank_no = 1
-               AND coalesce(e.rank, '') NOT IN ({excl}) AND e.rawi_id NOT IN ({ph_ids})) AS itibar,
+            (SELECT count(DISTINCT e.rawi_id) FROM chain_end e WHERE e.group_id = g.id
+               AND {companion_sql(scale, 'e.rank_no', 'e.rank')} AND e.rawi_id NOT IN ({ph_ids})) AS itibar,
             {on_path_sql} AS on_path, left(g.nass, 50) AS opening
             FROM meaning_groups g WHERE g.id > 0 ORDER BY g.repeat_qty DESC LIMIT 10""")
     w(md_table(sq))
@@ -173,6 +242,28 @@ def build() -> str:
     w("Labels whose wording disagrees with their level (kept at the source's level; itibar grades by `rank_no`):\n")
     w(md_table(anomalies))
     w("")
+    w("### 2.1 Companion label overrides\n")
+    ov = ",".join("'" + x + "'" for x in sorted(scale.companion_label_overrides)) or "NULL"
+    ovt = df(f"""SELECT r.id, r.nickname, r.rank, r.rank_no, r.tabaka, r.death_year,
+                 (SELECT count(*) FROM chain_end e WHERE e.rawi_id = r.id AND e.type_no IN (0, 1)) AS chain_ends,
+                 (SELECT count(DISTINCT e.group_id) FROM chain_end e WHERE e.rawi_id = r.id AND e.type_no IN (0, 1)) AS groups
+                 FROM rawis r WHERE r.rank IN ({ov}) AND r.rank_no NOT IN ({','.join(map(str, sorted(scale.companion_rank_nos)))})
+                 ORDER BY r.rank_no, r.id""")
+    w(f"`grades.yaml: companion.label_overrides` ({', '.join('`' + x + '`' for x in sorted(scale.companion_label_overrides))}) "
+      f"makes a narrator a companion whatever its `rank_no`. {len(ovt)} narrators carry these labels outside rank_no 1 "
+      f"({q1(f'SELECT count(*) FROM rawis WHERE rank IN ({ov}) AND rank_no = 1')} more are at rank_no 1 and were "
+      "companions already). Their chains now reach PROPHET. Companionship only: the ordinal still follows `rank_no` "
+      "(DECISIONS D33).\n")
+    w(md_table(ovt))
+    disp = df(f"""WITH d AS (SELECT rank_no, count(*) AS narrators, sum(({is_comp})::INT) AS companions_in_itibar
+                             FROM rawis WHERE rank LIKE '%مختلف في صحب%' GROUP BY 1),
+                       e AS (SELECT rank_no, count(*) AS chain_ends FROM chain_end
+                             WHERE type_no IN (0, 1) AND rank LIKE '%مختلف في صحب%' GROUP BY 1)
+                  SELECT d.*, coalesce(e.chain_ends, 0) AS chain_ends FROM d LEFT JOIN e USING (rank_no) ORDER BY 1""")
+    w("\nDisputed companionship (`مختلف في صحبته` and variants) is not overridden and follows `rank_no`: a companion "
+      "at rank_no 1, a narrator of that level otherwise.\n")
+    w(md_table(disp))
+    w("")
 
     # ------------------------------------------------------------------ 3
     w("## 3. `tabaka`: distribution, and Ibn Hajar's twelve generations\n")
@@ -212,8 +303,8 @@ def build() -> str:
                          GROUP BY 1 ORDER BY n DESC LIMIT 8""")
     w("\nRaw-only values are ranges or approximations the build declined to parse, e.g. "
       + ", ".join(f"`{r}` ({n})" for r, n in raw_examples.itertuples(index=False)) + ". itibar keeps them beside the "
-      "parsed value (terminus columns) and never parses them itself. Birth years are rare, so the continuity check "
-      "falls back to tabaka for most links (§8.5).\n")
+      "parsed value (terminus columns) and never parses them itself. Where both the teacher's death and the "
+      "student's birth are known the continuity check uses years; otherwise it falls back to tabaka (§8.5).\n")
 
     # ------------------------------------------------------------------ 5
     w("## 5. Inline mentions and transmission words\n")
@@ -273,19 +364,20 @@ def build() -> str:
     w("### 6.3 Marfu'/qudsi chains not ending in a companion\n")
     ends = df(f"""SELECT CASE WHEN rawi_id IN ({gap_ids}) THEN 'break marker (' || rawi_id || ')'
                     WHEN rawi_id = 1131 THEN 'unnamed person (1131)'
-                    WHEN rank_no = 1 AND coalesce(rank, '') NOT IN ({excl}) THEN 'companion: ' || rank
+                    WHEN {is_comp} THEN 'companion: ' || rank
                     WHEN rank_no = 1 THEN 'rank_no 1, not a companion: ' || rank
                     WHEN is_stub = 1 THEN 'stub'
                     ELSE 'other narrator, rank_no ' || rank_no END AS chain_end, count(*) AS chains,
                   coalesce(sum((rank != 'صحابي')::INT), 0) AS counted_by_upstream
                FROM chain_end WHERE type_no IN (0, 1) GROUP BY 1 ORDER BY chains DESC""")
     w(md_table(ends))
-    ours_mursal = q1(f"""SELECT count(*) FROM chain_end WHERE type_no IN (0,1) AND NOT (rank_no = 1
-                       AND coalesce(rank, '') NOT IN ({excl}) AND rawi_id NOT IN ({ph_ids}))""")
+    ours_mursal = q1(f"""SELECT count(*) FROM chain_end WHERE type_no IN (0,1) AND NOT ({is_comp}
+                       AND rawi_id NOT IN ({ph_ids}))""")
     w(f"\nUpstream's 17,811 counts chain ends whose label is not exactly `صحابي`: it **includes** 10,646 chains ending "
       f"at female companions and 3,879 at `صحابي صغير`, and **excludes** every chain ending at a NULL-rank "
       f"placeholder (37,538, mostly `موضع إرسال`, the source's own irsal marker). By itibar's companion rule "
-      f"(rank_no 1, minus `لم تثبت له صحبة` / `له إدراك` / `لها إدراك`) **{ours_mursal:,}** marfu'/qudsi chains do not "
+      f"(rank_no 1, minus `لم تثبت له صحبة` / `له إدراك` / `لها إدراك`, plus the young-companion labels at any rank_no) "
+      f"**{ours_mursal:,}** marfu'/qudsi chains do not "
       "end in a companion; these are kept in their bundles, flagged mursal, and get no PROPHET edge.\n")
     w("### 6.4 Groups without chains\n")
     w(f"{empty:,} groups (id > 0) have no hadith, group 0 is the `غير منشور` placeholder, and "
@@ -365,18 +457,48 @@ def build() -> str:
         rp = paths.records_path().as_posix()
         w(f"Groups with a cycle in the on-path bundle: {q1(f'SELECT sum(has_cycle::INT) FROM read_parquet({chr(39)}{rp}{chr(39)})'):,}.\n")
     w("### 8.4 Homonym misresolution across different full names\n")
-    w("See §6.1. Not mergeable without a name-resolution model (out of scope); the continuity check is the visible "
-      "symptom. The gold set documents every such chain it meets.\n")
-    w("### 8.5 Layer gaps along chain links (calibrating the continuity window)\n")
-    gaps = df(f"""WITH l AS (SELECT a.rawi_id student, b.rawi_id teacher FROM sanad_rawis a JOIN sanad_rawis b
-                  ON a.sanad_id = b.sanad_id AND b.pos = a.pos + 1 WHERE a.rawi_id NOT IN ({ph_ids}) AND b.rawi_id NOT IN ({ph_ids}))
-                  SELECT CASE WHEN ts.tabaka = 0 OR tt.tabaka = 0 THEN 'missing'
-                              WHEN ts.tabaka - tt.tabaka < 0 THEN 'negative'
+    nar = load.narrators(c, scale)
+    nick = dict(c.sql("SELECT id, nickname FROM rawis").fetchall())
+    mt, caught, total = misresolution_table(c, nar, nick)
+    w("Not mergeable without a name-resolution model (out of scope, §6.1). The continuity rule (§8.5) is the "
+      "visible symptom: a wrongly resolved narrator often sits in the wrong generation for his teacher. For every "
+      "cross-name misresolution documented in `tests/gold/gold.yaml` (and the one candidate), the links into and "
+      "out of the wrong narrator are checked against the corrected rule. *Caught* means at least one of them is "
+      "incompatible, so the `nocompat` graph of `kappa_lower` removes that route.\n")
+    w(mt)
+    w(f"\n**{caught} of {total}** chains caught. The al-Qattan chains are caught by years: the data gives al-Taymi "
+      "d. 119 (Taqrib: 120) and al-Qattan b. 120, so the student was born after the teacher died; PR 1's rule "
+      "(death ≥ birth) already flagged them because of the 119, and the corrected rule (death − birth ≥ "
+      f"{structure.ContinuityRule.load().min_hearing_age}) would also catch the Taqrib date. Every documented case was "
+      "already flagged under PR 1's rule (last column); what changes is that the flags now lower `kappa_lower` "
+      "through the `nocompat` graph (§8.7). The candidate (Sa'id b. Bashir for Ibn Abi 'Aruba) sits in a plausible "
+      "generation and is not caught. Cross-name misresolution the rule does not catch remains an unquantified "
+      "upward bias on κ.\n")
+    w("### 8.5 Continuity: layer gaps and the years rule\n")
+    rule = structure.ContinuityRule.load()
+    win = config.load("structure")["continuity"]
+    c.execute(f"""CREATE OR REPLACE TEMP TABLE links AS
+        SELECT b.rawi_id AS teacher, a.rawi_id AS student, count(*) AS n FROM sanad_rawis a JOIN sanad_rawis b
+        ON a.sanad_id = b.sanad_id AND b.pos = a.pos + 1
+        WHERE a.rawi_id NOT IN ({ph_ids}) AND b.rawi_id NOT IN ({ph_ids}) GROUP BY 1, 2""")
+    gaps = df("""SELECT CASE WHEN ts.tabaka = 0 OR tt.tabaka = 0 THEN 'missing'
+                              WHEN ts.tabaka - tt.tabaka <= -2 THEN '≤ −2'
                               WHEN ts.tabaka - tt.tabaka >= 6 THEN '6+'
-                              ELSE (ts.tabaka - tt.tabaka)::VARCHAR END AS student_minus_teacher, count(*) AS links
-                  FROM l JOIN rawis ts ON ts.id = l.student JOIN rawis tt ON tt.id = l.teacher GROUP BY 1 ORDER BY 1""")
+                              ELSE (ts.tabaka - tt.tabaka)::VARCHAR END AS student_minus_teacher,
+                         sum(n)::BIGINT AS links, count(*) AS distinct_pairs
+                  FROM links l JOIN rawis ts ON ts.id = l.student JOIN rawis tt ON tt.id = l.teacher GROUP BY 1""")
+    order = ["≤ −2", "-1", "0", "1", "2", "3", "4", "5", "6+", "missing"]
+    gaps["k"] = [order.index(x) for x in gaps["student_minus_teacher"]]
+    gaps = gaps.sort_values("k").drop(columns="k")
+    gaps["student_minus_teacher"] = gaps["student_minus_teacher"].str.replace("-", "−")
     tot = gaps["links"].sum()
     gaps["share"] = gaps["links"] / tot
+    ours_win = {str(x).replace("-", "−") for x in rule.window}
+    brief_win = {str(x).replace("-", "−") for x in win["brief_tabaka_window"]}
+    gaps["itibar_window"] = ["" if g == "missing" else ("in" if g in ours_win else "out") for g in gaps["student_minus_teacher"]]
+    gaps["brief_window"] = ["" if g == "missing" else ("in" if g in brief_win else "out") for g in gaps["student_minus_teacher"]]
+    w("Chain links (adjacent narrators in `sanad_rawis`, placeholders excluded) by tabaka gap, student minus teacher. "
+      "This is the tabaka rule's input; years decide first where both are known.\n")
     w(md_table(gaps))
     pairs = [(720, 7272, "Anas → al-Zuhri"), (5719, 6796, "'Alqama → al-Taymi"), (7272, 6659, "al-Zuhri → Malik"),
              (6458, 3795, "Qatada → Shu'ba"), (7272, 3443, "al-Zuhri → Ibn 'Uyayna"), (5913, 6796, "'Umar → al-Taymi (dropped link)")]
@@ -384,12 +506,41 @@ def build() -> str:
     for u, v, lab in pairs:
         tu, tv = names.get(u), names.get(v)
         w(f"| {lab} | {tu} | {tv} | {tv - tu} |")
-    win = config.load("structure")["continuity"]
-    w(f"\nThe brief's window {win['brief_tabaka_window']} would mark every gap-3 and gap-4 link incompatible — about "
-      f"{gaps[gaps['student_minus_teacher'].isin(['3', '4', '5', '6+', 'negative'])]['links'].sum() / tot:.0%} of all "
-      f"links, including canonical ones above. itibar uses {win['tabaka_window']} (`config/structure.yaml`), which "
-      "keeps them; incompatible then means a gap of 5+ layers (~125 years) or a student placed before the teacher. "
-      "The continuity flags are reported, never used in kappa or the derived grade.\n")
+    out_brief = gaps[gaps["brief_window"] == "out"]["links"].sum() / tot
+    out_ours = gaps[gaps["itibar_window"] == "out"]["links"].sum() / tot
+    w(f"\nThe brief's window {win['brief_tabaka_window']} puts {out_brief:.0%} of all links outside it, including every "
+      f"canonical gap-3 and gap-4 link above. itibar's window {win['tabaka_window']} (`config/structure.yaml`) keeps "
+      f"them and accepts −1 (a senior narrating from a junior, *riwayat al-akabir 'an al-asaghir*); {out_ours:.1%} of "
+      "links fall outside it (a gap of 5+ layers, ~125 years, or a student two or more layers before the teacher).\n")
+    yrs = df("""SELECT CASE WHEN d < -20 THEN -25 WHEN d >= 100 THEN 100 ELSE floor(d / 5)::INT * 5 END AS bin,
+                       sum(n)::BIGINT AS links, count(*) AS distinct_pairs FROM
+                (SELECT tt.death_year - ts.birth_year AS d, l.n FROM links l JOIN rawis ts ON ts.id = l.student
+                 JOIN rawis tt ON tt.id = l.teacher WHERE tt.death_year IS NOT NULL AND ts.birth_year IS NOT NULL)
+                GROUP BY 1 ORDER BY 1""")
+    both = int(yrs["links"].sum())
+    below = int(yrs[yrs["bin"] < rule.min_hearing_age]["links"].sum())
+    yrs["death_minus_birth"] = ["< −20" if b == -25 else ("≥ 100" if b == 100 else f"{b} to {b + 4}") for b in yrs["bin"]]
+    yrs["share"] = yrs["links"] / both
+    yrs["verdict"] = ["incompatible" if b < rule.min_hearing_age else "compatible" for b in yrs["bin"]]
+    w(f"**Years rule.** {both:,} of {tot:,} links ({both / tot:.1%}) have both the teacher's death year and the student's "
+      f"birth year; for them the years decide. Compatible iff death(teacher) − birth(student) ≥ "
+      f"{rule.min_hearing_age} (`continuity.min_hearing_age`): {below:,} links ({below / both:.2%}) fall below it, of "
+      f"which {int(yrs[(yrs['bin'] >= 0) & (yrs['bin'] < rule.min_hearing_age)]['links'].sum()):,} are 0–4 (passed by "
+      "PR 1's death ≥ birth rule) and the rest negative.\n")
+    w(md_table(yrs[["death_minus_birth", "links", "distinct_pairs", "share", "verdict"]]))
+    # verdict tallies with the one continuity function, new rule vs PR 1's
+    lk = c.sql("SELECT teacher, student, n FROM links").fetchnumpy()
+    new_ct, old_ct = Counter(), Counter()
+    for u, v, n in zip(lk["teacher"].tolist(), lk["student"].tolist(), lk["n"].tolist()):
+        new_ct[structure.link_continuity(nar, u, v, rule)] += n
+        old_ct[structure.link_continuity(nar, u, v, PR1_RULE)] += n
+    w("\nVerdicts over all chain links, by basis (`continuity_basis`), under the corrected rule and under PR 1's "
+      "(window [0..4], death ≥ birth):\n")
+    w("| verdict | basis | links (corrected) | share | links (PR 1) | share |\n|---|---|---|---|---|---|")
+    for key in sorted(set(new_ct) | set(old_ct), key=lambda k: (k[0], k[1])):
+        w(f"| {key[0]} | {key[1]} | {new_ct[key]:,} | {new_ct[key] / tot:.2%} | {old_ct[key]:,} | {old_ct[key] / tot:.2%} |")
+    w("\nThe continuity flags feed one quantity: the `nocompat` hypothesis of `kappa_lower` (§8.7), which removes "
+      "every incompatible link. They are never used in κ itself or in the derived grade.\n")
     w("### 8.6 `max_rank` includes the compiler\n")
     if rec_exists:
         cp = paths.chains_path().as_posix()
@@ -401,15 +552,101 @@ def build() -> str:
         w("\n`agree_full`: our weakest link over the whole stored chain equals `max_rank` (the like-for-like check of "
           "our reading). `agree_derived`: the same with the compiler at pos 0 excluded, as the derived grade does; every "
           "disagreement is a chain whose compiler is strictly weaker than everyone else in it.\n")
-    w("### 8.7 Summary of modelling consequences\n")
+    w("### 8.7 κ_lower under three hypotheses\n")
+    if rec_exists:
+        rp = paths.records_path().as_posix()
+        kl = []
+        for th in scale.thresholds:
+            r = c.sql(f"""SELECT count(*) AS groups,
+                sum((kappa_lower_{th} < kappa_{th})::INT) AS lower_below_kappa,
+                sum((kappa_nocompat_{th} < kappa_{th})::INT) AS nocompat_below_kappa,
+                sum((kappa_lower_source_{th} = 'unmerged')::INT) AS attained_unmerged,
+                sum((kappa_lower_source_{th} = 'merged')::INT) AS attained_merged,
+                sum((kappa_lower_source_{th} = 'nocompat')::INT) AS attained_nocompat,
+                sum((kappa_{th} >= 2 AND kappa_lower_{th} < 2)::INT) AS kappa_2plus_lower_below_2,
+                sum((kappa_{th} >= 1 AND kappa_lower_{th} = 0)::INT) AS kappa_1plus_lower_0
+                FROM read_parquet('{rp}') WHERE status = 'ok'""").df()
+            r.insert(0, "threshold", th)
+            kl.append(r)
+        w("`kappa_lower_θ` = min of κ_θ over three graphs, stubs dropped in all: **unmerged** (identities as "
+          "resolved), **merged** (each same-name cluster one node of min ordinal, unnamed persons merged per student) "
+          "and **nocompat** (unmerged, every continuity-incompatible link removed). `kappa_lower_source_θ` names the "
+          "first hypothesis attaining the minimum in that order; since removing links never raises κ, `nocompat` "
+          "there means removing incompatible links lowered κ below both other graphs.\n")
+        w(md_table(pd.concat(kl, ignore_index=True)))
+        w("\nIt is a lower bound under those hypotheses, not a guarantee: cross-name misresolution that the continuity "
+          "rule does not catch (§8.4) remains an unquantified upward bias on κ.\n")
+    w("### 8.8 Summary of modelling consequences\n")
     w("- break markers: per-chain, untraversable gap nodes (no fused hubs; broken chains do not count as routes)\n"
       "- unnamed person: per-(student, teacher) node, ordinal 0\n"
       "- compiler node in front of every book; book nodes never cut\n"
       "- self-loops dropped; cycles handled; path counts flagged on cyclic bundles\n"
-      "- companion = rank_no 1 minus explicit denials; mursal chains kept, not connected to PROPHET\n"
-      "- continuity window calibrated to the source scale ([0..4])\n"
-      "- `kappa_lower`: min(κ with homonym clusters merged (min ordinal), unnamed persons merged per student and stubs "
-      "dropped; κ with stubs dropped only) — merging alone can splice two half-routes into a new route\n")
+      "- companion = rank_no 1 minus explicit denials, plus the young-companion labels at any rank_no; mursal chains "
+      "kept, not connected to PROPHET\n"
+      f"- continuity: years first (death − birth ≥ {rule.min_hearing_age}), then the tabaka window "
+      f"{win['tabaka_window']} calibrated to the source scale\n"
+      "- `kappa_lower`: min of κ over three stated hypotheses — same-name clusters merged, unmerged, "
+      "continuity-incompatible links removed (stubs dropped in all); a lower bound under those hypotheses, not a "
+      "guarantee\n")
+
+    # ------------------------------------------------------------------ 9
+    w("## 9. Why κ is zero\n")
+    if rec_exists:
+        rp = paths.records_path().as_posix()
+        cp = paths.chains_path().as_posix()
+        n_all = q1(f"SELECT count(*) FROM read_parquet('{rp}')")
+        n_ok = q1(f"SELECT count(*) FROM read_parquet('{rp}') WHERE status = 'ok'")
+        zr = df(f"""SELECT kappa_zero_reason AS reason, count(*) AS groups FROM read_parquet('{rp}')
+                    WHERE kappa_zero_reason IS NOT NULL GROUP BY 1""")
+        zorder = ["no_chains", "no_companion_end", "broken_only", "other"]
+        zr = zr.set_index("reason").reindex(zorder, fill_value=0).reset_index()
+        nz = int(zr["groups"].sum())
+        zr["share_of_all_groups"] = zr["groups"] / n_all
+        zr["share_of_zero_groups"] = zr["groups"] / nz
+        meaning = {"no_chains": "the group has no chains",
+                   "no_companion_end": "no chain ends in a companion (irsal marker, unnamed person, non-companion or stub)",
+                   "broken_only": "companion-ending chains exist, every one with a break marker",
+                   "other": "a continuous chain exists yet no route survived (gated at 0)"}
+        zr["meaning"] = [meaning[x] for x in zr["reason"]]
+        w(f"κ = 0 means **no unbroken companion-ending route in this data**, not no support. {nz:,} of {n_all:,} "
+          f"groups have no PROPHET → book route at *everyone*: {nz - int(zr.loc[zr.reason == 'no_chains', 'groups'].sum()):,} "
+          f"of the {n_ok:,} groups with chains ({(nz - int(zr.loc[zr.reason == 'no_chains', 'groups'].sum())) / n_ok:.1%}) "
+          "plus the groups without chains. `kappa_zero_reason` assigns each one reason, by precedence:\n")
+        w(md_table(zr))
+        for reason in ("no_companion_end", "broken_only"):
+            tb = df(f"""WITH g AS (SELECT group_id FROM read_parquet('{rp}') WHERE kappa_zero_reason = '{reason}'),
+                        gb AS (SELECT DISTINCT group_id, book_id FROM read_parquet('{cp}')),
+                        tot AS (SELECT book_id, count(*) AS groups_with_chains FROM gb GROUP BY 1)
+                        SELECT gb.book_id, b.name AS book, b.author_name AS author, count(*) AS groups,
+                               tot.groups_with_chains, count(*) / tot.groups_with_chains AS share_of_book
+                        FROM gb JOIN g USING (group_id) JOIN books b ON b.id = gb.book_id JOIN tot USING (book_id)
+                        GROUP BY gb.book_id, b.name, b.author_name, tot.groups_with_chains
+                        ORDER BY groups DESC, gb.book_id LIMIT 10""")
+            w(f"\n**`{reason}`: the ten books contributing the most such groups** (a group counts for every book with a "
+              "chain in it):\n")
+            w(md_table(tb))
+        sp = df(f"""SELECT group_id, kappa_all, n_chains, n_chains_companion_end, n_chains_broken, left(nass, 40) AS opening
+                    FROM read_parquet('{rp}') WHERE status = 'ok' AND kappa_all > 0 AND n_chains_connected = 0
+                    ORDER BY group_id""")
+        w(f"\n**The converse does not hold.** {len(sp)} groups have κ ≥ 1 with no continuous chain: every chain is "
+          "broken, but at different places, and the union graph joins the intact parts into a route. In group 7978 one "
+          "copy of the isnad has an inqita' marker in the middle and another a ta'liq at the compiler's end; together "
+          "they cover the whole chain. Routes are paths in the bundle, not attested chains (DECISIONS D31); "
+          "`n_chains_connected` and `bypass_chains` count attested chains.\n")
+        w(md_table(sp))
+        hk = scale.hukm_codes
+        xt = df(f"""SELECT coalesce(kappa_zero_reason, 'κ ≥ 1') AS reason, matn_no_group AS code, count(*) AS n
+                    FROM read_parquet('{rp}') GROUP BY 1, 2""")
+        piv = xt.pivot_table(index="reason", columns="code", values="n", aggfunc="sum", fill_value=0)
+        piv = piv.reindex([x for x in zorder + ["κ ≥ 1"] if x in piv.index])
+        piv.columns = [f"{int(cd)} {hk.get(int(cd), '')}" for cd in piv.columns]
+        piv = piv.reset_index()
+        w("\n**Against the source's recorded group grade** (`meaning_groups.matn_no`, labels quoted from the source). "
+          "A group the source grades صحيح with no connected chain here is a gap in this data's chains, not a finding "
+          "about the report:\n")
+        w(md_table(piv))
+    else:
+        w("_(run `make bundles` first)_\n")
 
     # ------------------------------------------------------------------ appendix
     w("## Appendix A. Full `rawis.rank` vocabulary\n")

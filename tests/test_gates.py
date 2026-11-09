@@ -56,14 +56,46 @@ def test_one_record_per_group(records, con):
     assert records["group_id"].is_unique
 
 
-def test_kappa_lower_is_a_lower_bound(records):
+def test_kappa_lower_is_the_minimum_over_three_hypotheses(records):
+    """kappa_lower = min(unmerged, merged, nocompat). We store nocompat and the
+    name of the hypothesis attaining the minimum; the bound never exceeds kappa
+    or nocompat, and nocompat (edges removed from the unmerged graph) never
+    exceeds kappa."""
     r = records[records["status"] == "ok"]
     for th in ("all", "above_matruk", "saduq_up", "thiqa_up"):
         assert (r[f"kappa_lower_{th}"] <= r[f"kappa_{th}"]).all(), th
+        assert (r[f"kappa_lower_{th}"] <= r[f"kappa_nocompat_{th}"]).all(), th
+        assert (r[f"kappa_nocompat_{th}"] <= r[f"kappa_{th}"]).all(), th
+        assert set(r[f"kappa_lower_source_{th}"]) <= {"unmerged", "merged", "nocompat"}, th
+        nc = r[r[f"kappa_lower_source_{th}"] == "nocompat"]
+        assert (nc[f"kappa_lower_{th}"] == nc[f"kappa_nocompat_{th}"]).all(), th
+    assert (records["structure_version"] == 2).all()
     # thresholds are nested: a stricter threshold never raises kappa
     assert (r["kappa_above_matruk"] <= r["kappa_all"]).all()
     assert (r["kappa_saduq_up"] <= r["kappa_above_matruk"]).all()
     assert (r["kappa_thiqa_up"] <= r["kappa_saduq_up"]).all()
+
+
+def test_every_zero_kappa_has_a_reason_and_none_is_other(records):
+    """kappa_zero_reason is set exactly when there is no PROPHET -> book route at
+    `everyone`, and every such group is explained by its chains: no chains, no
+    chain ending in a companion, or a break marker in every companion-ending
+    chain. `other` (a continuous chain exists yet no route) must not occur."""
+    reason = records["kappa_zero_reason"]
+    zero = (records["status"] == "no_chains") | (records["kappa_all"] == 0)
+    assert (reason.notna() == zero).all()
+    assert ((reason == "no_chains") == (records["status"] == "no_chains")).all()
+    assert (reason == "other").sum() == 0, records.loc[reason == "other", "group_id"].head(10).tolist()
+    nce = records[reason == "no_companion_end"]
+    assert (nce["n_chains_companion_end"] == 0).all()
+    bo = records[reason == "broken_only"]
+    assert (bo["n_chains_companion_end"] > 0).all() and (bo["n_chains_connected"] == 0).all()
+    ok = records[records["status"] == "ok"]
+    assert (ok.loc[ok["n_chains_connected"] > 0, "kappa_all"] > 0).all()
+    # The converse does not hold: a route can be assembled from chains broken at
+    # different places (DECISIONS D31); those groups are listed in the audit, §9.
+    spliced = ok[(ok["kappa_all"] > 0) & (ok["n_chains_connected"] == 0)]
+    assert len(spliced) <= 0.001 * len(ok), len(spliced)
 
 
 def test_cut_vertices_iff_kappa_one(records):
