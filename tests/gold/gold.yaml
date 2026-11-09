@@ -271,3 +271,215 @@ entries:
 - {id: bada-al-islam-gharib, group_id: 497, title: "بدأ الإسلام غريبا", class: mutawatir,
    source: [{work: "Nazm al-Mutanathir", author: "al-Kattani", confidence: medium, claim: "listed"}],
    scope: {threshold: all}, expect: {kappa_gt: {all: 1}, companions_ge: 10}}
+
+# ================================================================ bucket 2
+#
+# The entries below test the corroborated grade (derive v2), the number class,
+# the qara'in flags and the list matching. They never change an entry above.
+# `scope_from: <id>` reuses another entry's scope and documented deviations.
+# chain_v2 selects the chains carrying `path` (companion first, then down the
+# chain, consecutive), takes the best of them under v2, and checks its weakest
+# narrator (Taqrib level = rawis.rank_no) and its v2 rule and code per ruleset.
+# Pages are Shamela page ids; printed page labels are in the quotes.
+
+# ---------------------------------------------------------------- corroboration
+
+- id: siwak-muhammad-b-amr
+  group_id: 121
+  title: "لولا أن أشق على أمتي لأمرتهم بالسواك — through Muhammad b. 'Amr b. 'Alqama"
+  class: hasan-raised-by-other-routes
+  source:
+    - {work: "Muqaddimat Ibn al-Salah (naw' 2, al-hasan), ed. 'Itr p. 35", author: "Ibn al-Salah", confidence: high,
+       url: "https://shamela.ws/book/22870/32",
+       claim: "Muhammad b. 'Amr is known for truthfulness but not for precision; his hadith is hasan, and as it is also narrated by other routes the chain reaches the level of sahih"}
+    - {work: "Taqrib al-Tahdhib, introduction (level 5)", author: "Ibn Hajar", confidence: high,
+       url: "https://shamela.ws/book/127715/52", claim: "level 5: صدوق سيء الحفظ / يهم / له أوهام"}
+  scope: {threshold: all}
+  expect:
+    chain_v2:
+      path: [r4396, r4903, r7225]          # Abu Hurayra -> Abu Salama -> Muhammad b. 'Amr al-Laythi (rank_no 5, صدوق له أوهام)
+      weakest: {node: r7225, level: 5}
+      ibn_hajar: {code: 1, rule: hasan_li_ghayrihi}
+      ibn_al_salah: {code: 0, rule: sahih_li_ghayrihi}
+  notes: >
+    16 chains of group 121 carry Abu Hurayra -> Abu Salama -> Muhammad b. 'Amr. The witnessing route
+    (attested chain, e.g. sanad 1037) shares Abu Hurayra but not Abu Salama: mutaba'a qasira. Under
+    ibn_hajar level 5 is a light defect, repaired to hasan li-ghayrihi; under ibn_al_salah it is hasan
+    on its own and an independent hasan-or-better route raises it to sahih li-ghayrihi, as in his text.
+
+- id: sandals-asim-b-ubaydallah
+  group_id: 2031
+  title: "أرضيت من نفسك ومالك بنعلين — through 'Asim b. 'Ubaydallah"
+  class: hasan-li-ghayrihi-witnesses-outside-the-group
+  source:
+    - {work: "al-Nukat 'ala Kitab Ibn al-Salah 1/388-389", author: "Ibn Hajar", confidence: high,
+       url: "https://shamela.ws/book/8316/363",
+       claim: "an example of hasan from a poor-memory narrator: al-Tirmidhi called it hasan 'لمجيئه من غير وجه'"}
+    - {work: "Jami' al-Tirmidhi no. 1113 (Shamela 7895)", author: "al-Tirmidhi", confidence: high,
+       url: "https://shamela.ws/book/7895/1910",
+       claim: "after the hadith: وفي الباب عن عمر وأبي هريرة وسهل بن سعد وأبي سعيد وأنس وعائشة وجابر وأبي حدرد (that edition reads حسن صحيح)"}
+    - {work: "Taysir Mustalah al-Hadith p. 67", author: "Mahmud al-Tahhan", confidence: high,
+       url: "https://shamela.ws/book/8681/58", claim: "the textbook example of al-hasan li-ghayrihi"}
+  scope: {threshold: all}
+  expect:
+    chain_v2:
+      path: [r4095, r4879, r4069]          # 'Amir b. Rabi'a -> 'Abdullah b. 'Amir -> 'Asim b. 'Ubaydallah (rank_no 8, ضعيف الحديث)
+      weakest: {node: r4069, level: 8}
+      ibn_hajar: {code: 2, rule: daif}
+      ibn_al_salah: {code: 2, rule: daif}
+  classical_claim: "hasan li-ghayrihi (corroboration fires)"
+  classical_claim_holds_in_group: false
+  notes: >
+    The brief expected corroboration to fire here. It cannot inside this meaning group: 47 of its 51
+    chains pass through 'Asim, and the other four carry a different report (Maymuna bint Kardam,
+    through unnamed persons). The routes al-Tirmidhi relies on are his "fi al-bab" reports from other
+    companions, which are separate reports (other meaning groups). The bundle is per meaning group,
+    so the assertion pins what the data supports: 'Asim at level 8, no witness avoiding him, da'if
+    under both rulesets. See DECISIONS.md D54.
+
+- id: maqbul-repaired
+  group_id: 3487
+  title: "التاجر الصدوق الأمين مع النبيين والصديقين والشهداء — a maqbul narrator followed"
+  class: maqbul-with-mutabaa
+  source:
+    - {work: "Taqrib al-Tahdhib, introduction (level 6)", author: "Ibn Hajar", confidence: high,
+       url: "https://shamela.ws/book/127715/52",
+       claim: "level 6: مقبول حيث يتابع وإلا فلين الحديث (accepted where he is followed, otherwise soft)"}
+    - {work: "Jami' al-Tirmidhi no. 1126 (as recorded in the source's hadith text)", author: "al-Tirmidhi", confidence: high,
+       claim: "هذا حديث حسن لا نعرفه إلا من هذا الوجه من حديث الثوري عن أبي حمزة، وأبو حمزة اسمه عبد الله بن جابر"}
+  scope: {threshold: all}
+  expect:
+    v2:
+      ibn_hajar: {code: 1, rule: hasan_li_ghayrihi, divergence: mutabaa_tamma}
+      ibn_al_salah: {code: 1, rule: hasan_li_ghayrihi, divergence: mutabaa_tamma}
+    chain_v2:
+      path: [r3260, r1239, r4755]          # Abu Sa'id -> al-Hasan -> 'Abdullah b. Jabir (Abu Hamza, rank_no 6, مقبول)
+      weakest: {node: r4755, level: 6}
+      ibn_hajar: {code: 1, rule: hasan_li_ghayrihi, divergence: mutabaa_tamma}
+      ibn_al_salah: {code: 1, rule: hasan_li_ghayrihi, divergence: mutabaa_tamma}
+  notes: >
+    Chosen as the maqbul case: al-Tirmidhi's own chain (sanad 23820) runs through Abu Hamza 'Abdullah
+    b. Jabir (level 6); al-Hakim's chain (sanad 97515) follows him from his own teacher al-Hasan through
+    Ishaq b. al-Rabi' (level 4): a mutaba'a tamma by a narrator above him, so it holds under the
+    witness_not_below variant too. Level 6 is light under both rulesets, hence code 1 under both.
+
+- id: fatal-not-repaired
+  group_id: 7688
+  title: "لكل شيء آلة وعدة وآلة المؤمن وعدته العقل — the Kitab al-'Aql chains"
+  class: fatal-weakness
+  source:
+    - {work: "Bughyat al-Murtad p. 173, quoting al-Daraqutni", author: "Ibn Taymiyya", confidence: high,
+       url: "https://shamela.ws/book/11071/5",
+       claim: "كتاب العقل وضعه أربعة أولهم ميسرة بن عبد ربه ثم سرقه منه داود بن المحبر فركبه بأسانيد غير أسانيد ميسرة ... ثم سرقه سليمان بن عيسى السجزي فأتى بأسانيد أخر"}
+    - {work: "Muqaddimat Ibn al-Salah (naw' 2), ed. 'Itr p. 34", author: "Ibn al-Salah", confidence: high,
+       url: "https://shamela.ws/book/22870/31",
+       claim: "not every weakness is removed by multiple routes: not the weakness of a narrator accused of lying"}
+  scope: {threshold: all}
+  expect:
+    kappa_eq: {all: 2, above_matruk: 0}
+    no_upgrade: true
+    v2:
+      ibn_hajar: {code: 5, rule: fatal}
+      ibn_al_salah: {code: 5, rule: fatal}
+  notes: >
+    Two vertex-disjoint routes (Ibn 'Abbas via Maysara b. 'Abd Rabbih and Ghalib b. 'Ubaydallah; Abu
+    Sa'id via 'Abbad b. Kathir, and via Sulayman b. 'Isa al-Sijzi), every chain through narrators at
+    Taqrib level 12 in the source (Dawud b. al-Muhabbar, Maysara, 'Abbad, al-Sijzi): kappa_all = 2,
+    kappa above matruk = 0, and no chain's code moves under either ruleset.
+
+# ---------------------------------------------------------------- number class
+
+- id: innama-number-class
+  group_id: 319
+  scope_from: innama-al-amal
+  title: "إنما الأعمال بالنيات — gharib mutlaq"
+  class: gharib
+  source:
+    - {work: "Nuzhat al-Nazar (al-gharib; al-fard al-mutlaq vs al-nisbi), ed. 'Itr pp. 50, 56", author: "Ibn Hajar", confidence: high,
+       url: "https://shamela.ws/book/1565/52", claim: "tafarrud at the root of the chain, where the companion is: al-fard al-mutlaq"}
+  expect:
+    number_class_eq: gharib_mutlaq
+    tafarrud_layers_include: [1]
+
+- id: la-yuminu-number-class
+  group_id: 1581
+  title: "لا يؤمن أحدكم — 'aziz, Ibn Hajar's own example"
+  class: aziz
+  source:
+    - {work: "Nuzhat al-Nazar (al-'aziz), ed. 'Itr p. 50", author: "Ibn Hajar", confidence: high,
+       url: "https://shamela.ws/book/1565/46",
+       claim: "not narrated by fewer than two from fewer than two: Anas and Abu Hurayra; Qatada and 'Abd al-'Aziz b. Suhayb; Shu'ba and Sa'id; Isma'il b. 'Ulayya and 'Abd al-Warith"}
+  scope: {companions: [720, 4396], threshold: all}   # the two companions Ibn Hajar names
+  expect:
+    number_class_eq: aziz
+    number_class_kappa_eq: aziz
+  notes: >
+    Scoped to Anas and Abu Hurayra, the companions of Ibn Hajar's example; the whole group folds in
+    other reports (7 companions) and reads gharib_nisbi by width only because layer 2 has one
+    on-path narrator while other routes skip that layer (reports/audit.md section 12).
+
+- id: man-kadhaba-number-class
+  group_id: 1
+  title: "من كذب علي متعمدا — mutawatir by count"
+  class: mutawatir
+  source:
+    - {work: "Muqaddimat Ibn al-Salah (naw' 30), ed. 'Itr p. 269", author: "Ibn al-Salah", confidence: high,
+       url: "https://shamela.ws/book/22870/266", claim: "the example of mutawatir; narrated by a great number of companions (62 by one count)"}
+    - {work: "al-Azhar al-Mutanathira (criterion), as reported by al-Kattani", author: "al-Suyuti", confidence: medium,
+       url: "https://shamela.ws/book/7016/15", claim: "what ten or more companions narrated is mutawatir"}
+  scope: {threshold: all}
+  expect:
+    number_class_eq: mutawatir_count
+
+- id: mashhur-al-muslim
+  group_id: 218
+  title: "المسلم من سلم المسلمون من لسانه ويده — mashhur"
+  class: mashhur
+  source:
+    - {work: "Muqaddimat Ibn al-Salah (naw' 30, al-mashhur), ed. 'Itr p. 266", author: "Ibn al-Salah", confidence: high,
+       url: "https://shamela.ws/book/22870/263", claim: "مشهور بين أهل الحديث وغيرهم: المسلم من سلم المسلمون من لسانه ويده"}
+  scope: {threshold: all}
+  expect:
+    number_class_eq: mashhur
+  notes: >
+    Ibn al-Salah's mashhur is fame; Ibn Hajar's is a count (more than two at every layer, short of
+    tawatur). By width the narrowest Taqrib layer has 9 narrators (mashhur at N = 10); kappa_all is
+    19, so number_class_kappa reads mutawatir_count, and al-Kattani lists it as mutawatir (entry 10).
+
+# ---------------------------------------------------------------- qara'in
+
+- id: innama-qarain
+  group_id: 319
+  scope_from: innama-al-amal
+  title: "إنما الأعمال بالنيات — in the Sahihayn"
+  class: qarain
+  source:
+    - {work: "Nuzhat al-Nazar (indicators: what the two Shaykhs narrated), ed. 'Itr p. 52", author: "Ibn Hajar", confidence: high,
+       url: "https://shamela.ws/book/1565/48", claim: "what al-Bukhari and Muslim narrated is the first of the indicators"}
+  expect:
+    in_sahihayn_eq: true
+
+- id: gharib-not-in-sahihayn
+  group_id: 3487
+  title: "التاجر الصدوق الأمين — gharib, not in the Sahihayn"
+  class: qarain
+  source:
+    - {work: "Jami' al-Tirmidhi no. 1126 (as recorded in the source's hadith text)", author: "al-Tirmidhi", confidence: high,
+       claim: "لا نعرفه إلا من هذا الوجه من حديث الثوري عن أبي حمزة"}
+  scope: {companion: 3260, threshold: all}         # Abu Sa'id al-Khudri's report
+  expect:
+    number_class_eq: gharib_mutlaq
+    in_sahihayn_eq: false
+
+# ---------------------------------------------------------------- lists
+
+- id: kattani-man-kadhaba
+  group_id: 1
+  title: "al-Kattani, Nazm al-Mutanathir entry 2 — من كذب علي متعمدا"
+  class: list-match
+  source:
+    - {work: "Nazm al-Mutanathir, entry 2 (Shamela 7016, printed p. 28)", author: "al-Kattani", confidence: high,
+       url: "https://shamela.ws/book/7016/27", claim: "listed as mutawatir"}
+  scope: {threshold: all}
+  expect:
+    list_match: {list: kattani, entry: "2", confirmed_by: auto}

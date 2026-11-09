@@ -1,5 +1,6 @@
 """`itibar show <group_id>` prints a record as a readable card;
-`itibar render <group_id>` writes an SVG of the bundle via Graphviz."""
+`itibar render <group_id>` writes an SVG of the bundle via Graphviz;
+`itibar pool --groups/--topic/--entry` builds and prints a pooled bundle."""
 
 from __future__ import annotations
 
@@ -129,6 +130,14 @@ def show(gid: int, file=sys.stdout) -> None:
         p(f"   … {len(wp) - 16} more layers")
     p(f"   Taqrib layers 1–12: max width {rec['width_taqrib_max']}, min {rec['width_taqrib_min']}")
     p("")
+    p(f" number class (narrowest Taqrib layer 1–12, compiler roles excluded): {rec.get('number_class')} "
+      f"(min width {rec.get('min_width')}, tafarrud layers {list(rec.get('tafarrud_layers') or [])}); "
+      f"by κ_all: {rec.get('number_class_kappa')}"
+      + ("   ← the two readings differ" if rec.get("number_class_disagree") else ""))
+    p(f" qarāʾin (flags only; knowledge yield is not computed): in the Ṣaḥīḥayn {rec.get('in_sahihayn')}, "
+      f"in a ṣaḥīḥ-class book {rec.get('in_sahih_class')}, ≥3 distinct ṣadūq+ routes {rec.get('sound_distinct_routes')}, "
+      f"chain of ḥuffāẓ (not gharīb) {rec.get('huffaz_chain')}")
+    p("")
     p(f" chains: mursal {rec['n_mursal_chains']} (irsal marker {rec['n_irsal_marker_chains']}), "
       f"inqita' {rec['n_inqita_marker_chains']}, ta'liq {rec['n_taliq_marker_chains']}, "
       f"unnamed narrator {rec['n_mubham_chains']}, undescribed narrator {rec['n_stub_chains']}, "
@@ -147,6 +156,16 @@ def show(gid: int, file=sys.stdout) -> None:
       f"{'agree' if rec['agree_derived_vs_hadith_mode'] else 'differ'}")
     p(f" chains whose weakest link equals sanads.max_rank: {rec['n_chains_maxrank_agree_full']}/{rec['n_chains']} "
       f"(compiler excluded: {rec['n_chains_maxrank_agree_derived']})")
+    for rs in ("ibn_hajar", "ibn_al_salah"):
+        code = rec.get(f"code_v2_{rs}")
+        wit = rec.get(f"witness_sanad_v2_{rs}")
+        p(f" derived grade v2 ({rs}): {rec.get(f'rule_v2_{rs}')} → code {code} ({hk.get(code, '')}) · chain "
+          f"{rec.get(f'best_sanad_v2_{rs}')}"
+          + (f" · witness {'sanad ' + str(wit) if wit is not None else 'a spliced route'} ({rec.get(f'divergence_v2_{rs}')})"
+             if rec.get(f"divergence_v2_{rs}") else ""))
+    alts = {k[len('code_v2_alt_'):]: v for k, v in rec.items() if k.startswith("code_v2_alt_")}
+    if alts:
+        p("   variants on ibn_hajar: " + ", ".join(f"{k} {v}" for k, v in alts.items()))
     p("")
     p(" receipt")
     for i, step in enumerate(json.loads(rec["receipt"]), 1):
@@ -158,6 +177,12 @@ def show(gid: int, file=sys.stdout) -> None:
                 mark = "  ◀ weakest" if n["pos"] in step["data"]["weakest_positions"] else ""
                 p(f"       pos {n['pos']:>2}  {nm('r' + str(rid))}  [rank_no {n['rank_no']}, ordinal {n['ordinal']}"
                   f"{'' if n['graded'] else ', not graded'}]{mark}")
+    if rec.get("receipt_v2"):
+        p("")
+        p(" receipt v2 (ibn_hajar)")
+        for i, step in enumerate(json.loads(rec["receipt_v2"]).get("ibn_hajar", []), 1):
+            p(f"  {i}. {step['check']}: {step['result']}")
+            p(f"     rule: {step['rule']}")
     sid = rec["derived_best_sanad_id"]
     txt = con.sql(f"SELECT h.nass FROM sanads s JOIN hadiths h ON h.id = s.hadith_id WHERE s.id = {int(sid)}").fetchall()
     if txt:
@@ -264,11 +289,30 @@ def main(argv: list[str] | None = None) -> None:
     r.add_argument("-o", "--out", type=Path)
     r.add_argument("--all", action="store_true", help="include off-path nodes and break markers")
     r.add_argument("--max-nodes", type=int, default=1500)
+    pl = sub.add_parser("pool", help="pooled bundle over several groups, a topic subtree or a list entry")
+    g = pl.add_mutually_exclusive_group(required=True)
+    g.add_argument("--groups", type=int, nargs="+")
+    g.add_argument("--topic", type=int, help="topics.id: every group under the node")
+    g.add_argument("--entry", help="list entry, e.g. kattani:2 (groups from lists/confirmed.csv)")
+    pl.add_argument("--save", type=Path, help="write <stem>.json and <stem>.md")
     a = ap.parse_args(argv)
     if a.cmd == "show":
         show(a.group_id)
     elif a.cmd == "render":
         print(render(a.group_id, a.out, a.all, a.max_nodes))
+    elif a.cmd == "pool":
+        from itibar import pool
+        con = data.views()
+        if a.groups:
+            gids, label = a.groups, "groups " + " ".join(map(str, a.groups[:8])) + (" …" if len(a.groups) > 8 else "")
+        elif a.topic is not None:
+            gids, label = pool.topic_groups(con, a.topic), f"topic {a.topic}: {pool.topic_name(con, a.topic)}"
+        else:
+            gids, label = pool.entry_groups(a.entry), f"list entry {a.entry}"
+        res = pool.analyse(gids, con, label=label)
+        print(pool.card(res))
+        if a.save:
+            pool.save(res, a.save)
 
 
 if __name__ == "__main__":

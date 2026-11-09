@@ -123,6 +123,153 @@ def misresolution_table(c, nar: load.Narrators, nick: dict) -> tuple[str, int, i
     return "\n".join(rows), caught, total
 
 
+def misresolution_rate(c) -> str:
+    """Per gold entry with a chain-by-chain deviation list: documented misresolution
+    and dropped-link chains over in-scope chains; pooled over those entries."""
+    from itibar import gold
+    rows = []
+    for e in gold.entries():
+        if not e.get("deviation_key") or e.get("scope_from"):
+            continue
+        gid = int(e["group_id"])
+        chains = load.chains_by_group(c, [gid]).get(gid, [])
+        sc = e.get("scope") or {}
+        if sc.get("companion") is not None:
+            chains = [x for x in chains if x.rawis[-1] == int(sc["companion"])]
+        mis = sum(len(d["sanad_ids"]) for d in e.get("known_deviations") or [] if d.get("misresolution"))
+        drop = sum(len(d["sanad_ids"]) for d in e.get("known_deviations") or []
+                   if not d.get("misresolution") and "dropped link" in d.get("reason", ""))
+        other = sum(len(d["sanad_ids"]) for d in e.get("known_deviations") or []) - mis - drop
+        rows.append({"entry": e["id"], "group": gid, "in_scope_chains": len(chains), "misresolution": mis,
+                     "dropped_link": drop, "error_chains": mis + drop, "other_documented_routes": other,
+                     "error_rate": (mis + drop) / len(chains) if chains else None})
+    t = pd.DataFrame(rows)
+    tot = t["in_scope_chains"].sum()
+    err = t["error_chains"].sum()
+    out = [("Every gold entry whose chains were inspected one by one (`deviation_key` and `known_deviations` in "
+            "`tests/gold/gold.yaml`): chains documented as a cross-name misresolution (`misresolution`) or a dropped "
+            "link, over the chains in the entry's scope. Other documented deviations (alternative routes the classical "
+            "sources do not count) are listed but are not errors of the data. The four entries are hand-picked famous "
+            "reports, so this is an indicative rate for the limitations section, not an estimate for the corpus.\n"),
+           md_table(t),
+           (f"\nPooled: **{err} of {tot} in-scope chains ({err / tot:.2%})** carry a documented misresolution or "
+            f"dropped link; misresolution alone {t['misresolution'].sum()} ({t['misresolution'].sum() / tot:.2%}).\n")]
+    return "\n".join(out)
+
+
+def v2_section(c, scale) -> str:
+    rp = paths.records_path().as_posix()
+    cp = paths.chains_path().as_posix()
+    r = pd.read_parquet(rp)
+    r = r[r["status"] == "ok"]
+    hk = scale.hukm_codes
+    src = r["matn_no_group"]
+    out = []
+    books = c.sql("SELECT id, name FROM books WHERE id IN (1, 2) ORDER BY id").fetchall()
+    out.append("Books used by the qarāʾin and the collection classes, verified: "
+               + "; ".join(f"`books.id` {i} = {n}" for i, n in books) + ".\n")
+    rows = [("v1 (best single chain)", (r["derived_code"] == src).mean())]
+    for col in sorted(x for x in r.columns if x.startswith("code_v2_")):
+        rows.append((col.replace("code_v2_", "v2 ").replace("alt_", "variant "), (r[col] == src).mean()))
+    t = pd.DataFrame(rows, columns=["grade", "agreement_with_matn_no"])
+    out.append("**Agreement with the source's recorded group grade** (`meaning_groups.matn_no`), over the "
+               f"{len(r):,} groups with chains. Variants run on the `ibn_hajar` ruleset with one switch changed "
+               "(config `derive.variants`); they are reported, not used. The gate requires both rulesets ≥ v1.\n")
+    out.append(md_table(t, floatfmt="{:.4f}"))
+    for rs in ("ibn_hajar", "ibn_al_salah"):
+        xt = pd.crosstab(r[f"code_v2_{rs}"].astype(int), src.astype(int))
+        xt.index = [f"ours {i}" for i in xt.index]
+        xt.columns = [f"{cd} {hk.get(cd, '')}" for cd in xt.columns]
+        out.append(f"\n**Disagreement table, `{rs}`**: our v2 code (rows) by the source's code (columns):\n")
+        out.append(md_table(xt.reset_index().rename(columns={"index": "v2 code"})))
+    xt = pd.crosstab(r["derived_code"].astype(int), src.astype(int))
+    xt.index = [f"ours {i}" for i in xt.index]
+    xt.columns = [f"{cd} {hk.get(cd, '')}" for cd in xt.columns]
+    out.append("\n**For comparison, v1**:\n")
+    out.append(md_table(xt.reset_index().rename(columns={"index": "v1 code"})))
+    rules = r["rule_v2_ibn_hajar"].value_counts().rename_axis("rule").reset_index(name="groups")
+    rules["share"] = rules["groups"] / len(r)
+    out.append("\n**Rule that fired for the group's v2 chain (`ibn_hajar`)**:\n")
+    out.append(md_table(rules))
+    dv = r["divergence_v2_ibn_hajar"].value_counts().rename_axis("divergence").reset_index(name="groups")
+    att = r.loc[r["divergence_v2_ibn_hajar"].notna(), "witness_attested_v2_ibn_hajar"].mean()
+    out.append(f"\n**Divergence class of the witness** (upgraded groups; the witness is an attested chain in "
+               f"{att:.1%} of them, else a route spliced from several chains):\n")
+    out.append(md_table(dv))
+    ch = pd.read_parquet(cp, columns=["sanad_id", "weakest_positions", "chain_ordinal"])
+    best = r[["group_id", "best_sanad_v2_ibn_hajar", "code_v2_ibn_hajar", "matn_no_group", "derived_code"]].merge(
+        ch, left_on="best_sanad_v2_ibn_hajar", right_on="sanad_id", how="left")
+    best["weakest_level"] = [13 - int(o) if 1 <= o <= 12 else "unknown" for o in best["chain_ordinal"]]
+    bl = best.groupby("weakest_level").apply(lambda d: pd.Series({
+        "groups": len(d), "agree_v1": (d["derived_code"] == d["matn_no_group"]).mean(),
+        "agree_v2_ibn_hajar": (d["code_v2_ibn_hajar"] == d["matn_no_group"]).mean()}), include_groups=False)
+    out.append("\n**By the weakest narrator's Taqrīb level** in the group's v2 chain (`ibn_hajar`):\n")
+    out.append(md_table(bl.reset_index()))
+    names = dict(c.sql("SELECT id, nickname FROM rawis").fetchall())
+    chains_rawis = dict(c.sql("SELECT sanad_id, list(rawi_id ORDER BY pos) FROM sanad_rawis GROUP BY 1").fetchall())
+    dis = best[best["code_v2_ibn_hajar"] != best["matn_no_group"]]
+    cnt: Counter = Counter()
+    for sid, wp in zip(dis["best_sanad_v2_ibn_hajar"], dis["weakest_positions"]):
+        rw = chains_rawis.get(int(sid), [])
+        for p in (wp if wp is not None else []):
+            if p < len(rw):
+                cnt[int(rw[p])] += 1
+    top = pd.DataFrame([{"narrator": f"{names.get(k)} (r{k})", "groups_disagreeing": v} for k, v in cnt.most_common(15)])
+    out.append("\n**Narrators most often weakest in the disagreeing groups** (`ibn_hajar`):\n")
+    out.append(md_table(top))
+    down = r[(r["derived_code"] == 0) & (r["code_v2_ibn_hajar"] > 0)]
+    dch = pd.read_parquet(cp, columns=["sanad_id", "defects_v2_ibn_hajar"]).set_index("sanad_id")
+    comp = Counter(",".join(dch.loc[int(s), "defects_v2_ibn_hajar"]) or "none"
+                   for s in down["best_sanad_v2_ibn_hajar"])
+    out.append(f"\n**Downgrades.** {len(down):,} groups that v1 grades 0 get a higher v2 code under `ibn_hajar` "
+               f"({int((down['matn_no_group'] == 0).sum()):,} of them recorded 0 by the source). The defects of their "
+               "v2 chain: " + "; ".join(f"{k} {v:,}" for k, v in comp.most_common()) + ". A mudallis's muʿanʿan "
+               "link is a light defect by the brief's decision, and a light defect, even corroborated, reaches ḥasan "
+               "li-ghayrihi at most. The source's binary `has_tadlis` does not carry Ibn Hajar's five tiers of "
+               "mudallisūn, whose first two tiers' ʿan is accepted (DECISIONS.md D36).\n")
+    return "\n".join(out)
+
+
+def number_section(c) -> str:
+    from itibar import structure
+    r = pd.read_parquet(paths.records_path())
+    r = r[r["status"] == "ok"]
+    N = structure.tawatur_n()
+    out = []
+    order = ["gharib_mutlaq", "gharib_nisbi", "aziz", "mashhur", "mutawatir_count"]
+    nc = r["number_class"].fillna("no route").value_counts().reindex(order + ["no route"], fill_value=0)
+    t = pd.DataFrame({"number_class": nc.index, "groups": nc.values, "share": nc.values / len(r)})
+    out.append(f"Width on the on-path graph at `all`, Taqrīb layers 1–12, compiler roles excluded; tawatur_n = {N}. "
+               "`no route`: no on-path narrator in layers 1–12 (κ_all = 0).\n")
+    out.append(md_table(t))
+    xt = pd.crosstab(r["number_class"].fillna("no route"), r["number_class_kappa"].fillna("no route"))
+    out.append("\n**Width reading (rows) against the κ reading (columns)**:\n")
+    out.append(md_table(xt.reset_index().rename(columns={"number_class": "width \\ κ"})))
+    dis = r["number_class_disagree"].mean()
+    wide = ((r["number_class"].isin(["gharib_mutlaq", "gharib_nisbi"])) & (r["kappa_all"] >= 2)).sum()
+    out.append(f"\nThe readings differ in {dis:.1%} of groups. The width reading treats each Taqrīb layer as a cut, "
+               "but routes skip layers (tabaka steps of 2–4 are normal on this scale, §8.5), so a layer is a cut only "
+               f"when every route has a narrator in it. {wide:,} groups read gharīb by width while κ_all ≥ 2: the "
+               "single narrator sits in a layer other routes jump over (group 273, إن الله لا يقبض العلم انتزاعا, is "
+               "gharīb nisbī by width because Shaqīq is alone at layer 2, and mashhūr by κ). The converse (κ below "
+               "the width class) is hidden sharing: the minimum cut mixes narrators of different layers.\n")
+    rows = []
+    for n in sorted(set([4, 5, 10, 12, 40, 70] + [N])):
+        rows.append({"tawatur_n": n, "mutawatir_count (width)": int((r["min_width"] >= n).sum()),
+                     "mutawatir_count (κ_all)": int((r["kappa_all"] >= n).sum()),
+                     "mashhur (width)": int(((r["min_width"] >= 3) & (r["min_width"] < n)).sum())})
+    out.append("\n**Sensitivity to tawatur_n** (the numbers the books report as proposed):\n")
+    out.append(md_table(pd.DataFrame(rows)))
+    q = pd.DataFrame([{"flag": f, "groups": int(r[f].sum()), "share": r[f].mean(),
+                       "recorded 0 (صحيح) among them": (r.loc[r[f], "matn_no_group"] == 0).mean()}
+                      for f in ("in_sahihayn", "in_sahih_class", "sound_distinct_routes", "huffaz_chain")])
+    out.append("\n**Qarāʾin flags** (reported, never combined; knowledge yield is not computed):\n")
+    out.append(md_table(q))
+    allq = (r["in_sahihayn"] & r["sound_distinct_routes"] & r["huffaz_chain"]).sum()
+    out.append(f"\nAll three flags together: {allq:,} groups.\n")
+    return "\n".join(out)
+
+
 def build() -> str:
     t0 = time.time()
     c = data.views()
@@ -560,6 +707,7 @@ def build() -> str:
             r = c.sql(f"""SELECT count(*) AS groups,
                 sum((kappa_lower_{th} < kappa_{th})::INT) AS lower_below_kappa,
                 sum((kappa_nocompat_{th} < kappa_{th})::INT) AS nocompat_below_kappa,
+                sum((kappa_nocompat_years_{th} < kappa_{th})::INT) AS nocompat_years_below_kappa,
                 sum((kappa_lower_source_{th} = 'unmerged')::INT) AS attained_unmerged,
                 sum((kappa_lower_source_{th} = 'merged')::INT) AS attained_merged,
                 sum((kappa_lower_source_{th} = 'nocompat')::INT) AS attained_nocompat,
@@ -576,6 +724,8 @@ def build() -> str:
         w(md_table(pd.concat(kl, ignore_index=True)))
         w("\nIt is a lower bound under those hypotheses, not a guarantee: cross-name misresolution that the continuity "
           "rule does not catch (§8.4) remains an unquantified upward bias on κ.\n")
+        w("`kappa_nocompat_years_θ` removes only the links the years rule marks incompatible (both dates known: the "
+          "strong evidence); κ_lower keeps the all-incompatible graph. Both are reported for the paper.\n")
     w("### 8.8 Summary of modelling consequences\n")
     w("- break markers: per-chain, untraversable gap nodes (no fused hubs; broken chains do not count as routes)\n"
       "- unnamed person: per-(student, teacher) node, ordinal 0\n"
@@ -645,6 +795,22 @@ def build() -> str:
           "A group the source grades صحيح with no connected chain here is a gap in this data's chains, not a finding "
           "about the report:\n")
         w(md_table(piv))
+    else:
+        w("_(run `make bundles` first)_\n")
+
+    # ------------------------------------------------------------------ 10
+    w("## 10. Indicative chain-level error rate from the gold set\n")
+    w(misresolution_rate(c))
+    # ------------------------------------------------------------------ 11
+    w("## 11. Derived grade v2: corroboration\n")
+    if rec_exists:
+        w(v2_section(c, scale))
+    else:
+        w("_(run `make bundles` first)_\n")
+    # ------------------------------------------------------------------ 12
+    w("## 12. Number class and qarāʾin\n")
+    if rec_exists:
+        w(number_section(c))
     else:
         w("_(run `make bundles` first)_\n")
 

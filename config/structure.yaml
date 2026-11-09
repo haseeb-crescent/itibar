@@ -30,7 +30,9 @@ structure:
   # 2: kappa_lower over three hypotheses (adds nocompat), kappa_zero_reason,
   #    continuity window [-1..4] and min_hearing_age, companion label overrides,
   #    width_taqrib.
-  version: 2
+  # 3: number_class (width and kappa readings), qara'in flags, bypass nodes,
+  #    kappa_nocompat_years, pooled bundles.
+  version: 3
   pcl_k: [2, 3]
   common_link_k: 2
   # Path counts can be astronomically large; saturate at int64 max and flag.
@@ -56,17 +58,98 @@ continuity:
   # Transmission words that make a mudallis's link mu'an'an (normalized forms).
   muanan_words: ["عن", "أن", "قال"]
 
+number_class:
+  # The classical count (Nuzhat al-Nazar): the number of narrators at the narrowest
+  # layer, blind to narrator quality. Computed on the on-path graph at the `all`
+  # threshold, Taqrib layers 1..taqrib_max_layer, compiler-role nodes excluded.
+  #   min_width = 1 -> gharib (gharib_mutlaq when layer 1 is a tafarrud layer, else
+  #   gharib_nisbi); 2 -> aziz; 3 .. tawatur_n-1 -> mashhur; >= tawatur_n ->
+  #   mutawatir_count. number_class_kappa applies the same cut points to kappa_all.
+  # tawatur_n = 10 is al-Suyuti's criterion (al-Azhar al-Mutanathira: "what ten or
+  # more companions narrated"); the other values are the numbers the books report
+  # as proposed (Nuzhat al-Nazar lists 4, 5, 7, 10, 12, 40, 70 and others).
+  tawatur_n: 10
+  tawatur_n_alternatives: [4, 5, 12, 40, 70]
+
+lists:
+  # Deterministic matching of the classical list entries to meaning groups
+  # (src/itibar/lists.py). Text normalization: lists.NORMALIZE_VERSION.
+  candidates: 5            # rows per entry in lists/candidates.csv
+  shortlist: 30            # groups per entry scored for the opening phrase
+  support_min: 0.8         # a member matn "supports" an entry at this containment
+  opening_tokens: 4        # length of the opening phrase tested for a contiguous match
+  weights: {containment: 0.5, opening: 0.2, support: 0.3}
+  # Auto-confirm a wording entry only when its top score clears auto_min_score
+  # and leads the second candidate by auto_min_margin; everything else is
+  # needs_review and waits for a human row in lists/confirmed.csv.
+  auto_min_score: 0.85
+  auto_min_margin: 0.25
+  auto_min_tokens: 4       # shorter wordings ("الحوض") name a topic, never auto
+  auto_min_support: 3      # member matns containing the wording (relative support alone can be 1 of 1)
+
+qarain:
+  # Ibn Hajar's indicators that an ahad report yields knowledge (Nuzhat al-Nazar).
+  # Reported as flags, never combined into a verdict.
+  sahihayn_book_ids: [1, 2]        # Sahih al-Bukhari, Sahih Muslim (books.id, verified in the audit)
+  sahih_class_tasnif_no: 1         # books.tasnif_no = 1: صحاح ومستخرجات
+  sound_threshold: saduq_up        # "mashhur with distinct routes free of weak narrators"
+  sound_distinct_routes_min: 3
+  huffaz_max_level: 2              # "a chain of hafiz imams, provided it is not gharib"
+
 derive:
-  version: 1
+  # 1: best single chain (v1). 2: corroboration (hasan/sahih li-ghayrihi), both
+  #    rulesets computed and stored; v1 columns kept unchanged.
+  version: 2
   exclude_compiler: true          # chain grade ignores the compiler at pos 0
   # Codes in the source matn_no scale (0 = best). A chain that does not reach
   # PROPHET through a companion (mursal), or that contains a break marker, cannot
   # be placed above this code. Set to null to disable.
   discontinuity_cap_code: 2
-  # Best chain: maximise the chain grade among chains that are continuous and end
-  # in a companion; fall back to all chains (flagged) when none qualifies.
+  # Best chain (v1): maximise the chain grade among chains that are continuous and
+  # end in a companion; fall back to all chains (flagged) when none qualifies.
   prefer_continuous: true
-  # Corroboration upgrades (hasan li-ghayrihi, sahih li-ghayrihi, ...) are bucket 2.
+  # Derived grade v2: the classical ladder as parameters (src/itibar/corroborate.py).
+  # Weakness classes by Taqrib level live in config/grades.yaml: weakness.
+  # Every ruleset listed is computed; records carry code_v2_<ruleset>. `ruleset`
+  # names the default reading used where one grade is shown (itibar show, census).
+  ruleset: ibn_hajar
+  rulesets:
+    # weakest level <= sahih_max_level        -> sahih li-dhatihi (0)
+    # weakest level <= hasan_max_level        -> hasan li-dhatihi (1); with an
+    #   independent route of hasan-or-better grade avoiding its hasan-level
+    #   narrators                             -> sahih li-ghayrihi (0)
+    # light defects only, corroborated        -> hasan li-ghayrihi (1)
+    # light defects only, uncorroborated      -> da'if (2)
+    # an unrepairable or fatal defect         -> the v1 code, never upgraded
+    ibn_hajar:    {sahih_max_level: 3, hasan_max_level: 4}
+    # Ibn al-Salah's siwak example: Muhammad b. 'Amr (saduq, poor memory: level 5)
+    # is hasan on his own and other routes raise the chain to sahih.
+    ibn_al_salah: {sahih_max_level: 3, hasan_max_level: 5}
   corroboration:
-    enabled: false
-    rules: []
+    enabled: true
+    # A corroborating route is a PROPHET -> book route in the bundle, in the graph
+    # at `witness_threshold`, that avoids every node of the chain's defect set W.
+    # It must itself be light-or-better (its narrators pass the light floor, no
+    # unrepairable or fatal defect), so its nodes must also pass that floor.
+    witness_threshold: above_matruk
+    min_corroborating_routes: 1
+    # light: any light-or-better witness. not_below: the witness's grade must be at
+    # least the corroborated chain's ("فوقه أو مثله لا دونه", Nuzhat al-Nazar).
+    witness_min: light
+    # weakest: W = the light-defect narrators of the lowest grade (the brief's
+    # "weakest positions"); with none, the structural light defects. light_defects:
+    # W = every light-defect position (variant all_light_defects).
+    avoid: weakest
+    # Mursal: ibn_hajar = corroborated by any connected light-or-better route (W
+    # does not include the mursil). shafii = the witness must avoid the mursil and
+    # be musnad, or be a mursal whose mursil is a different person (al-Risala).
+    mursal_rule: ibn_hajar
+    # An unnamed person in the companion slot: treat the chain as mursal (light),
+    # or as an unknown narrator (unrepairable).
+    top_mubham: mursal
+  # Sensitivity runs on top of the default ruleset, stored as code_v2_alt_<name>.
+  variants:
+    mursal_shafii: {mursal_rule: shafii}
+    no_level_8: {light_includes_level_8: false}
+    witness_not_below: {witness_min: not_below}
+    all_light_defects: {avoid: light_defects}

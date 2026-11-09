@@ -2,7 +2,8 @@
 needs the 1.6 GB source. Contains the gold-set groups, the ten most-narrated
 groups (the companion-band gate), a seeded random sample, and a few groups
 without chains. Narrators are every narrator in the sampled chains plus all
-members of their same-name clusters (so kappa_lower is reproduced exactly)."""
+members of their same-name clusters (so kappa_lower is reproduced exactly);
+topics are the sampled groups' leaves and their ancestors."""
 
 from __future__ import annotations
 
@@ -52,6 +53,10 @@ def build(out_dir=None) -> dict:
         "sanads": "SELECT * FROM sanads WHERE id IN (SELECT id FROM fx_sanads)",
         "sanad_rawis": "SELECT * FROM sanad_rawis WHERE sanad_id IN (SELECT id FROM fx_sanads)",
         "rawis": "SELECT * FROM rawis WHERE id IN (SELECT id FROM fx_rawis)",
+        # the topic leaves of the sampled groups and every ancestor (nested set), for pools and the census
+        "topics": """SELECT DISTINCT t.* FROM topics t JOIN topics leaf
+                     ON leaf.group_id IN (SELECT id FROM fx_groups) AND leaf.tree_id = t.tree_id
+                     AND t.lft <= leaf.lft AND t.rgt >= leaf.rgt""",
     }
     sizes = {}
     for name, sql in queries.items():

@@ -48,6 +48,26 @@ companion:
   # See DECISIONS.md D33.
   label_overrides: ["صحابي صغير", "صحابية صغيرة"]
 
+# Weakness classes for the corroborated grade (derive v2), by Taqrib level.
+#   light         repairable by a corroborating route (Nuzhat al-Nazar: poor memory,
+#                 the mastur, the mursal, the mudallis)
+#   unrepairable  not repaired: level 9 (majhul al-'ayn) - Ibn Hajar names only
+#                 the mastur (majhul al-hal, level 7) among the unknowns repaired
+#   fatal         never repaired; keeps its v1 code (3/4/5 by level)
+# Levels 1..hasan_max_level of the ruleset are not defects. Structural defects:
+# mursal (no companion at the top, or an irsal marker there) and a mudallis's
+# mu'an'an link are light; inqita' and ta'liq markers (and an irsal marker
+# anywhere but the top) are fatal. See DECISIONS.md D35-D40.
+weakness:
+  light: [5, 6, 7, 8]
+  unrepairable: [9]
+  fatal: [10, 11, 12]
+  # Level 8 (da'if) is light by default: Ibn Hajar's hasan li-ghayrihi includes the
+  # poor-memory narrator. false moves level 8 to unrepairable.
+  light_includes_level_8: true
+  # Undescribed narrators (stubs) and unnamed persons below the companion slot.
+  unknown: unrepairable
+
 # Pseudo-narrators: rawis rows with rank IS NULL and rank_no = 12 that are not
 # people. The audit asserts this list equals that set exactly.
 placeholders:
