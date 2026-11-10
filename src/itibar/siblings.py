@@ -44,7 +44,7 @@ def sibling_groups(con, group_ids=None) -> dict[int, tuple[int, ...]]:
 def node_code(node: str, mubham: dict[str, int], add: bool = False) -> int | None:
     if node.startswith("r"):
         return int(node[1:])
-    if node.startswith("m"):
+    if node.startswith(("m", "u")):
         c = mubham.get(node)
         if c is None and add:
             c = mubham[node] = -(len(mubham) + 1)

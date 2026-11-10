@@ -61,6 +61,7 @@ class Chain:
     hadith_matn_no: int
     words: dict[int, tuple[str | None, str | None, str | None]] = field(default_factory=dict)
     # pos -> (word, word_raw, word_class); pos is the TEACHER position
+    top_unnamed: str | None = None   # class of the unnamed person at the top (unnamed.py), None if none
 
 
 def narrators(con: duckdb.DuckDBPyConnection, scale: grades.GradeScale | None = None) -> Narrators:
@@ -211,7 +212,9 @@ def books(con: duckdb.DuckDBPyConnection) -> Books:
 
 def chains_by_group(con: duckdb.DuckDBPyConnection, group_ids: list[int] | None = None,
                     words_path: Path | None = None) -> dict[int, list[Chain]]:
+    from itibar import unnamed
     words_path = words_path or (paths.OUT_DIR / "words.parquet")
+    tops = unnamed.load()
     where = ""
     if group_ids is not None:
         con.execute("CREATE OR REPLACE TEMP TABLE _gsel AS SELECT unnest(?::BIGINT[]) AS gid", [list(group_ids)])
@@ -232,6 +235,7 @@ def chains_by_group(con: duckdb.DuckDBPyConnection, group_ids: list[int] | None 
             sanad_id=cols["sanad_id"][i], hadith_id=cols["hadith_id"][i], book_id=cols["book_id"][i],
             rawis=tuple(cols["chain"][i]), matn_no=cols["matn_no"][i], max_rank=cols["max_rank"][i],
             takhrij=cols["takhrij"][i], hadith_matn_no=cols["hadith_matn_no"][i],
+            top_unnamed=tops.get(cols["sanad_id"][i]),
         )
         out.setdefault(cols["group_id"][i], []).append(c)
         by_sid[c.sanad_id] = c
@@ -261,6 +265,10 @@ class Corpus:
     # word (derive.tadlis.hearing_classes), or that stands in a chain of the Sahihayn
     # (derive.tadlis.sahihayn_muanan_accepted): the tasrih_scope `corpus` evidence.
     hearing_pairs: frozenset = frozenset()
+    # conditional narrator rulings in force (lists/conditional_confirmed.csv: auto and human rows),
+    # and the region tags of narrators (nisbas and residences; conditional.regions)
+    rulings: dict = field(default_factory=dict)
+    regions: dict = field(default_factory=dict)
 
 
 def hearing_pairs(con: duckdb.DuckDBPyConnection, nar: Narrators, words_path: Path | None = None) -> frozenset:
@@ -292,4 +300,8 @@ def corpus(con: duckdb.DuckDBPyConnection | None = None) -> Corpus:
     con = con or data.views()
     scale = grades.load()
     nar = narrators(con, scale)
-    return Corpus(narrators=nar, books=books(con), scale=scale, hearing_pairs=hearing_pairs(con, nar))
+    from itibar import conditional
+    rul = conditional.load_rulings()
+    need_reg = any(r.kind == "region_of_shaykh" for rs in rul.values() for r in rs)
+    return Corpus(narrators=nar, books=books(con), scale=scale, hearing_pairs=hearing_pairs(con, nar),
+                  rulings=rul, regions=conditional.regions(con) if need_reg else {})

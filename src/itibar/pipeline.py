@@ -16,7 +16,7 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 
 from itibar import bundle as bundle_mod
-from itibar import config, corroborate, data, derive, load, matn, paths, siblings, structure
+from itibar import config, corroborate, data, derive, load, matn, paths, residue, siblings, structure
 from itibar.bundle import PROPHET
 
 _CORPUS: load.Corpus | None = None
@@ -69,8 +69,9 @@ def witness_rows(gid: int, chains: list[load.Chain], corpus: load.Corpus,
         if not (lb or hb):
             continue
         info = info_by[c.sanad_id]
-        out.append((gid, c.sanad_id, c.hadith_id, g.ordinal, lb, hb, c.rawis[-1] if info.ends_companion else None,
-                    [v for v in info.nodes if B.kind[v] in ("narrator", "mubham")]))
+        out.append((gid, c.sanad_id, c.hadith_id, g.ordinal, lb, hb,
+                    c.rawis[-1] if (info.ends_companion and not info.unnamed_companion) else None,
+                    [v for v in info.nodes if B.kind[v] in structure.NARRATOR_KINDS]))
     return out
 
 
@@ -123,7 +124,8 @@ def analyse_group(gid: int, chains: list[load.Chain], corpus: load.Corpus, mg: d
     steps = derive.receipt(B, corpus, chains, cgr, best, fell_back, mg.get("matn_no"))
     # ---- derived grade v2 (corroboration), every ruleset and variant
     params = corroborate.rulesets()
-    v2 = corroborate.grade_group(B, corpus, chains, cgr, params, siblings=sibling_idx)
+    classes = corroborate.classify_group(B, corpus, chains, cgr, params)
+    v2 = corroborate.grade_group(B, corpus, chains, cgr, params, siblings=sibling_idx, classes=classes)
     infos = [info_by[c.sanad_id] for c in chains]
     v2_rec: dict = {}
     v2_receipts: dict = {}
@@ -149,6 +151,12 @@ def analyse_group(gid: int, chains: list[load.Chain], corpus: load.Corpus, mg: d
         v2_receipts[name] = corroborate.receipt(name, params[name], i, verdicts, chains, cgr, B, corpus)
     default_rs = scfg["derive"]["ruleset"]
     v2_rec["v2_differs_from_v1"] = (v2_rec[f"code_v2_{default_rs}"] != best.code) if best else None
+    # ---- the residue (PR 6 §3): disagreement with the recorded grade, tagged by mechanical cause
+    rrs = (scfg.get("residue") or {}).get("ruleset", default_rs)
+    if rrs in v2:
+        ri = corroborate.best(v2[rrs], chains, cgr, infos)
+        v2_rec.update(residue.tag_group(mg.get("matn_no"), v2[rrs], classes[rrs], chains, ri, B, corpus,
+                                        v2_rec.get("code_v2_alt_conditional_off")))
     v2_rec["v2_by_corroboration"] = (v2_rec[f"rule_v2_{default_rs}"] in corroborate.UPGRADE_RULES) if best else None
     # ---- qara'in (flags only)
     qcfg = scfg["qarain"]
@@ -163,6 +171,8 @@ def analyse_group(gid: int, chains: list[load.Chain], corpus: load.Corpus, mg: d
             return False
         for p in g.graded_positions:
             rid = c.rawis[p]
+            if info.unnamed_companion and p == len(c.rawis) - 1:
+                continue                          # an unnamed companion: level 1
             if B.kind[info.nodes[p]] != "narrator" or nar.is_stub[rid] or not (1 <= int(nar.rank_no[rid]) <= hmax):
                 return False
         return True
@@ -171,8 +181,10 @@ def analyse_group(gid: int, chains: list[load.Chain], corpus: load.Corpus, mg: d
 
     # ---- companions
     comp_on = {v for v in on if B.kind.get(v) == "narrator" and nar.is_companion[B.rawi[v]]}
-    comp_direct = {v for v in B.succ.get(PROPHET, ()) if v in on}
-    comp_end = {c.rawis[-1] for c in B.chains if c.ends_companion}
+    # named companions only: the unnamed-companion node u<group> is one or more unknown men
+    comp_direct = {v for v in B.succ.get(PROPHET, ()) if v in on and B.kind.get(v) == "narrator"}
+    comp_end = {c.rawis[-1] for c in B.chains if c.ends_companion and not c.unnamed_companion}
+    utop = Counter(c.top_unnamed for c in B.chains if c.top_unnamed is not None)
     up_end = {c.rawis[-1] for c in B.chains
               if B.kind[c.nodes[-1]] == "narrator" and c.rawis[-1] in _SAHABI_EXACT}
 
@@ -216,6 +228,10 @@ def analyse_group(gid: int, chains: list[load.Chain], corpus: load.Corpus, mg: d
         **{f"kappa_nocompat_years_{th}": S.kappa_nocompat_years[th] for th in scale.thresholds},
         "kappa_lower_splice": [k for k, v in S.kappa_lower_splice.items() if v],
         "kappa_zero_reason": kappa_zero_reason(S.kappa["all"], B.chains),
+        "kappa_unnamed_split": S.kappa_unnamed_split,
+        "unnamed_companion_node": any(k == "ucomp" for k in B.kind.values()),
+        "n_unnamed_companion_chains": sum(1 for c in B.chains if c.unnamed_companion),
+        "unnamed_top_classes": json.dumps(dict(sorted(utop.items())), ensure_ascii=False) if utop else None,
         "width_number": [{"layer": int(k), "width": int(v)} for k, v in S.width_number.items()],
         "min_width": S.min_width,
         "tafarrud_layers": S.tafarrud_layers,
@@ -350,11 +366,13 @@ def analyse_group(gid: int, chains: list[load.Chain], corpus: load.Corpus, mg: d
                 v2c[f"notes_v2_{name}"] = vv.notes
                 v2c[f"witness_group_v2_{name}"] = vv.witness_group
                 v2c[f"route_exists_v2_{name}"] = vv.route_exists
+                v2c[f"rulings_v2_{name}"] = [rid for _, rid, _, _ in vv.rulings]
         chain_rows.append({
             "sanad_id": c.sanad_id, "group_id": gid, "hadith_id": c.hadith_id, "book_id": c.book_id,
             "length": len(c.rawis), "ends_companion": info.ends_companion,
             "gap_irsal": info.gaps.get("irsal", 0), "gap_inqita": info.gaps.get("inqita", 0),
             "gap_taliq": info.gaps.get("taliq", 0), "has_mubham": info.has_mubham,
+            "top_unnamed": info.top_unnamed, "unnamed_companion": info.unnamed_companion,
             "has_stub": info.has_stub, "connected": info.connected,
             "compiler_at_pos0": info.compiler_at_pos0, "transmitter_at_pos0": info.transmitter_at_pos0,
             "book_role_positions": list(g.book_role_positions), "self_loops": info.self_loops,
@@ -480,7 +498,10 @@ def run(group_ids: list[int] | None = None, workers: int | None = None, out_dir=
                 if not quiet and (time.time() - last > 5 or done == len(items)):
                     last = time.time()
                     print(f"  groups {done:,}/{len(items):,}  {time.time() - t0:6.1f}s", file=sys.stderr)
+    tw = time.time()
     write(results, out_dir, bundles=not records_only)
+    if not quiet:
+        print(f"  written in {time.time() - tw:.1f}s", file=sys.stderr)
     if sib_path is not None:
         sib_path.unlink(missing_ok=True)
     return {"groups": len(results), "load_s": round(t_load, 1), "siblings_s": round(t_sib, 1),
@@ -536,6 +557,8 @@ _ORDER = [
     "n_edges", "n_narrators_on_path", "width_profile", "width_max", "width_min",
     "width_taqrib", "width_taqrib_max", "width_taqrib_min",
     "kappa_all", "kappa_above_matruk", "kappa_saduq_up", "kappa_thiqa_up", "kappa_zero_reason",
+    "kappa_unnamed_split", "unnamed_companion_node", "n_unnamed_companion_chains",
+    "unnamed_top_classes",
     "kappa_lower_all", "kappa_lower_above_matruk", "kappa_lower_saduq_up", "kappa_lower_thiqa_up",
     "kappa_lower_source_all", "kappa_lower_source_above_matruk", "kappa_lower_source_saduq_up",
     "kappa_lower_source_thiqa_up",
@@ -564,10 +587,14 @@ _ORDER = [
         "code", "rule", "best_sanad", "witness_sanad", "witness_attested", "divergence", "witness_route_exists",
         "witness_cross_group", "witness_group", "n_witnesses")],
     "agree_v2_ibn_hajar_vs_group", "agree_v2_ibn_al_salah_vs_group",
-    "code_v2_alt_weakest", "code_v2_alt_all_light_defects", "code_v2_alt_shahid_group", "code_v2_alt_tasrih_corpus",
-    "code_v2_alt_mudallis_union", "code_v2_alt_unknown_none", "code_v2_alt_mursal_shafii", "code_v2_alt_no_level_8",
-    "code_v2_alt_witness_not_below",
+    "code_v2_alt_weakest", "code_v2_alt_all_light_defects", "code_v2_alt_siblings", "code_v2_alt_siblings_strict",
+    "code_v2_alt_tasrih_corpus", "code_v2_alt_mudallis_source_flag", "code_v2_alt_unknown_none",
+    "code_v2_alt_mursal_shafii", "code_v2_alt_conditional_off", "code_v2_alt_no_level_8",
+    "code_v2_alt_witness_not_below", "code_v2_alt_tasrih_tier_3_only", "code_v2_alt_unnamed_top_mursal",
+    "code_v2_alt_ansar_muhajir_mursal",
     "v2_differs_from_v1", "v2_by_corroboration", "receipt_v2",
+    "residue_disagree", "residue_direction", "residue_primary", "residue_tags", "residue_conditional",
+    "residue_weakest", "residue_divergence", "residue_tahrir_vs_ibn_hajar",
     "matn_no_group", "hadith_matn_no_mode", "sanad_matn_no_mode", "hadith_matn_no_counts",
     "sanad_matn_no_counts", "agree_derived_vs_group", "agree_derived_vs_hadith_mode",
     "n_chains_maxrank_agree_full", "n_chains_maxrank_agree_derived",

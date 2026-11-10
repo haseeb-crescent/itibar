@@ -276,4 +276,4 @@ def test_width_taqrib_keeps_layers_1_to_12():
     r = run([chain(1, a, q, t, C)], people, books)["record"]
     assert [w["layer"] for w in r["width_profile"]] == [1, 3, 14, 16]
     assert [w["layer"] for w in r["width_taqrib"]] == [1, 3]
-    assert r["structure_version"] == 4
+    assert r["structure_version"] == 5

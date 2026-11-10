@@ -1,9 +1,11 @@
 # Stage 6: + number class on kappa (section 6; no effect on grades).
 structure:
+  unnamed_companion: {enabled: false}
   bundle: {book_transmitters: true}
   structure: {compiler_terminal: edge}
   number_class: {basis: kappa}
   derive:
     corroboration: {witness: attested, avoid: each_defect, shahid_scope: siblings, unknown_repair: none}
-    tadlis: {tiers: true, tasrih_scope: group, sahihayn_muanan_accepted: true}
+    conditional: false
+    tadlis: {mudallis_set: source_flag, tiers: true, tasrih_scope: group, sahihayn_muanan_accepted: true}
     variants: null

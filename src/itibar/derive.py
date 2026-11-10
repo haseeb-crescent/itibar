@@ -48,7 +48,9 @@ def grade_chain(ch: Chain, info: ChainInfo, corpus: Corpus) -> ChainGrade:
     r = ch.rawis
     excl = set(info.role_positions) if bool(cfg["exclude_compiler"]) else set()
     graded = [p for p in range(len(r)) if p not in excl and not nar.is_gap(r[p])]
-    ords = [int(nar.ordinal[r[p]]) for p in graded]
+    # an unnamed companion at the top (structure version 5) is a companion: Taqrib level 1
+    ucomp = len(r) - 1 if info.unnamed_companion else None
+    ords = [12 if p == ucomp else int(nar.ordinal[r[p]]) for p in graded]
     ordinal = min(ords) if ords else 0
     weakest = [p for p, o in zip(graded, ords) if o == ordinal]
     code_raw = scale.code_of_ordinal(ordinal)
@@ -135,8 +137,10 @@ def receipt(B: Bundle, corpus: Corpus, chains: list[Chain], cgrades: list[ChainG
         rid = ch.rawis[p]
         narrators.append({
             "pos": p, "rawi_id": rid, "rank_no": int(nar.rank_no[rid]),
-            "ordinal": int(nar.ordinal[rid]) if not nar.is_gap(rid) else None,
+            "ordinal": (12 if (info.unnamed_companion and p == len(ch.rawis) - 1)
+                        else int(nar.ordinal[rid]) if not nar.is_gap(rid) else None),
             "graded": p in best.graded_positions,
+            **({"unnamed_companion": info.top_unnamed} if info.unnamed_companion and p == len(ch.rawis) - 1 else {}),
         })
     steps.append({
         "check": "best chain selection",
@@ -152,7 +156,8 @@ def receipt(B: Bundle, corpus: Corpus, chains: list[Chain], cgrades: list[ChainG
                  + (", compiler at pos 0 excluded" if info.compiler_at_pos0 and cfg["exclude_compiler"] else "")
                  + (", book transmitter at pos 0 excluded" if info.transmitter_at_pos0 and cfg["exclude_compiler"] else "")
                  + (", compiler at pos 1 excluded" if info.compiler_pos == 1 and cfg["exclude_compiler"] else "")
-                 + "; ordinal = 13 - rawis.rank_no; undescribed/unnamed = 0; break markers are not narrators"),
+                 + "; ordinal = 13 - rawis.rank_no; undescribed/unnamed = 0, an unnamed companion at the top = 12; "
+                   "break markers are not narrators"),
         "data": {"narrators": narrators, "weakest_positions": best.weakest_positions},
         "result": f"ordinal {best.ordinal} ({scale.name_of_ordinal(best.ordinal)})",
     })

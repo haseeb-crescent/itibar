@@ -20,6 +20,10 @@ STAGE_TITLES = {
     "s5_book_roles": "+ §5 compiler roles per edge, book transmitters",
     "s6_kappa_class": "+ §6 number class on κ (no effect on grades)",
     "s7_named_elsewhere": "+ §8 unnamed person named elsewhere (= PR 5 defaults)",
+    "s8_unnamed_companion": "+ PR 6 §1 the unnamed companion (structure v5)",
+    "s9_conditional": "+ PR 6 §2 conditional narrator rulings",
+    "s10_shahid_group": "+ PR 6 §4 sibling shawāhid a variant (shahid_scope: group)",
+    "s11_mudallis_union": "+ PR 6 §4 the mudallis set the Ṭabaqāt union (= PR 6 defaults)",
 }
 UP = ("hasan_li_ghayrihi", "sahih_li_ghayrihi")
 
@@ -143,7 +147,9 @@ def corrections_section(c, scale) -> str:
     # ---------------------------------------------------------------- 11.1
     out.append("### 11.1 The corrections, applied cumulatively\n")
     out.append("Each row reruns the pipeline (`make stages`, `config/stages/`) with the corrections up to that row "
-               "switched on, in the brief's order; stage 0 reproduces PR 4 and the last row equals the defaults. "
+               "switched on, in the briefs' order (PR 5's, then PR 6's: the unnamed companion, conditional rulings, "
+               "the default flips; the hearing check on tier 4 was already in PR 5, §11.11); stage 0 reproduces PR 4, "
+               "stage 7 PR 5 and the last row equals the defaults. "
                "*ours 1 / source 3–5*: groups v2 (`ibn_hajar`) places at code 1 that the source records شديد "
                "الضعف, متهم بالوضع or موضوع.\n")
     st, keep = stage_table()
@@ -176,29 +182,34 @@ def corrections_section(c, scale) -> str:
                + "; ".join(f"`{k}` {v:,}" for k, v in sorted(nt.items()) if k.startswith("muanan"))
                + "; still defects: " + "; ".join(f"`{k}` {v:,}" for k, v in sorted(dt.items())) + ".\n")
     for col, name in (("code_v2_alt_tasrih_corpus", "hearing anywhere in the corpus (`tasrih_corpus`)"),
-                      ("code_v2_alt_mudallis_union", "every narrator matched to the book a mudallis (`mudallis_union`)")):
+                      ("code_v2_alt_mudallis_source_flag", "the source's flagged narrators only (`mudallis_source_flag`, "
+                                                           "PR 5's default; PR 6 made the Ṭabaqāt union the default)")):
         if col in r:
             out.append(f"- variant {name}: agreement {(r[col] == src).mean():.4f}")
     out.append("")
     # ---------------------------------------------------------------- 11.4
     out.append("### 11.4 §3 Shawāhid from sibling groups\n")
-    up = r[r["rule_v2_ibn_hajar"].isin(UP)]
-    cross = ch[ch["witness_group_v2_ibn_hajar"].notna()]
+    r7 = _stage("s7_named_elsewhere")
+    rr, cch = (r7 if r7[0] is not None else (r, ch))
+    up = rr[rr["rule_v2_ibn_hajar"].isin(UP)]
+    cross = cch[cch["witness_group_v2_ibn_hajar"].notna()]
     same_comp = _same_companion_share(cross, c)
     out.append(f"Floor: idf-weighted Dice ≥ {config.load('structure')['derive']['corroboration']['shahid_min_overlap']} "
-               "on lists.normalize tokens, set by reading 50 candidate pairs (reports/shahid_inspection.md, D58). In the "
-               f"final run {int(up['witness_cross_group_v2_ibn_hajar'].fillna(False).sum()):,} of {len(up):,} upgraded "
-               f"groups have a cross-group witness in their v2 chain; {len(cross):,} chains in all. Of those chains' "
-               f"witnesses, {same_comp:.1%} come through the same companion as the chain (a mutābaʿa by the "
-               "*Nuzha*'s definition; classed shāhid because the source files them as another report).\n")
-    rows = [{"reading": "with sibling shawāhid (default)", "agreement": (r["code_v2_ibn_hajar"] == src).mean()}]
-    for col, name in (("code_v2_alt_shahid_group", "in-group witnesses only (`shahid_group`)"),
-                      ("code_v2_alt_shahid_strict", "siblings, strict floor 0.38 (`shahid_strict`)")):
+               "on lists.normalize tokens, set by reading 50 candidate pairs (reports/shahid_inspection.md, D58). With "
+               f"siblings on (PR 5's defaults, stage s7) {int(up['witness_cross_group_v2_ibn_hajar'].fillna(False).sum()):,} "
+               f"of {len(up):,} upgraded groups had a cross-group witness in their v2 chain; {len(cross):,} chains in all. "
+               f"Of those chains' witnesses, {same_comp:.1%} came through the same companion as the chain (a mutābaʿa by "
+               "the *Nuzha*'s definition; classed shāhid because the source files them as another report). PR 6 made "
+               "sibling shawāhid a variant (§11.12).\n")
+    rows = [{"reading": "in-group witnesses only (default since PR 6, D58 amended)",
+             "agreement": (r["code_v2_ibn_hajar"] == src).mean()}]
+    for col, name in (("code_v2_alt_siblings", "with sibling shawāhid (`siblings`, PR 5's default)"),
+                      ("code_v2_alt_siblings_strict", "siblings, strict floor 0.38 (`siblings_strict`)")):
         if col in r:
             rows.append({"reading": name, "agreement": (r[col] == src).mean()})
     out.append(_md(pd.DataFrame(rows), "{:.4f}"))
-    out.append("\nThe sandals dowry (gold `sandals-asim-b-ubaydallah`, group 2031) is repaired by Sahl b. Saʿd's report "
-               "in group 763 at overlap 0.333: above the floor, below the strict variant's.\n")
+    out.append("\nThe sandals dowry (gold `sandals-asim-b-ubaydallah`, group 2031) is repaired under `siblings` by Sahl b. "
+               "Saʿd's report in group 763 at overlap 0.333: above the floor, below the strict variant's.\n")
     # ---------------------------------------------------------------- 11.5
     out.append("### 11.5 §4 Every light defect covered\n")
     rows = [{"positions to cover": "each light defect, a witness of its own (`each_defect`, default)",
@@ -234,8 +245,15 @@ def corrections_section(c, scale) -> str:
                    f"named_elsewhere`, {(r['code_v2_alt_unknown_none'] == src).mean():.4f} without "
                    f"(`unknown_none`). Chains whose unnamed person is named elsewhere: "
                    f"{sum(1 for ns in ch['notes_v2_ibn_hajar'].dropna() if any(n.startswith('unnamed_named') for n in ns)):,}.\n")
-    # ---------------------------------------------------------------- 11.9
-    out.append("### 11.9 The final grade\n")
+    # ---------------------------------------------------------------- 11.9 - 11.12: PR 6
+    from itibar import audit_pr6
+    keep_all = {k: v for k, v in keep.items()}
+    out.append(audit_pr6.unnamed_section(c, keep_all))
+    out.append(audit_pr6.conditional_section(c, keep_all, r, ch))
+    out.append(audit_pr6.tier4_section(c, r, ch))
+    out.append(audit_pr6.flips_section(c, keep_all, r, ch))
+    # ---------------------------------------------------------------- 11.13
+    out.append("### 11.13 The final grade\n")
     rows = [("v1 (best single chain)", (r["derived_code"] == src).mean())]
     for col in sorted(x for x in r.columns if x.startswith("code_v2_")):
         rows.append((col.replace("code_v2_", "v2 ").replace("alt_", "variant "), (r[col] == src).mean()))

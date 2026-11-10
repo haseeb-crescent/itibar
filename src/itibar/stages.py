@@ -1,4 +1,4 @@
-"""`make stages`: the PR 5 corrections applied cumulatively, for the audit's before/after
+"""`make stages`: the PR 5 and PR 6 changes applied cumulatively, for the audit's before/after
 tables (reports/audit.md, section 11). Each config/stages/<name>.yaml is deep-merged over
 config/ (ITIBAR_CONFIG_OVERRIDE) and the pipeline reruns into out/stages/<name>/ (records
 and chains only; out/words.parquet and the matn tokens are shared). Stage 0 reproduces
@@ -17,7 +17,9 @@ STAGES_DIR = paths.CONFIG_DIR / "stages"
 
 
 def stage_files() -> list:
-    return sorted(STAGES_DIR.glob("s*.yaml"))
+    """config/stages/s<N>_*.yaml in numeric order of N."""
+    import re
+    return sorted(STAGES_DIR.glob("s*.yaml"), key=lambda p: (int(re.match(r"s(\d+)", p.stem).group(1)), p.stem))
 
 
 def out_dir(stem: str):
@@ -30,7 +32,7 @@ def run(only: list[str] | None = None) -> None:
             continue
         od = out_dir(f.stem)
         od.mkdir(parents=True, exist_ok=True)
-        for shared in ("words.parquet", "matn_tokens.parquet", "matn_vocab.parquet"):
+        for shared in ("words.parquet", "matn_tokens.parquet", "matn_vocab.parquet", "unnamed_tops.parquet"):
             src, dst = paths.OUT_DIR / shared, od / shared
             if src.exists() and not dst.exists():
                 os.symlink(src, dst)
