@@ -1,6 +1,6 @@
 # itibar — source audit
 
-Generated 2026-11-09 03:25 by `make audit` (`itibar.audit`) from the Parquet copy of `hadith-kg.db` (Hugging Face `emadjumaah/hadith-kg` @ `8ae7e3d5be28`, sha256 `d528084321e71500…`). Upstream comparison values are from `DATA_REPORT.md` at `emadjumaah/hadith@b5a0cf2`.
+Generated 2026-11-09 22:01 by `make audit` (`itibar.audit`) from the Parquet copy of `hadith-kg.db` (Hugging Face `emadjumaah/hadith-kg` @ `8ae7e3d5be28`, sha256 `d528084321e71500…`). Upstream comparison values are from `DATA_REPORT.md` at `emadjumaah/hadith@b5a0cf2`.
 
 Every number below is recomputed. Where itibar's definition differs from upstream's, both are shown.
 
@@ -220,7 +220,7 @@ So `tabaka` is the source's generation scale anchored on Taqrib, not a copy of T
 | 12 | 2,923 | 947 | 28 | 1,948 | 91 | 0 | 2,832 |
 | 13+ | 16,135 | 8,832 | 15 | 7,288 | 4,319 | 0 | 11,816 |
 
-Raw-only values are ranges or approximations the build declined to parse, e.g. `130 - 121` (16), `290 - 281` (14), `300 - 291` (11), `23 - 13` (7), `40 - 20` (6), `158 - 136` (6), `35 - 23` (5), `60 - 41` (4). itibar keeps them beside the parsed value (terminus columns) and never parses them itself. Where both the teacher's death and the student's birth are known the continuity check uses years; otherwise it falls back to tabaka (§8.5).
+Raw-only values are ranges or approximations the build declined to parse, e.g. `130 - 121` (16), `290 - 281` (14), `300 - 291` (11), `23 - 13` (7), `158 - 136` (6), `40 - 20` (6), `35 - 23` (5), `60 - 41` (4). itibar keeps them beside the parsed value (terminus columns) and never parses them itself. Where both the teacher's death and the student's birth are known the continuity check uses years; otherwise it falls back to tabaka (§8.5).
 
 ## 5. Inline mentions and transmission words
 
@@ -287,21 +287,21 @@ A cluster can only change kappa inside a group where two of its members both occ
 | 40,740 | وَمُحَمَّدُ بْنُ الْحُسَيْنِ | 2 | 2 | 2 |
 | 47,655 | عَبْدِ اللَّهِ بْنِ حُذَيْمٍ | 2 | 5 | 5 |
 | 40,138 | مُحَمَّدُ بْنُ عَمْرٍو | 2 | 1 | 3 |
-| 9,481 | غير معرف | 2 | 7 | 7 |
 | 50,436 | أَبِيهِ | 2 | 6 | 7 |
+| 26,043 | عِيسَى بْنُ الأَشْعَثِ | 2 | 4 | 8 |
+| 9,481 | غير معرف | 2 | 7 | 7 |
 | 47,653 | النُّعْمَانِ بْنِ نُعَيْمٍ | 2 | 5 | 7 |
 | 60,137 | مَخْرَمَةَ الْعَبْدِيِّ | 2 | 5 | 5 |
 | 40,741 | وَأَبُو مُسْلِمٍ | 2 | 2 | 2 |
-| 26,043 | عِيسَى بْنُ الأَشْعَثِ | 2 | 4 | 8 |
 | 50,437 | السُّمَيْطِ الْبَجَلِيِّ | 2 | 6 | 6 |
 | 40,142 | مُحَمَّدِ بْنِ مَطَرٍ | 1 | 2 | 2 |
+| 61,758 | الأَخْنَسِ بْنِ زُهَيْرٍ | 1 | 7 | 7 |
+| 40,139 | سَعْدِ بْنِ عُثْمَانَ | 1 | 4 | 4 |
+| 45,025 | جَعْفَر بْنِ الْفُرَافِصَةِ الْحَنَفِيِّ | 1 | 4 | 4 |
+| 60,136 | مَنْدُوسٍ | 1 | 6 | 6 |
+| 60,677 | سَنْجَوَيْهِ النَّاهِكِيُّ | 1 | 3 | 3 |
 | 40,260 | قَيْسٌ السَّعِيدِيُّ | 1 | 4 | 4 |
 | 45,024 | سَعِيدِ بْنِ عَوْسَجَةَ | 1 | 3 | 3 |
-| 60,677 | سَنْجَوَيْهِ النَّاهِكِيُّ | 1 | 3 | 3 |
-| 45,025 | جَعْفَر بْنِ الْفُرَافِصَةِ الْحَنَفِيِّ | 1 | 4 | 4 |
-| 40,139 | سَعْدِ بْنِ عُثْمَانَ | 1 | 4 | 4 |
-| 61,758 | الأَخْنَسِ بْنِ زُهَيْرٍ | 1 | 7 | 7 |
-| 60,136 | مَنْدُوسٍ | 1 | 6 | 6 |
 
 Stubs touch 60 chain links. They get ordinal 0 (below every threshold but `all`) and are dropped in `kappa_lower`. Several names are relational (`أبي`, `أبيه`, `أباه`).
 
@@ -330,8 +330,8 @@ Stubs touch 60 chain links. They get ordinal 0 (below every threshold but `all`)
 | companion: لها رؤية | 7 | 7 |
 | companion: مختلف في صحبتها | 4 | 4 |
 | other narrator, rank_no 5 | 2 | 2 |
-| other narrator, rank_no 10 | 1 | 1 |
 | break marker (30000) | 1 | 0 |
+| other narrator, rank_no 10 | 1 | 1 |
 
 Upstream's 17,811 counts chain ends whose label is not exactly `صحابي`: it **includes** 10,646 chains ending at female companions and 3,879 at `صحابي صغير`, and **excludes** every chain ending at a NULL-rank placeholder (37,538, mostly `موضع إرسال`, the source's own irsal marker). By itibar's companion rule (rank_no 1, minus `لم تثبت له صحبة` / `له إدراك` / `لها إدراك`, plus the young-companion labels at any rank_no) **39,350** marfu'/qudsi chains do not end in a companion; these are kept in their bundles, flagged mursal, and get no PROPHET edge.
 
@@ -550,10 +550,10 @@ The continuity flags feed one quantity: the `nocompat` hypothesis of `kappa_lowe
 
 | threshold | groups | lower_below_kappa | nocompat_below_kappa | nocompat_years_below_kappa | attained_unmerged | attained_merged | attained_nocompat | kappa_2plus_lower_below_2 | kappa_1plus_lower_0 |
 |---|---|---|---|---|---|---|---|---|---|
-| all | 20,282 | 2,436 | 2,436 | 732 | 17,849 | 1 | 2,432 | 404 | 1,020 |
-| above_matruk | 20,282 | 1,765 | 1,764 | 538 | 18,517 | 2 | 1,763 | 303 | 746 |
-| saduq_up | 20,282 | 835 | 827 | 327 | 19,447 | 11 | 824 | 131 | 363 |
-| thiqa_up | 20,282 | 569 | 569 | 254 | 19,713 | 1 | 568 | 95 | 245 |
+| all | 20,282 | 2,447 | 2,447 | 734 | 17,838 | 1 | 2,443 | 403 | 1,022 |
+| above_matruk | 20,282 | 1,771 | 1,770 | 538 | 18,511 | 2 | 1,769 | 304 | 747 |
+| saduq_up | 20,282 | 839 | 831 | 331 | 19,443 | 11 | 828 | 132 | 364 |
+| thiqa_up | 20,282 | 573 | 573 | 257 | 19,709 | 1 | 572 | 95 | 245 |
 
 It is a lower bound under those hypotheses, not a guarantee: cross-name misresolution that the continuity rule does not catch (§8.4) remains an unquantified upward bias on κ.
 
@@ -571,29 +571,29 @@ It is a lower bound under those hypotheses, not a guarantee: cross-name misresol
 
 ## 9. Why κ is zero
 
-κ = 0 means **no unbroken companion-ending route in this data**, not no support. 3,421 of 20,745 groups have no PROPHET → book route at *everyone*: 2,958 of the 20,282 groups with chains (14.6%) plus the groups without chains. `kappa_zero_reason` assigns each one reason, by precedence:
+κ = 0 means **no unbroken companion-ending route in this data**, not no support. 3,337 of 20,745 groups have no PROPHET → book route at *everyone*: 2,874 of the 20,282 groups with chains (14.2%) plus the groups without chains. `kappa_zero_reason` assigns each one reason, by precedence:
 
 | reason | groups | share_of_all_groups | share_of_zero_groups | meaning |
 |---|---|---|---|---|
-| no_chains | 463 | 0.022 | 0.135 | the group has no chains |
-| no_companion_end | 2,531 | 0.122 | 0.740 | no chain ends in a companion (irsal marker, unnamed person, non-companion or stub) |
-| broken_only | 427 | 0.021 | 0.125 | companion-ending chains exist, every one with a break marker |
+| no_chains | 463 | 0.022 | 0.139 | the group has no chains |
+| no_companion_end | 2,448 | 0.118 | 0.734 | no chain ends in a companion (irsal marker, unnamed person, non-companion or stub) |
+| broken_only | 426 | 0.021 | 0.128 | companion-ending chains exist, every one with a break marker |
 | other | 0 | 0 | 0 | a continuous chain exists yet no route survived (gated at 0) |
 
 **`no_companion_end`: the ten books contributing the most such groups** (a group counts for every book with a chain in it):
 
 | book_id | book | author | groups | groups_with_chains | share_of_book |
 |---|---|---|---|---|---|
-| 274 | الطبقات الكبرى لابن سعد | محمد بن سعد الزهري | 319 | 2,096 | 0.152 |
-| 303 | تاريخ دمشق لابن عساكر | ابن عساكر الدمشقي | 314 | 5,605 | 0.056 |
-| 62 | مصنف ابن أبي شيبة | ابن ابي شيبة | 239 | 3,431 | 0.070 |
-| 61 | مصنف عبد الرزاق | عبد الرزاق الصنعاني | 174 | 1,900 | 0.092 |
-| 22 | السنن الكبرى للبيهقي | البيهقي | 150 | 4,551 | 0.033 |
-| 297 | معرفة الصحابة لأبي نعيم | أبو نعيم الأصبهاني | 148 | 3,092 | 0.048 |
-| 143 | المراسيل مع الأسانيد لأبي داود | أبو داود السجستاني | 129 | 417 | 0.309 |
-| 249 | جامع البيان عن تأويل آي القرآن | ابن جرير الطبري | 129 | 1,292 | 0.100 |
-| 269 | دلائل النبوة للبيهقي | البيهقي | 117 | 1,399 | 0.084 |
-| 278 | تاريخ المدينة لابن شبة | ابن شبة النميري | 87 | 455 | 0.191 |
+| 274 | الطبقات الكبرى لابن سعد | محمد بن سعد الزهري | 316 | 2,096 | 0.151 |
+| 303 | تاريخ دمشق لابن عساكر | ابن عساكر الدمشقي | 307 | 5,605 | 0.055 |
+| 62 | مصنف ابن أبي شيبة | ابن ابي شيبة | 233 | 3,431 | 0.068 |
+| 61 | مصنف عبد الرزاق | عبد الرزاق الصنعاني | 169 | 1,900 | 0.089 |
+| 22 | السنن الكبرى للبيهقي | البيهقي | 141 | 4,551 | 0.031 |
+| 297 | معرفة الصحابة لأبي نعيم | أبو نعيم الأصبهاني | 129 | 3,092 | 0.042 |
+| 143 | المراسيل مع الأسانيد لأبي داود | أبو داود السجستاني | 128 | 417 | 0.307 |
+| 249 | جامع البيان عن تأويل آي القرآن | ابن جرير الطبري | 126 | 1,292 | 0.098 |
+| 269 | دلائل النبوة للبيهقي | البيهقي | 112 | 1,399 | 0.080 |
+| 278 | تاريخ المدينة لابن شبة | ابن شبة النميري | 85 | 455 | 0.187 |
 
 **`broken_only`: the ten books contributing the most such groups** (a group counts for every book with a chain in it):
 
@@ -602,26 +602,25 @@ It is a lower bound under those hypotheses, not a guarantee: cross-name misresol
 | 305 | التدوين في أخبار قزوين للرافعي | عبد الكريم الرافعي | 52 | 1,188 | 0.044 |
 | 303 | تاريخ دمشق لابن عساكر | ابن عساكر الدمشقي | 46 | 5,605 | 0.008 |
 | 255 | الوسيط في تفسير القرآن المجيد | الواحدي | 33 | 793 | 0.042 |
-| 297 | معرفة الصحابة لأبي نعيم | أبو نعيم الأصبهاني | 23 | 3,092 | 0.007 |
+| 297 | معرفة الصحابة لأبي نعيم | أبو نعيم الأصبهاني | 22 | 3,092 | 0.007 |
 | 45 | مسند الشاميين للطبراني | سليمان بن أحمد الطبراني | 19 | 1,846 | 0.010 |
 | 274 | الطبقات الكبرى لابن سعد | محمد بن سعد الزهري | 16 | 2,096 | 0.008 |
-| 9 | مسند أحمد بن حنبل | أحمد بن حنبل | 15 | 5,666 | 0.003 |
+| 9 | مسند أحمد بن حنبل | أحمد بن حنبل | 14 | 5,666 | 0.002 |
 | 40 | المطالب العالية بزوائد المسانيد الثمانية لابن حجر | ابن حجر العسقلاني | 14 | 2,500 | 0.006 |
 | 67 | المعجم الكبير للطبراني | سليمان بن أحمد الطبراني | 13 | 5,496 | 0.002 |
 | 22 | السنن الكبرى للبيهقي | البيهقي | 11 | 4,551 | 0.002 |
 
-**The converse does not hold.** 13 groups have κ ≥ 1 with no continuous chain: every chain is broken, but at different places, and the union graph joins the intact parts into a route. In group 7978 one copy of the isnad has an inqita' marker in the middle and another a ta'liq at the compiler's end; together they cover the whole chain. Routes are paths in the bundle, not attested chains (DECISIONS D31); `n_chains_connected` and `bypass_chains` count attested chains.
+**The converse does not hold.** 12 groups have κ ≥ 1 with no continuous chain: every chain is broken, but at different places, and the union graph joins the intact parts into a route. In group 7978 one copy of the isnad has an inqita' marker in the middle and another a ta'liq at the compiler's end; together they cover the whole chain. Routes are paths in the bundle, not attested chains (DECISIONS D31); `n_chains_connected` and `bypass_chains` count attested chains.
 
 | group_id | kappa_all | n_chains | n_chains_companion_end | n_chains_broken | opening |
 |---|---|---|---|---|---|
 | 7,978 | 1 | 2 | 2 | 2 | يطير الحمام |
-| 9,030 | 1 | 6 | 1 | 5 | ليأخذ العبد من نفسه لنفسه ومن دنياه لآخر |
 | 9,730 | 1 | 5 | 1 | 5 | ضرب رسول الله لجعفر يوم بدر بسهمه وأجره |
 | 11,928 | 1 | 2 | 2 | 2 | نصلي مع رسول الله المغرب ونحن ننظر إلى ا |
 | 11,996 | 1 | 6 | 1 | 6 | آخى رسول الله بين عويم بن ساعدة وبين عمر |
-| 12,053 | 1 | 3 | 1 | 1 | نهى عن الشعر إذا أبنت فيه النساء وبذر في |
 | 12,120 | 1 | 4 | 3 | 4 | الله يقبض أرواح شهداء البحر بيده ولا يكل |
 | 12,518 | 1 | 3 | 2 | 3 | تريدون من ربكم إلا أن يغفر لكم ذنوبكم وي |
+| 12,901 | 1 | 3 | 1 | 3 | بعث الله إليه ملكا فأخرج يده من سور جدار |
 | 13,542 | 1 | 5 | 1 | 1 | أهل حين راح إلى منى |
 | 14,391 | 1 | 3 | 2 | 3 | عليكم بأمهات الأولاد فإنهن مباركات الأرح |
 | 14,804 | 1 | 2 | 1 | 2 | لا تزال مصليا قانتا ما ذكرت الله قائما و |
@@ -633,9 +632,9 @@ It is a lower bound under those hypotheses, not a guarantee: cross-name misresol
 | reason | 0 صحيح | 1 حسن | 2 ضعيف | 3 شديد الضعف | 4 متهم بالوضع | 5 موضوع |
 |---|---|---|---|---|---|---|
 | no_chains | 21 | 40 | 180 | 86 | 84 | 52 |
-| no_companion_end | 83 | 110 | 1,511 | 426 | 322 | 79 |
-| broken_only | 2 | 6 | 245 | 93 | 49 | 32 |
-| κ ≥ 1 | 5,957 | 4,519 | 2,217 | 2,025 | 1,567 | 1,039 |
+| no_companion_end | 60 | 79 | 1,495 | 415 | 321 | 78 |
+| broken_only | 1 | 6 | 245 | 93 | 49 | 32 |
+| κ ≥ 1 | 5,981 | 4,550 | 2,233 | 2,036 | 1,568 | 1,040 |
 ## 10. Indicative chain-level error rate from the gold set
 
 Every gold entry whose chains were inspected one by one (`deviation_key` and `known_deviations` in `tests/gold/gold.yaml`): chains documented as a cross-name misresolution (`misresolution`) or a dropped link, over the chains in the entry's scope. Other documented deviations (alternative routes the classical sources do not count) are listed but are not errors of the data. The four entries are hand-picked famous reports, so this is an indicative rate for the limitations section, not an estimate for the corpus.
@@ -649,7 +648,7 @@ Every gold entry whose chains were inspected one by one (`deviation_key` and `kn
 
 Pooled: **14 of 843 in-scope chains (1.66%)** carry a documented misresolution or dropped link; misresolution alone 10 (1.19%).
 
-## 11. Derived grade v2: corroboration, after the PR 5 corrections
+## 11. Derived grade v2: corroboration, after the PR 5 and PR 6 changes
 
 Books used by the qarāʾin, the collection classes and the Ṣaḥīḥayn convention, verified: `books.id` 1 = صحيح البخاري; `books.id` 2 = صحيح مسلم.
 
@@ -657,7 +656,7 @@ Agreement with the source's recorded grades is a **reported result, never a gate
 
 ### 11.1 The corrections, applied cumulatively
 
-Each row reruns the pipeline (`make stages`, `config/stages/`) with the corrections up to that row switched on, in the brief's order; stage 0 reproduces PR 4 and the last row equals the defaults. *ours 1 / source 3–5*: groups v2 (`ibn_hajar`) places at code 1 that the source records شديد الضعف, متهم بالوضع or موضوع.
+Each row reruns the pipeline (`make stages`, `config/stages/`) with the corrections up to that row switched on, in the briefs' order (PR 5's, then PR 6's: the unnamed companion, conditional rulings, the default flips; the hearing check on tier 4 was already in PR 5, §11.11); stage 0 reproduces PR 4, stage 7 PR 5 and the last row equals the defaults. *ours 1 / source 3–5*: groups v2 (`ibn_hajar`) places at code 1 that the source records شديد الضعف, متهم بالوضع or موضوع.
 
 | stage | correction | v1 | v2 ibn_hajar | v2 ibn_al_salah | ours 1 / source 3–5 | upgraded groups | groups changed vs previous |
 |---|---|---|---|---|---|---|---|
@@ -669,12 +668,16 @@ Each row reruns the pipeline (`make stages`, `config/stages/`) with the correcti
 | s5_book_roles | + §5 compiler roles per edge, book transmitters | 0.7235 | 0.7109 | 0.7201 | 486 | 2,855 | 0 |
 | s6_kappa_class | + §6 number class on κ (no effect on grades) | 0.7235 | 0.7109 | 0.7201 | 486 | 2,855 | 0 |
 | s7_named_elsewhere | + §8 unnamed person named elsewhere (= PR 5 defaults) | 0.7235 | 0.7121 | 0.7211 | 488 | 2,877 | 34 |
+| s8_unnamed_companion | + PR 6 §1 the unnamed companion (structure v5) | 0.7267 | 0.7149 | 0.7240 | 488 | 2,861 | 72 |
+| s9_conditional | + PR 6 §2 conditional narrator rulings | 0.7267 | 0.7120 | 0.7191 | 496 | 2,901 | 157 |
+| s10_shahid_group | + PR 6 §4 sibling shawāhid a variant (shahid_scope: group) | 0.7267 | 0.7182 | 0.7302 | 401 | 2,301 | 607 |
+| s11_mudallis_union | + PR 6 §4 the mudallis set the Ṭabaqāt union (= PR 6 defaults) | 0.7267 | 0.7153 | 0.7275 | 382 | 2,312 | 159 |
 
 ### 11.2 §1 A witness is one attested chain
 
 PR 4 accepted a route spliced from several chains in the union graph: 725 of its 3,730 upgraded groups (19.4%) rested on one. With witnesses restricted to single attested chains, upgraded groups go from 3,730 to 3,310 and the block *ours 1 / source 3–5* from 562 to 457.
 
-`witness_route_exists` (the union graph had a route avoiding the positions, no single chain did), final run: 125 of 5,441 groups whose v2 chain is ḍaʿīf; 1,519 of 24,508 such chains.
+`witness_route_exists` (the union graph had a route avoiding the positions, no single chain did), final run: 154 of 5,739 groups whose v2 chain is ḍaʿīf; 1,762 of 26,160 such chains.
 
 ### 11.3 §2 Tiered tadlīs, the hearing check, the Ṣaḥīḥayn convention
 
@@ -695,32 +698,32 @@ PR 4 downgraded 271 groups from v1 code 0 only because of a mudallis's ʿan (its
 | code 0: covered_tasrih | 6 |
 | not_repairable (code 2.0) | 3 |
 
-Chain-level counts in the final run (`ibn_hajar`; a chain counts once per kind): `muanan_accepted_sahihayn_tier_3` 1,552; `muanan_accepted_sahihayn_tier_4` 34; `muanan_accepted_tier_1` 10,733; `muanan_accepted_tier_2` 32,112; `muanan_covered_tasrih_tier_3` 28,113; `muanan_covered_tasrih_tier_4` 4,832; `muanan_covered_tasrih_tier_5` 386; still defects: `mudallis_muanan_tier_3` 34,018; `mudallis_muanan_tier_4` 6,712; `mudallis_muanan_tier_5` 2,643.
+Chain-level counts in the final run (`ibn_hajar`; a chain counts once per kind): `muanan_accepted_sahihayn_tier_3` 2,998; `muanan_accepted_sahihayn_tier_4` 34; `muanan_accepted_tier_1` 19,495; `muanan_accepted_tier_2` 58,272; `muanan_covered_tasrih_tier_3` 51,825; `muanan_covered_tasrih_tier_4` 5,388; `muanan_covered_tasrih_tier_5` 1,713; still defects: `mudallis_muanan_tier_3` 45,852; `mudallis_muanan_tier_4` 8,102; `mudallis_muanan_tier_5` 5,387.
 
-- variant hearing anywhere in the corpus (`tasrih_corpus`): agreement 0.7237
-- variant every narrator matched to the book a mudallis (`mudallis_union`): agreement 0.7096
+- variant hearing anywhere in the corpus (`tasrih_corpus`): agreement 0.7317
+- variant the source's flagged narrators only (`mudallis_source_flag`, PR 5's default; PR 6 made the Ṭabaqāt union the default): agreement 0.7182
 
 ### 11.4 §3 Shawāhid from sibling groups
 
-Floor: idf-weighted Dice ≥ 0.32 on lists.normalize tokens, set by reading 50 candidate pairs (reports/shahid_inspection.md, D58). In the final run 659 of 2,877 upgraded groups have a cross-group witness in their v2 chain; 1,844 chains in all. Of those chains' witnesses, 17.6% come through the same companion as the chain (a mutābaʿa by the *Nuzha*'s definition; classed shāhid because the source files them as another report).
+Floor: idf-weighted Dice ≥ 0.32 on lists.normalize tokens, set by reading 50 candidate pairs (reports/shahid_inspection.md, D58). With siblings on (PR 5's defaults, stage s7) 659 of 2,877 upgraded groups had a cross-group witness in their v2 chain; 1,844 chains in all. Of those chains' witnesses, 17.6% came through the same companion as the chain (a mutābaʿa by the *Nuzha*'s definition; classed shāhid because the source files them as another report). PR 6 made sibling shawāhid a variant (§11.12).
 
 | reading | agreement |
 |---|---|
-| with sibling shawāhid (default) | 0.7121 |
-| in-group witnesses only (`shahid_group`) | 0.7180 |
-| siblings, strict floor 0.38 (`shahid_strict`) | 0.7153 |
+| in-group witnesses only (default since PR 6, D58 amended) | 0.7153 |
+| with sibling shawāhid (`siblings`, PR 5's default) | 0.7098 |
+| siblings, strict floor 0.38 (`siblings_strict`) | 0.7128 |
 
-The sandals dowry (gold `sandals-asim-b-ubaydallah`, group 2031) is repaired by Sahl b. Saʿd's report in group 763 at overlap 0.333: above the floor, below the strict variant's.
+The sandals dowry (gold `sandals-asim-b-ubaydallah`, group 2031) is repaired under `siblings` by Sahl b. Saʿd's report in group 763 at overlap 0.333: above the floor, below the strict variant's.
 
 ### 11.5 §4 Every light defect covered
 
 | positions to cover | agreement |
 |---|---|
-| each light defect, a witness of its own (`each_defect`, default) | 0.7121 |
-| the weakest light defects, one witness (`weakest`, PR 4) | 0.7334 |
-| every light defect, one witness (`all_light_defects`) | 0.7121 |
+| each light defect, a witness of its own (`each_defect`, default) | 0.7153 |
+| the weakest light defects, one witness (`weakest`, PR 4) | 0.7404 |
+| every light defect, one witness (`all_light_defects`) | 0.7154 |
 
-Groups whose v2 chain needed more than one witness (one per defect): 941 of 2,492 ḥasan li-ghayrihi groups (ḥasan li-ghayrihi chains in all: 211,522).
+Groups whose v2 chain needed more than one witness (one per defect): 711 of 2,062 ḥasan li-ghayrihi groups (ḥasan li-ghayrihi chains in all: 209,159).
 
 ### 11.6 §5 Book transmitters and compiler roles
 
@@ -802,121 +805,374 @@ By the source's recorded grade:
 | mid | 73 | 92 | 0 | 108 | 70 | 38 |
 | top | 53 | 63 | 5 | 37 | 21 | 9 |
 
-Effect: agreement 0.7121 with `unknown_repair: named_elsewhere`, 0.7109 without (`unknown_none`). Chains whose unnamed person is named elsewhere: 2,717.
+Effect: agreement 0.7153 with `unknown_repair: named_elsewhere`, 0.7141 without (`unknown_none`). Chains whose unnamed person is named elsewhere: 2,730.
 
-### 11.9 The final grade
+### 11.9 PR 6 §1 The unnamed companion
+
+5,040 chains end in the unnamed person (`اسم مبهم`, r1131). His designation is read from `hadiths.nass`: the mention (`hadith_rawis` offsets, the chain aligned as in `words.py`) and the words after it up to the next mention, a delimiter or a transmission word (README). How the mention was found:
+
+| method | chain tops |
+|---|---|
+| exact | 2,420 |
+| subseq | 1,867 |
+| sanad_fallback_mention | 429 |
+| sanad_fallback_text | 324 |
+
+*sanad_fallback_text* (no mention of him at all): what stands before the matn is mostly the matn's own opening, so nothing is read as a designation (class `none_text`, D69). The classes (`config/structure.yaml: unnamed_companion.phrases`, by precedence companion, ansar_muhajir, none; *unclassified* = no phrase matched, read as none):
+
+| class | exact | sanad_fallback_mention | sanad_fallback_text | subseq | total |
+|---|---|---|---|---|---|
+| ansar_muhajir | 134 | 34 | 0 | 132 | 300 |
+| companion | 855 | 126 | 0 | 634 | 1,615 |
+| none | 1,143 | 215 | 0 | 884 | 2,242 |
+| none_text | 0 | 0 | 324 | 0 | 324 |
+| unclassified | 288 | 54 | 0 | 217 | 559 |
+
+The phrase that classified each companion and Anṣār/Muhājirūn designation:
+
+| class | phrase | chain tops |
+|---|---|---|
+| ansar_muhajir | من الأنصار | 273 |
+| ansar_muhajir | من المهاجرين | 15 |
+| ansar_muhajir | بعض المهاجرين | 7 |
+| ansar_muhajir | الأنصاري | 4 |
+| ansar_muhajir | بعض الأنصار | 1 |
+| companion | من أصحاب النبي | 676 |
+| companion | أصحاب رسول الله | 324 |
+| companion | أصحاب النبي | 175 |
+| companion | أزواج النبي | 73 |
+| companion | أصحاب محمد | 71 |
+| companion | سمع النبي | 63 |
+| companion | من الصحابة | 30 |
+| companion | صلى مع رسول الله | 27 |
+| companion | رأى النبي | 25 |
+| companion | سمع رسول الله | 19 |
+| companion | صحب النبي | 18 |
+| companion | مصدق النبي | 17 |
+| companion | من المبايعات | 17 |
+| companion | صلى مع النبي | 13 |
+| companion | أمهات المؤمنين | 9 |
+| companion | له صحبة | 9 |
+| companion | مصدق رسول الله | 8 |
+| companion | خادم النبي | 5 |
+| companion | رديف النبي | 5 |
+| companion | نسوة رسول الله | 5 |
+| companion | أم المؤمنين | 4 |
+| companion | ردف النبي | 4 |
+| companion | نساء النبي | 4 |
+| companion | رأى رسول الله | 3 |
+| companion | صحب رسول الله | 3 |
+| companion | مولاة للنبي | 3 |
+| companion | خادم رسول الله | 2 |
+| companion | من أهل بدر | 2 |
+| companion | أزواج رسول الله | 1 |
+
+1,290 distinct designations (normalized); the 40 most frequent are below and every one with its count is in Appendix B. The most frequent *unclassified* ones, for the reviewer completing the list:
+
+| designation (normalized) | class | chain tops |
+|---|---|---|
+| رجل من اصحاب النبي | companion | 408 |
+| رجل | none | 226 |
+| ابيه | none | 160 |
+| بعض اصحاب النبي | companion | 119 |
+| رجل من الانصار | ansar_muhajir | 119 |
+| بعض ازواج النبي | companion | 53 |
+| بعض اصحاب رسول الله | companion | 53 |
+| رجلا | none | 52 |
+| رجل من اصحاب رسول الله | companion | 46 |
+| جده | none | 41 |
+| اصحاب رسول الله | companion | 41 |
+| رجل من بلقين | none | 40 |
+| اصحاب النبي | companion | 37 |
+| من | unclassified | 37 |
+| رجل من اسلم | none | 36 |
+| من سمع النبي | companion | 35 |
+| رجل من قومه | none | 34 |
+| رجل من بني سليم | none | 32 |
+| رجل من جهينه | none | 30 |
+| عمه | none | 28 |
+| عمن | unclassified | 27 |
+| رجل من بني اسد | none | 27 |
+| رجل من اصحاب النبي صلي الله عليه وسلم | companion | 26 |
+| جدي | none | 25 |
+| رجلان | none | 22 |
+| اصحاب محمد | companion | 22 |
+| رجل من اصحاب رسول الله من الانصار | companion | 22 |
+| رجلا من اصحاب النبي | companion | 22 |
+| رجل من مزينه | none | 22 |
+| ابايه | none | 22 |
+| فلان | none | 21 |
+| البدوي | none | 21 |
+| اصحابنا | none | 21 |
+| رجل منهم | none | 21 |
+| رجلا من الانصار | ansar_muhajir | 19 |
+| رجل من اصحاب محمد | companion | 19 |
+| رجل من ثقيف | none | 18 |
+| رجل من اهل الباديه | none | 18 |
+| رجل من اصحاب النبي من الانصار | companion | 18 |
+| رجل من اهل المدينه | none | 18 |
+
+| designation (normalized) | class | chain tops |
+|---|---|---|
+| من | unclassified | 37 |
+| عمن | unclassified | 27 |
+| عمن سمعه | unclassified | 8 |
+| وامراه من قيس | unclassified | 8 |
+| مولي لبني هاشم | unclassified | 7 |
+| ابا سعيد | unclassified | 6 |
+| من شهد ذاك | unclassified | 6 |
+| بعض عمات رسول الله | unclassified | 6 |
+| ظير محمد بن طلحه | unclassified | 6 |
+| وفد عبد القيس | unclassified | 5 |
+| جاريه حبشيه | unclassified | 4 |
+| من هو خير مني | unclassified | 4 |
+| مناد من اصحاب معاويه اصحاب علي | unclassified | 4 |
+| اناس من ال عبد الله بن صفوان | unclassified | 3 |
+| رجالا يتحدثون | unclassified | 3 |
+| بعض | unclassified | 3 |
+| عدي | unclassified | 3 |
+| ناس من ال صفوان بن اميه | unclassified | 3 |
+| عمومتي الي رسول الله | unclassified | 3 |
+| اباءه حدثوه | unclassified | 3 |
+
+**Effect** (stage s8_unnamed_companion against s7_named_elsewhere, PR 5's defaults): chain tops read as an unnamed companion 1,915 in 501 groups; chains not ending in a companion (mursal) 39,350 → 37,435; groups with `kappa_zero_reason: no_companion_end` 2,531 → 2,448, of which 82 now have κ_all ≥ 1; κ_all changes in 324 groups; `kappa_unnamed_split` (each unnamed companion a different man) exceeds the merged κ_all in 17 groups. v2 (`ibn_hajar`) changes in 72 groups; agreement 0.7121 → 0.7149 (`ibn_al_salah` 0.7211 → 0.7240; v1 0.7235 → 0.7267).
+
+Number class, before (rows) and after (columns):
+
+| before \ after | aziz | gharib_mutlaq | gharib_nisbi | mashhur | mutawatir_count | no route |
+|---|---|---|---|---|---|---|
+| aziz | 2,656 | 0 | 0 | 23 | 0 | 0 |
+| gharib_mutlaq | 33 | 10,365 | 27 | 0 | 0 | 0 |
+| gharib_nisbi | 2 | 0 | 748 | 0 | 0 | 0 |
+| mashhur | 0 | 0 | 0 | 2,959 | 6 | 0 |
+| mutawatir_count | 0 | 0 | 0 | 0 | 505 | 0 |
+| no route | 0 | 84 | 0 | 0 | 0 | 2,874 |
+
+PR 5's 574 disagreeing groups with the unnamed person among the weakest positions of their v2 chain (the brief's 631 counts his positions: a group can hold two), by where he sits, and how many now agree:
+
+| where | groups | v2_changed | agree_now |
+|---|---|---|---|
+| mid | 379 | 3 | 3 |
+| top | 195 | 38 | 37 |
+
+The residue table before and after (narrators most often weakest in the disagreeing groups):
+
+| narrator | before | after |
+|---|---|---|
+| اسم مبهم (r1131) | 631 | 556 |
+| ابن إسحاق القرشي (r6811) | 98 | 100 |
+| عبد الله بن لهيعة الحضرمي (r5033) | 93 | 91 |
+| الحسن البصري (r1239) | 67 | 67 |
+| بقية بن الوليد الكلاعي (r1919) | 62 | 64 |
+| أبو إسحاق السبيعي (r6155) | 50 | 50 |
+| سماك بن حرب الذهلي (r3638) | 47 | 47 |
+| الحجاج بن أرطاة النخعي (r2288) | 44 | 44 |
+| مسلم بن أبي كريمة التميمي (r31544) | 40 | 43 |
+| محمد بن مسلم القرشي (r7270) | 38 | 39 |
+| الليث بن أبي سليم القرشي (r6638) | 37 | 37 |
+| علي بن زيد القرشي (r5770) | 36 | 36 |
+| إبراهيم بن أبي يحيى الأسلمي (r870) | 35 | 35 |
+| إسماعيل بن عياش العنسي (r1050) | 34 | 34 |
+| ابن جريج المكي (r5223) | 32 | 32 |
+
+### 11.10 PR 6 §2 Conditional narrator rulings
+
+**Seed** (227 narrators looked up; a narrator can carry several reasons): PR 5's residue table 14, a conditional label 53, the source's `has_ikhtilat` flag 161, the brief's named cases 14, an entry of al-Kawākib al-Nayyirāt 46, of al-ʿAlāʾī's al-Mukhtaliṭīn 37, of al-Ightibāṭ 58, of Ibn Rajab's section 46 (entries matched to `rawis` by the mudallisin matcher, D71). Their entries were fetched from Shamela (`lists/source/conditional_taqrib.jsonl`) and accepted after an identity check (README): Taqrīb 109, Taḥrīr 109. al-Kawākib al-Nayyirāt (Shamela 309, `lists/source/kawakib_309.jsonl`): 70 entries parsed, 46 matched to `rawis` by the mudallisin matcher's auto rule.
+
+**Rulings by kind and status** (`lists/conditional_confirmed.csv`; `human` rows are the reviewer's):
+
+| kind | auto | needs_review | total |
+|---|---|---|---|
+| from_shaykh | 9 | 4 | 13 |
+| ikhtilat_after | 5 | 166 | 171 |
+| ikhtilat_before | 5 | 166 | 171 |
+| region_of_shaykh | 1 | 0 | 1 |
+| unknown | 0 | 16 | 16 |
+| unobservable | 14 | 0 | 14 |
+| via_student | 1 | 1 | 2 |
+
+In force: 35 rulings on 25 narrators; by effect:
+
+| kind | effect | rulings |
+|---|---|---|
+| from_shaykh | defect:light | 9 |
+| ikhtilat_after | defect:light | 5 |
+| ikhtilat_before | level:3 | 1 |
+| ikhtilat_before | level:4 | 1 |
+| ikhtilat_before | none | 3 |
+| region_of_shaykh | level:4 | 1 |
+| unobservable | none | 14 |
+| via_student | level:4 | 1 |
+
+Why rows wait for review (a row can carry several reasons): no student documented as hearing before 326; no student list found 326; no ikhtilat in the Taqrib/Tahrir entry (no entry identified) 182; no ikhtilat in the Taqrib/Tahrir entry 60; al-Alai: first category (the confusion did him no harm) 18; the label carries a condition 16; no Taqrib/Tahrir entry identified 16; minor change 6; Tahrir disputes the ikhtilat 4; the criterion is a date or a place 4; Tahrir disputes it 3; no name matched 1.
+
+Links where a ruling fired, final run (`ibn_hajar`, a chain counted once per ruling): from_shaykh 2,985; ikhtilat_after 13,711; ikhtilat_before 8,036; region_of_shaykh 2,624; via_student 914; chains with any: 26,163.
+
+**Effect** (stage s9_conditional against s8_unnamed_companion): v2 changes in 157 groups; agreement 0.7149 → 0.7120 (`ibn_al_salah` 0.7240 → 0.7191). The residue table before and after:
+
+| narrator | before | after |
+|---|---|---|
+| اسم مبهم (r1131) | 556 | 556 |
+| ابن إسحاق القرشي (r6811) | 100 | 102 |
+| عبد الله بن لهيعة الحضرمي (r5033) | 91 | 113 |
+| الحسن البصري (r1239) | 67 | 69 |
+| بقية بن الوليد الكلاعي (r1919) | 64 | 64 |
+| أبو إسحاق السبيعي (r6155) | 50 | 52 |
+| سماك بن حرب الذهلي (r3638) | 47 | 33 |
+| الحجاج بن أرطاة النخعي (r2288) | 44 | 44 |
+| مسلم بن أبي كريمة التميمي (r31544) | 43 | 43 |
+| محمد بن مسلم القرشي (r7270) | 39 | 39 |
+| الليث بن أبي سليم القرشي (r6638) | 37 | 37 |
+| علي بن زيد القرشي (r5770) | 36 | 36 |
+| إبراهيم بن أبي يحيى الأسلمي (r870) | 35 | 35 |
+| إسماعيل بن عياش العنسي (r1050) | 34 | 24 |
+| ابن جريج المكي (r5223) | 32 | 30 |
+| حماد بن سلمة البصري (r2492) | 30 | 33 |
+| عطاء بن السائب الثقفي (r5629) | 0 | 31 |
+
+### 11.11 PR 6 §2 The hearing check on tier 4
+
+The brief took PR 5's hearing-elsewhere check for tier 3 only; PR 5's code already covered tiers 3–5 (D57's «a defect unless covered»; PR 5's audit counted `muanan_covered_tasrih_tier_4` on 4,832 chains). No change to the default is needed; the switch `tadlis.tasrih_tiers` makes the rule explicit and the variant `tasrih_tier_3_only` shows what the check on tiers 4–5 contributes (D73). Final run: `muanan_covered_tasrih_tier_3` 51,825; `muanan_covered_tasrih_tier_4` 5,388; `muanan_covered_tasrih_tier_5` 1,713.
+
+Agreement 0.7153 with the check on tiers 3–5, 0.7155 with tier 3 only; 28 groups differ.
+
+| narrator | groups where weakest | disagreeing, tiers 3–5 | disagreeing, tier 3 only |
+|---|---|---|---|
+| Ibn Isḥāq (r6811) | 319 | 149 | 153 |
+| Baqiyya b. al-Walīd (r1919) | 302 | 148 | 149 |
+
+### 11.12 PR 6 §4 The two default flips
+
+| change | groups changed | agreement before | agreement after | ibn_al_salah before | ibn_al_salah after |
+|---|---|---|---|---|---|
+| sibling shawāhid off (`shahid_scope: group`; `siblings` the variant) | 607 | 0.7120 | 0.7182 | 0.7191 | 0.7302 |
+| the mudallis set is the Ṭabaqāt union (`mudallis_set: union`) | 159 | 0.7182 | 0.7153 | 0.7302 | 0.7275 |
+- variant sibling shawāhid (`siblings`, PR 5's default): agreement 0.7098
+- variant siblings at the strict floor 0.38 (`siblings_strict`): agreement 0.7128
+- variant the source's flagged mudallisūn only (`mudallis_source_flag`, PR 5's default): agreement 0.7182
+
+The sandals dowry (group 2031): code 2 under the default (no witness inside the group), 1 under `siblings` (Sahl b. Saʿd's report, group 763).
+
+al-Zuhrī (r7272, tier 3 in the *Ṭabaqāt*, not flagged by the source): chains whose v2 defects include his uncovered ʿan, final run: 5,688; groups whose v2 chain is one of them: 191, of which 127 disagree with the recorded grade (reports/residue.md names him under `tadlis_only`). His placement in tier 3 is disputed (D57).
+
+
+### 11.13 The final grade
 
 **Agreement with `meaning_groups.matn_no`** over the 20,282 groups with chains (variants run on `ibn_hajar` with one switch changed, `derive.variants`):
 
 | grade | agreement_with_matn_no |
 |---|---|
-| v1 (best single chain) | 0.7235 |
-| v2 variant all_light_defects | 0.7121 |
-| v2 variant mudallis_union | 0.7096 |
-| v2 variant mursal_shafii | 0.7083 |
-| v2 variant no_level_8 | 0.7099 |
-| v2 variant shahid_group | 0.7180 |
-| v2 variant shahid_strict | 0.7153 |
-| v2 variant tasrih_corpus | 0.7237 |
-| v2 variant unknown_none | 0.7109 |
-| v2 variant weakest | 0.7334 |
-| v2 variant witness_not_below | 0.7117 |
-| v2 ibn_al_salah | 0.7211 |
-| v2 ibn_hajar | 0.7121 |
+| v1 (best single chain) | 0.7267 |
+| v2 variant all_light_defects | 0.7154 |
+| v2 variant ansar_muhajir_mursal | 0.7147 |
+| v2 variant conditional_off | 0.7181 |
+| v2 variant mudallis_source_flag | 0.7182 |
+| v2 variant mursal_shafii | 0.7109 |
+| v2 variant no_level_8 | 0.7086 |
+| v2 variant siblings | 0.7098 |
+| v2 variant siblings_strict | 0.7128 |
+| v2 variant tasrih_corpus | 0.7317 |
+| v2 variant tasrih_tier_3_only | 0.7155 |
+| v2 variant unknown_none | 0.7141 |
+| v2 variant unnamed_top_mursal | 0.7124 |
+| v2 variant weakest | 0.7404 |
+| v2 variant witness_not_below | 0.7138 |
+| v2 ibn_al_salah | 0.7275 |
+| v2 ibn_hajar | 0.7153 |
 
 **Disagreement table, `ibn_hajar`**: our v2 code (rows) by the source's code (columns):
 
 | v2 code | 0 صحيح | 1 حسن | 2 ضعيف | 3 شديد الضعف | 4 متهم بالوضع | 5 موضوع |
 |---|---|---|---|---|---|---|
-| ours 0 | 5,427 | 427 | 0 | 0 | 0 | 0 |
-| ours 1 | 345 | 2,629 | 421 | 167 | 191 | 130 |
-| ours 2 | 268 | 1,561 | 3,487 | 879 | 637 | 381 |
-| ours 3 | 1 | 11 | 42 | 1,496 | 180 | 99 |
+| ours 0 | 5,367 | 313 | 0 | 0 | 0 | 0 |
+| ours 1 | 360 | 2,571 | 242 | 121 | 155 | 106 |
+| ours 2 | 313 | 1,733 | 3,666 | 921 | 673 | 404 |
+| ours 3 | 1 | 11 | 42 | 1,500 | 180 | 99 |
 | ours 4 | 1 | 5 | 19 | 0 | 930 | 67 |
-| ours 5 | 0 | 2 | 4 | 2 | 0 | 473 |
+| ours 5 | 0 | 2 | 4 | 2 | 0 | 474 |
 
 **Disagreement table, `ibn_al_salah`**: our v2 code (rows) by the source's code (columns):
 
 | v2 code | 0 صحيح | 1 حسن | 2 ضعيف | 3 شديد الضعف | 4 متهم بالوضع | 5 موضوع |
 |---|---|---|---|---|---|---|
-| ours 0 | 5,458 | 726 | 0 | 0 | 0 | 0 |
-| ours 1 | 325 | 2,792 | 432 | 175 | 199 | 132 |
-| ours 2 | 257 | 1,099 | 3,476 | 871 | 629 | 379 |
-| ours 3 | 1 | 11 | 42 | 1,496 | 180 | 99 |
+| ours 0 | 5,397 | 507 | 0 | 0 | 0 | 0 |
+| ours 1 | 338 | 2,802 | 256 | 127 | 161 | 107 |
+| ours 2 | 305 | 1,308 | 3,652 | 915 | 667 | 403 |
+| ours 3 | 1 | 11 | 42 | 1,500 | 180 | 99 |
 | ours 4 | 1 | 5 | 19 | 0 | 930 | 67 |
-| ours 5 | 0 | 2 | 4 | 2 | 0 | 473 |
+| ours 5 | 0 | 2 | 4 | 2 | 0 | 474 |
 
 **For comparison, v1**:
 
 | v1 code | 0 صحيح | 1 حسن | 2 ضعيف | 3 شديد الضعف | 4 متهم بالوضع | 5 موضوع |
 |---|---|---|---|---|---|---|
-| ours 0 | 5,601 | 110 | 0 | 1 | 1 | 0 |
-| ours 1 | 117 | 1,904 | 1 | 0 | 0 | 0 |
-| ours 2 | 287 | 2,573 | 3,906 | 859 | 669 | 425 |
-| ours 3 | 24 | 31 | 43 | 1,682 | 208 | 125 |
-| ours 4 | 11 | 9 | 19 | 0 | 1,060 | 79 |
-| ours 5 | 2 | 8 | 4 | 2 | 0 | 521 |
+| ours 0 | 5,645 | 110 | 0 | 1 | 1 | 0 |
+| ours 1 | 109 | 1,924 | 1 | 0 | 0 | 0 |
+| ours 2 | 253 | 2,556 | 3,906 | 859 | 670 | 423 |
+| ours 3 | 22 | 28 | 43 | 1,682 | 208 | 126 |
+| ours 4 | 11 | 9 | 19 | 0 | 1,059 | 79 |
+| ours 5 | 2 | 8 | 4 | 2 | 0 | 522 |
 
 **Rule that fired for the group's v2 chain (`ibn_hajar`)**:
 
 | rule | groups | share |
 |---|---|---|
-| sahih_li_dhatihi | 5,469 | 0.270 |
-| daif | 5,441 | 0.268 |
-| fatal | 3,977 | 0.196 |
-| hasan_li_ghayrihi | 2,492 | 0.123 |
-| hasan_li_dhatihi | 1,391 | 0.069 |
-| not_repairable | 1,127 | 0.056 |
-| sahih_li_ghayrihi | 385 | 0.019 |
+| daif | 5,739 | 0.283 |
+| sahih_li_dhatihi | 5,430 | 0.268 |
+| fatal | 3,975 | 0.196 |
+| hasan_li_ghayrihi | 2,062 | 0.102 |
+| hasan_li_dhatihi | 1,493 | 0.074 |
+| not_repairable | 1,333 | 0.066 |
+| sahih_li_ghayrihi | 250 | 0.012 |
 
 **Divergence class of the summary witness** (upgraded groups; the witness covering the topmost position, D41):
 
 | divergence | groups |
 |---|---|
-| shahid | 1,937 |
-| mutabaa_tamma | 561 |
-| mutabaa_qasira | 287 |
-| wasl | 92 |
+| shahid | 1,343 |
+| mutabaa_tamma | 569 |
+| mutabaa_qasira | 297 |
+| wasl | 103 |
 
 **By the weakest narrator's Taqrīb level** in the group's v2 chain (`ibn_hajar`):
 
 | weakest_level | groups | agree_v1 | agree_v2_ibn_hajar |
 |---|---|---|---|
-| 1 | 167 | 0.958 | 0.946 |
-| 2 | 1,508 | 0.946 | 0.934 |
-| 3 | 4,955 | 0.934 | 0.884 |
-| 4 | 2,447 | 0.899 | 0.721 |
-| 5 | 1,307 | 0.157 | 0.484 |
-| 6 | 1,364 | 0.127 | 0.445 |
-| 7 | 1,539 | 0.606 | 0.520 |
-| 8 | 2,418 | 0.615 | 0.552 |
-| 9 | 479 | 0.574 | 0.564 |
-| 10 | 1,829 | 0.825 | 0.818 |
+| 1 | 168 | 0.958 | 0.946 |
+| 2 | 1,484 | 0.945 | 0.929 |
+| 3 | 5,024 | 0.933 | 0.875 |
+| 4 | 2,465 | 0.902 | 0.746 |
+| 5 | 1,309 | 0.156 | 0.455 |
+| 6 | 1,374 | 0.127 | 0.389 |
+| 7 | 1,541 | 0.611 | 0.552 |
+| 8 | 2,413 | 0.619 | 0.585 |
+| 9 | 486 | 0.570 | 0.560 |
+| 10 | 1,833 | 0.825 | 0.818 |
 | 11 | 1,022 | 0.915 | 0.910 |
-| 12 | 481 | 0.983 | 0.983 |
-| unknown | 766 | 0.351 | 0.244 |
+| 12 | 482 | 0.983 | 0.983 |
+| unknown | 681 | 0.367 | 0.245 |
 
 **Narrators most often weakest in the disagreeing groups** (`ibn_hajar`):
 
 | narrator | groups_disagreeing |
 |---|---|
-| اسم مبهم (r1131) | 631 |
-| ابن إسحاق القرشي (r6811) | 98 |
-| عبد الله بن لهيعة الحضرمي (r5033) | 93 |
-| الحسن البصري (r1239) | 67 |
-| بقية بن الوليد الكلاعي (r1919) | 62 |
-| أبو إسحاق السبيعي (r6155) | 50 |
-| سماك بن حرب الذهلي (r3638) | 47 |
-| الحجاج بن أرطاة النخعي (r2288) | 44 |
-| مسلم بن أبي كريمة التميمي (r31544) | 40 |
+| اسم مبهم (r1131) | 559 |
+| ابن إسحاق القرشي (r6811) | 103 |
+| عبد الله بن لهيعة الحضرمي (r5033) | 85 |
+| بقية بن الوليد الكلاعي (r1919) | 69 |
+| الحسن البصري (r1239) | 66 |
+| أبو إسحاق السبيعي (r6155) | 52 |
+| الحجاج بن أرطاة النخعي (r2288) | 47 |
+| مسلم بن أبي كريمة التميمي (r31544) | 43 |
 | محمد بن مسلم القرشي (r7270) | 38 |
-| الليث بن أبي سليم القرشي (r6638) | 37 |
-| علي بن زيد القرشي (r5770) | 36 |
+| سماك بن حرب الذهلي (r3638) | 35 |
 | إبراهيم بن أبي يحيى الأسلمي (r870) | 35 |
-| إسماعيل بن عياش العنسي (r1050) | 34 |
-| ابن جريج المكي (r5223) | 32 |
+| عطاء بن السائب الثقفي (r5629) | 34 |
+| حماد بن سلمة البصري (r2492) | 33 |
+| محمد بن شهاب الزهري (r7272) | 33 |
+| شريك بن عبد الله القاضي (r3792) | 33 |
 
-**Downgrades.** 231 groups that v1 grades 0 get a higher v2 code under `ibn_hajar` (223 of them recorded 0 by the source). The defects of their v2 chain: mudallis_muanan_tier_3 186; mursal 11; none 8; level_5 5; level_8 5; mudallis_muanan_tier_4 4; level_6 3; level_8,mursal 2; level_5,mudallis_muanan_tier_3 1; level_5,mursal 1; level_7 1; level_7,mursal 1.
+**Downgrades.** 328 groups that v1 grades 0 get a higher v2 code under `ibn_hajar` (317 of them recorded 0 by the source). The defects of their v2 chain: mudallis_muanan_tier_3 223; conditional 31; mursal 17; none 11; conditional,mudallis_muanan_tier_3 11; level_5 9; level_6 7; level_8 5; level_7 3; mudallis_muanan_tier_4 3; mudallis_muanan_tier_3,mudallis_muanan_tier_4 1; conditional,level_8 1.
 
 ## 12. Number class and qarāʾin
 
@@ -924,39 +1180,39 @@ Effect: agreement 0.7121 with `unknown_repair: named_elsewhere`, 0.7109 without 
 
 | number_class | groups | share |
 |---|---|---|
-| gharib_mutlaq | 10,425 | 0.514 |
-| gharib_nisbi | 750 | 0.037 |
-| aziz | 2,679 | 0.132 |
-| mashhur | 2,965 | 0.146 |
-| mutawatir_count | 505 | 0.025 |
-| no route | 2,958 | 0.146 |
+| gharib_mutlaq | 10,449 | 0.515 |
+| gharib_nisbi | 775 | 0.038 |
+| aziz | 2,691 | 0.133 |
+| mashhur | 2,982 | 0.147 |
+| mutawatir_count | 511 | 0.025 |
+| no route | 2,874 | 0.142 |
 
-**The topmost cut vertex of the gharīb groups**: companion 10,425; narrator 736; compiler 14 (*compiler*: every route ends in one compiler's books, so the tafarrud is his).
+**The topmost cut vertex of the gharīb groups**: companion 10,449; narrator 761; compiler 14 (*compiler*: every route ends in one compiler's books, so the tafarrud is his).
 
 **The width reading (rows, diagnostic, `number_class_width`) against the κ reading (columns)**:
 
 | width \ κ | aziz | gharib_mutlaq | gharib_nisbi | mashhur | mutawatir_count | no route |
 |---|---|---|---|---|---|---|
-| aziz | 177 | 15 | 5 | 651 | 45 | 0 |
-| gharib_mutlaq | 0 | 9,433 | 1 | 0 | 0 | 0 |
-| gharib_nisbi | 2,498 | 977 | 743 | 1,859 | 29 | 0 |
-| mashhur | 4 | 0 | 1 | 453 | 340 | 0 |
-| mutawatir_count | 0 | 0 | 0 | 2 | 91 | 0 |
-| no route | 0 | 0 | 0 | 0 | 0 | 2,958 |
+| aziz | 173 | 16 | 5 | 654 | 48 | 0 |
+| gharib_mutlaq | 0 | 9,449 | 1 | 0 | 0 | 0 |
+| gharib_nisbi | 2,514 | 984 | 768 | 1,871 | 28 | 0 |
+| mashhur | 4 | 0 | 1 | 455 | 342 | 0 |
+| mutawatir_count | 0 | 0 | 0 | 2 | 93 | 0 |
+| no route | 0 | 0 | 0 | 0 | 0 | 2,874 |
 
-The readings differ in 31.5% of groups. The width reading treats each Taqrīb layer as a cut, but routes skip layers (tabaka steps of 2–4 are normal on this scale, §8.5), so a layer is a cut only when every route has a narrator in it: 4,386 groups read gharīb by width while κ_all ≥ 2. Tafarrud is one man through whom every route passes, which is a cut vertex; hence the κ reading is the class.
+The readings differ in 31.5% of groups. The width reading treats each Taqrīb layer as a cut, but routes skip layers (tabaka steps of 2–4 are normal on this scale, §8.5), so a layer is a cut only when every route has a narrator in it: 4,413 groups read gharīb by width while κ_all ≥ 2. Tafarrud is one man through whom every route passes, which is a cut vertex; hence the κ reading is the class.
 
 
 **Sensitivity to tawatur_n** (the numbers the books report as proposed):
 
 | tawatur_n | mutawatir_count (κ_all) | mashhur (κ_all) | mutawatir_count (width) |
 |---|---|---|---|
-| 4 | 2,299 | 1,171 | 563 |
-| 5 | 1,662 | 1,808 | 399 |
-| 10 | 505 | 2,965 | 93 |
-| 12 | 330 | 3,140 | 61 |
-| 40 | 4 | 3,466 | 4 |
-| 70 | 0 | 3,470 | 0 |
+| 4 | 2,324 | 1,169 | 567 |
+| 5 | 1,674 | 1,819 | 400 |
+| 10 | 511 | 2,982 | 95 |
+| 12 | 335 | 3,158 | 63 |
+| 40 | 4 | 3,489 | 4 |
+| 70 | 0 | 3,493 | 0 |
 
 **Qarāʾin flags** (reported, never combined; knowledge yield is not computed; `huffaz_chain` now excludes gharīb by κ):
 
@@ -964,10 +1220,10 @@ The readings differ in 31.5% of groups. The width reading treats each Taqrīb la
 |---|---|---|---|
 | in_sahihayn | 2,690 | 0.133 | 0.935 |
 | in_sahih_class | 6,756 | 0.333 | 0.649 |
-| sound_distinct_routes | 1,557 | 0.077 | 0.978 |
-| huffaz_chain | 1,185 | 0.058 | 0.992 |
+| sound_distinct_routes | 1,575 | 0.078 | 0.978 |
+| huffaz_chain | 1,195 | 0.059 | 0.992 |
 
-All three flags together: 657 groups.
+All three flags together: 664 groups.
 
 ## Appendix A. Full `rawis.rank` vocabulary
 
@@ -1473,4 +1729,1302 @@ All three flags together: 657 groups.
 | 12 | وضاع رافضي | 1 | 1 |
 | 12 | يكذب ويضع الحديث | 1 | 1 |
 
-_Audit computed in 9.1s._
+## Appendix B. Designations of the unnamed person at a chain top
+
+Every designation of an unnamed person at a chain top (normalized, `lists.normalize` v1) with its class and count; 324 chain tops without a mention (`none_text`) are not listed.
+
+| designation | class | chain tops |
+|---|---|---|
+| رجل من اصحاب النبي | companion | 408 |
+| رجل | none | 226 |
+| ابيه | none | 160 |
+| بعض اصحاب النبي | companion | 119 |
+| رجل من الانصار | ansar_muhajir | 119 |
+| بعض ازواج النبي | companion | 53 |
+| بعض اصحاب رسول الله | companion | 53 |
+| رجلا | none | 52 |
+| رجل من اصحاب رسول الله | companion | 46 |
+| اصحاب رسول الله | companion | 41 |
+| جده | none | 41 |
+| رجل من بلقين | none | 40 |
+| اصحاب النبي | companion | 37 |
+| من | unclassified | 37 |
+| رجل من اسلم | none | 36 |
+| من سمع النبي | companion | 35 |
+| رجل من قومه | none | 34 |
+| رجل من بني سليم | none | 32 |
+| رجل من جهينه | none | 30 |
+| عمه | none | 28 |
+| رجل من بني اسد | none | 27 |
+| عمن | unclassified | 27 |
+| رجل من اصحاب النبي صلي الله عليه وسلم | companion | 26 |
+| جدي | none | 25 |
+| ابايه | none | 22 |
+| اصحاب محمد | companion | 22 |
+| رجل من اصحاب رسول الله من الانصار | companion | 22 |
+| رجل من مزينه | none | 22 |
+| رجلا من اصحاب النبي | companion | 22 |
+| رجلان | none | 22 |
+| اصحابنا | none | 21 |
+| البدوي | none | 21 |
+| رجل منهم | none | 21 |
+| فلان | none | 21 |
+| رجل من اصحاب محمد | companion | 19 |
+| رجلا من الانصار | ansar_muhajir | 19 |
+| رجل من اصحاب النبي من الانصار | companion | 18 |
+| رجل من اهل الباديه | none | 18 |
+| رجل من اهل المدينه | none | 18 |
+| رجل من ثقيف | none | 18 |
+| الرجل | none | 17 |
+| امراه من بني عبد الاشهل | none | 17 |
+| رجال من الانصار | ansar_muhajir | 17 |
+| رجل من الصحابه | companion | 17 |
+| الاعرابي | none | 16 |
+| امراه من المبايعات | companion | 16 |
+| اشياخ من قومه | none | 15 |
+| امراه | none | 15 |
+| بعض اصحابه | none | 15 |
+| من سمع رسول الله | companion | 15 |
+| رجال من كبراء قومه | none | 14 |
+| عمن صلي مع رسول الله يوم ذات الرقاع صلاه الخوف | companion | 14 |
+| من راي النبي | companion | 14 |
+| اشياخه | none | 13 |
+| رجل من بني عامر | none | 13 |
+| رجلا من اصحاب رسول الله | companion | 13 |
+| اعرابي | none | 12 |
+| بلغني | none | 12 |
+| رجال من الانصار من اصحاب النبي صلي الله عليه وسلم | companion | 12 |
+| رجل ادرك النبي | none | 12 |
+| رجل من بني سليط | none | 12 |
+| عمن سمع النبي | companion | 12 |
+| فلانا | none | 12 |
+| مشيخه لنا من جهينه | none | 12 |
+| ابي | none | 11 |
+| بلغنا | none | 11 |
+| رجال من قومه | none | 11 |
+| رجل من ال عمر | none | 11 |
+| رجل من قريش | none | 11 |
+| رجلا من بني وايل | none | 11 |
+| رجلان من قومي | none | 11 |
+| مصدق النبي | companion | 11 |
+| ابن عم له | none | 10 |
+| الثقه | none | 10 |
+| رجل من الانصار من اصحاب النبي | companion | 10 |
+| رجل من بني حارثه | none | 10 |
+| رجل من بني ليث | none | 10 |
+| رجل من بني يربوع | none | 10 |
+| رجل من خثعم | none | 10 |
+| رجل من المهاجرين | ansar_muhajir | 9 |
+| رجل من بني غفار | none | 9 |
+| اناس من اصحاب رسول الله | companion | 8 |
+| اناس من الانصار | ansar_muhajir | 8 |
+| رجال من اصحاب النبي من الانصار | companion | 8 |
+| رجال من اصحاب رسول الله | companion | 8 |
+| رجل من بني ثعلبه بن يربوع | none | 8 |
+| رجلا من الانصار الموت | ansar_muhajir | 8 |
+| عمن سمعه | unclassified | 8 |
+| عمومه له من اصحاب النبي | companion | 8 |
+| غير واحد | none | 8 |
+| غير واحد من علمايهم | none | 8 |
+| وامراه من قيس | unclassified | 8 |
+| امراه من بني اسد | none | 7 |
+| اهله | none | 7 |
+| بعض المهاجرين | ansar_muhajir | 7 |
+| رجل من ازد شنوءه | none | 7 |
+| رجل من اهل الشام | none | 7 |
+| رجل من بني بياضه من الانصار | ansar_muhajir | 7 |
+| رجل من بني تميم | none | 7 |
+| رجل من بني مدلج | none | 7 |
+| رجل من بني هاشم | none | 7 |
+| رجلا بتبوك مقعدا | none | 7 |
+| رجلا صحب النبي كما صحبه ابو هريره اربع سنين | companion | 7 |
+| رجلان علي بعير | none | 7 |
+| رجلان علي بعير واحد | none | 7 |
+| رجلين | none | 7 |
+| عمن صلي مع النبي يوم ذات الرقاع | companion | 7 |
+| مولي لبني هاشم | unclassified | 7 |
+| ابا سعيد | unclassified | 6 |
+| اشياخ من الانصار | ansar_muhajir | 6 |
+| امراه من بني سليم | none | 6 |
+| امراه من بني غفار | none | 6 |
+| بعض اصحاب محمد | companion | 6 |
+| بعض امهات المومنين | companion | 6 |
+| بعض عمات رسول الله | unclassified | 6 |
+| رجال من الانصار من اصحاب النبي | companion | 6 |
+| رجل من اشجع | none | 6 |
+| رجل من بلي | none | 6 |
+| رجل من بهز | none | 6 |
+| رجل يمشي في عرض جبل | none | 6 |
+| رجلا اتي النبي | none | 6 |
+| رجلين اخبراه | none | 6 |
+| شيخ | none | 6 |
+| ظير محمد بن طلحه | unclassified | 6 |
+| عمومته | none | 6 |
+| عمومه له من الانصار | ansar_muhajir | 6 |
+| من شهد ذاك | unclassified | 6 |
+| اجدادهم | none | 5 |
+| اخر | none | 5 |
+| ازواج النبي | companion | 5 |
+| اشياخهم | none | 5 |
+| امراه حدثته | none | 5 |
+| بعض اصحاب النبي صلي الله عليه وسلم | companion | 5 |
+| خادم النبي | companion | 5 |
+| رجال | none | 5 |
+| رجال من اصحاب النبي | companion | 5 |
+| رجل مقعد | none | 5 |
+| رجل من الانصار من اصحاب رسول الله الذين وقعوا الي الش | companion | 5 |
+| رجل من الانصار من بني سلمه | ansar_muhajir | 5 |
+| رجل من اهل الشام يوم صفين | none | 5 |
+| رجل من اهل العلم | none | 5 |
+| رجل من بلهجيم | none | 5 |
+| رجل من بني بياضه | none | 5 |
+| رجل من بني خطمه | none | 5 |
+| رجل من بني سلمه | none | 5 |
+| رجل من جهينه من اصحاب النبي | companion | 5 |
+| رجلا ببخاري علي بغله بيضاء | none | 5 |
+| رجلا من بني مدلج | none | 5 |
+| رجلا من ثقيف | none | 5 |
+| رجلا مناصحاب النبي | none | 5 |
+| رجلا يحدث | none | 5 |
+| رجلين حدثاه | none | 5 |
+| شيخ من بني مالك بن كنانه | none | 5 |
+| شيوخه | none | 5 |
+| صاحب لي | none | 5 |
+| عم له | none | 5 |
+| عمومتي من الانصار | ansar_muhajir | 5 |
+| عمومه له من اصحاب النبي صلي الله عليه وسلم | companion | 5 |
+| ورجل اخر سماه فلا يحضرني ذكر اسمه من اصحاب النبي | companion | 5 |
+| وفد عبد القيس | unclassified | 5 |
+| ابايه عليهم السلام | none | 4 |
+| ابايهم دنيه | none | 4 |
+| ابن عم له من اصحاب النبي | companion | 4 |
+| ابي او عمي | none | 4 |
+| احدي نسوه رسول الله | companion | 4 |
+| اخبرت | none | 4 |
+| اشياخ قومه | none | 4 |
+| اصحاب رسول الله صلي الله عليه وسلم وساءلهم | companion | 4 |
+| اعرابي معه قطعه اديم | none | 4 |
+| امراه من نسايهم | none | 4 |
+| امراه منهم | none | 4 |
+| اناس من الانصار من اصحاب رسول الله | companion | 4 |
+| جاريه حبشيه | unclassified | 4 |
+| حدثت | none | 4 |
+| رجال مرضيون من اصحاب رسول الله صلي الله عليه واله وس | companion | 4 |
+| رجال من ال عمار بن ياسر | none | 4 |
+| رجال من الانصار انهم بينما هم جلوس ليله مع النبي | ansar_muhajir | 4 |
+| رجل صدع من الرجال | none | 4 |
+| رجل قد ادرك النبي | none | 4 |
+| رجل من اصحاب النبي قد سماه | companion | 4 |
+| رجل من اصحاب بدر | none | 4 |
+| رجل من اهل الشام من اهل صفين | none | 4 |
+| رجل من بني ليث بيدي | none | 4 |
+| رجل من بني مره | none | 4 |
+| رجل من جهينه من اصحاب رسول الله | companion | 4 |
+| رجل من قريش من ال الزبير | none | 4 |
+| رجل من مزينه او جهينه | none | 4 |
+| رجلا مقعدا | none | 4 |
+| رجلا من بني بياضه من اصحاب النبي صلي الله عليه وسلم | companion | 4 |
+| رجلا من جهينه | none | 4 |
+| رجلين اخبراه انهما اتيا النبي صلي الله عليه وسلم | none | 4 |
+| رديف النبي | companion | 4 |
+| شيخ من الانصار | ansar_muhajir | 4 |
+| شيخا | none | 4 |
+| شيخا من كنانه | none | 4 |
+| عشره من اصحاب رسول الله | companion | 4 |
+| عمن سمع النبي صلي الله عليه وسلم | companion | 4 |
+| عمومته من اصحاب النبي | companion | 4 |
+| عمومتي من الانصار من اصحاب رسول الله | companion | 4 |
+| عمومه له | none | 4 |
+| عمومه له من الانصار انهم كانوا عند رسول الله من اخر النها | ansar_muhajir | 4 |
+| غيره | none | 4 |
+| فلان بن فلان | none | 4 |
+| مصدق رسول الله | companion | 4 |
+| من سمع النبي صلي الله عليه واله وسلم | companion | 4 |
+| من شيت من رجال قومي | none | 4 |
+| من هو خير مني | unclassified | 4 |
+| مناد من اصحاب معاويه اصحاب علي | unclassified | 4 |
+| وجماعه من اصحاب النبي يقولون | companion | 4 |
+| اباءه حدثوه | unclassified | 3 |
+| اباه | none | 3 |
+| ابن اخيه | none | 3 |
+| ابناء قريظه انهم عرضوا علي رسول الله يوم قريظه | unclassified | 3 |
+| ابي الي النبي | none | 3 |
+| ابي علي النبي فانتجاه دوني | none | 3 |
+| ابي علي رسول الله | none | 3 |
+| اجداده | none | 3 |
+| احد بني سليم | unclassified | 3 |
+| احدهم | unclassified | 3 |
+| اخر منهم | none | 3 |
+| اشياخ من بني سلمه | none | 3 |
+| اشياخنا | none | 3 |
+| اصحاب محمد رسول الله | companion | 3 |
+| اصحاب محمد صلي الله عليه وسلم | companion | 3 |
+| اصحاب محمد يزعمون | companion | 3 |
+| اصحابي | unclassified | 3 |
+| اعرابي بصحيفه | none | 3 |
+| اعرابي تضيفهم | none | 3 |
+| الانصاري | ansar_muhajir | 3 |
+| الذي | unclassified | 3 |
+| الرجل الذي بلغني عنه الحديث | none | 3 |
+| الرجل لعلي | none | 3 |
+| ام المومنين | companion | 3 |
+| امراه من الانصار | ansar_muhajir | 3 |
+| امراه من بني سليم ولدت عامه اهل دارنا | none | 3 |
+| امراه من قريش | none | 3 |
+| امراه من قومه | none | 3 |
+| اناس من ال عبد الله بن صفوان | unclassified | 3 |
+| بعض | unclassified | 3 |
+| بعض ازواج النبي صلي الله عليه وسلم | companion | 3 |
+| بعض اشياخنا | none | 3 |
+| بعض اصحاب رسول الله صلي الله عليه وسلم | companion | 3 |
+| بعض اصحاب رسول الله من الانصار | companion | 3 |
+| بعض ال ام سلمه | unclassified | 3 |
+| بعض الوفد الذين قدموا علي ابي | none | 3 |
+| بعض من ادرك النبي | none | 3 |
+| بعضهم | none | 3 |
+| رجال من اصحاب رسول الله صلي الله عليه وسلم | companion | 3 |
+| رجال من اهل العلم | none | 3 |
+| رجال من اهل بيته | none | 3 |
+| رجالا من اصحاب رسول الله حدثوه | companion | 3 |
+| رجالا من اصحاب رسول الله يتحدثون | companion | 3 |
+| رجالا يتحدثون | unclassified | 3 |
+| رجل امامه | none | 3 |
+| رجل لم يسمه | none | 3 |
+| رجل من اسلم من اصحاب النبي صلي الله عليه وسلم انهم كانوا | companion | 3 |
+| رجل من اصحاب النبي زاد الفارسي | companion | 3 |
+| رجل من الازد ادم طوال | none | 3 |
+| رجل من الانصار او | ansar_muhajir | 3 |
+| رجل من الانصار من اصحاب الرسول | ansar_muhajir | 3 |
+| رجل من القوم | none | 3 |
+| رجل من بني اقيش | none | 3 |
+| رجل من بني سليم كانت له صحبه | companion | 3 |
+| رجل من بني هلال | none | 3 |
+| رجل من فوقه | none | 3 |
+| رجل من قرن | none | 3 |
+| رجلا مقعدا بتبوك فسالته | none | 3 |
+| ردف النبي | companion | 3 |
+| شيخ جليل في مسجد رسول الله | none | 3 |
+| شيخ من اهل مكه من قريش | none | 3 |
+| شيخ من بني سليم رضي الله عنه | none | 3 |
+| شيخ من خثعم | none | 3 |
+| شيخا بالشام | none | 3 |
+| شيخا من بني سليط | none | 3 |
+| شيخا من ثقيف قد افسد السدر زرعه | none | 3 |
+| عجوز من بني نمير | none | 3 |
+| عدي | unclassified | 3 |
+| عمن راي النبي | companion | 3 |
+| عمن شهد ذاك | unclassified | 3 |
+| عمن صلي مع النبي يوم ذات الرقاع صلاه الخوف | companion | 3 |
+| عمن صلي مع رسول الله | companion | 3 |
+| عمه له | none | 3 |
+| عمومتي الي رسول الله | unclassified | 3 |
+| عمومه لي من الانصار من اصحاب رسول الله | companion | 3 |
+| فلان الثقفي | none | 3 |
+| فلان رجل من اصحاب النبي | companion | 3 |
+| من اهلي من لا اتهم يحدث | none | 3 |
+| من راي النبي عند احجار الزيت | companion | 3 |
+| من صلي مع رسول الله يوم ذات الرقاع صلاه الخوف | companion | 3 |
+| من لا اتهم | none | 3 |
+| من مر مع نبيكم | unclassified | 3 |
+| مولاه للنبي حدثته | companion | 3 |
+| ناس من ال صفوان بن اميه | unclassified | 3 |
+| نسوه من بني عبد الدار اللاتي ادركن رسول الله | none | 3 |
+| نفر من اصحاب رسول الله | companion | 3 |
+| نفر من اصحاب رسول الله من الانصار | companion | 3 |
+| نفرا من قريش | unclassified | 3 |
+| وغيره من الصحابه رضي الله عنهم | companion | 3 |
+| ابن اخ له وكانت له صحبه | companion | 2 |
+| ابن اخي المقتول سمعت رسول الله | unclassified | 2 |
+| ابن اخي جبير بن مطعم | unclassified | 2 |
+| ابنا قريظه | unclassified | 2 |
+| ابيه او عمه | none | 2 |
+| ابيه رضي الله عنه | none | 2 |
+| ابيه وكان من اصحاب النبي | companion | 2 |
+| احد الوفد الذين وفدوا الي رسول الله من عبد القيس | unclassified | 2 |
+| احد الوفد الذين وفدوا علي رسول الله من عبد القيس | unclassified | 2 |
+| احدي نساء النبي | companion | 2 |
+| اخ لي من بني زريق | none | 2 |
+| اخا رافع | unclassified | 2 |
+| ازواج النبي صلي الله عليه وسلم | companion | 2 |
+| اشياخ اهل المدينه حدثوه | none | 2 |
+| اصحاب رسول الله وسالتهم | companion | 2 |
+| اصحاب محمد انهم كانوا يسيرون مع النبي | companion | 2 |
+| اصحابه | unclassified | 2 |
+| اعرابي بقطعه اديم او جراب | none | 2 |
+| اعرابي فسالته | none | 2 |
+| اعرابي لنا | none | 2 |
+| اعرابي ومعه اديم او قطعه جراب | none | 2 |
+| اعرابيين | unclassified | 2 |
+| اعمامه | unclassified | 2 |
+| الانصار | unclassified | 2 |
+| البدوي اخذ بيدي رسول الله | none | 2 |
+| الحبشيه | unclassified | 2 |
+| الخزاعي لقد سمعت رسول الله | unclassified | 2 |
+| الرجل الذي اتي النبي فساله | none | 2 |
+| الرجل صحبت رسول الله ثلاث غزوات | none | 2 |
+| الصحابه | unclassified | 2 |
+| الغفاري | unclassified | 2 |
+| المشيخه | unclassified | 2 |
+| ام ولد لشيبه | unclassified | 2 |
+| امراه ابي رافع | none | 2 |
+| امراه اخبرتها | none | 2 |
+| امراه بمكه كثيره الحشم | none | 2 |
+| امراه من ازواج النبي | companion | 2 |
+| امراه من اهلنا | none | 2 |
+| امراه من اهلي | none | 2 |
+| امراه من قومه حدثته | none | 2 |
+| امه | unclassified | 2 |
+| اميرا كان علي مكه | unclassified | 2 |
+| انسان من الانصار | ansar_muhajir | 2 |
+| انسان من الانصار من اصحاب رسول الله | companion | 2 |
+| اهل المدينه | unclassified | 2 |
+| برجل | unclassified | 2 |
+| برجل مقعد فسال | unclassified | 2 |
+| برجل مقعد فساله | unclassified | 2 |
+| بعض اخواننا | unclassified | 2 |
+| بعض ازواج النبي صلي الله عليه واله وسلم | companion | 2 |
+| بعض اسلم | unclassified | 2 |
+| بعض اشياخ اهل المدينه | none | 2 |
+| بعض ال عمير | unclassified | 2 |
+| بعض بني مدلج | unclassified | 2 |
+| بعض عمومته | none | 2 |
+| بعض نساء النبي | companion | 2 |
+| بعض وفد عبد القيس وهم يقولون | unclassified | 2 |
+| بعض ولد رافع بن مكيث | unclassified | 2 |
+| بعض ولد محمد بن ابيسلمه | unclassified | 2 |
+| بلغه | unclassified | 2 |
+| ثقه | unclassified | 2 |
+| ثلاثه من بني سعد | none | 2 |
+| ثلاثين من اصحاب رسول الله | companion | 2 |
+| جار لخديجه بنت خويلد | unclassified | 2 |
+| جدته | unclassified | 2 |
+| جدتي | unclassified | 2 |
+| جده رضي الله عنه | none | 2 |
+| جلسايه | unclassified | 2 |
+| حدثه | unclassified | 2 |
+| خادم رسول الله | companion | 2 |
+| خال له من بكر بن وايل | unclassified | 2 |
+| خالته | unclassified | 2 |
+| خدم النبي | unclassified | 2 |
+| خدم رسول الله | unclassified | 2 |
+| خمسه او سته من اصحاب النبي | companion | 2 |
+| ذلك الوفد الذين قدموا علي رسول الله | unclassified | 2 |
+| رجاء | unclassified | 2 |
+| رجال قومي من اصحاب رسول الله | companion | 2 |
+| رجال من اصحاب النبي ادركهم يذكرون | companion | 2 |
+| رجال من اصحاب رسول الله من الانصار انهم بينا هم جلوس | companion | 2 |
+| رجال من الانصار انهم بينما هم جلوس ليله مع النبي ا | ansar_muhajir | 2 |
+| رجال من الانصار من اصحاب رسول الله | companion | 2 |
+| رجال من قومي | none | 2 |
+| رجال من كبار قومه | none | 2 |
+| رجالا من اصحاب رسول الله | companion | 2 |
+| رجالا من بني سلمه | none | 2 |
+| رجل اخر | none | 2 |
+| رجل ادرك النبي صلي الله عليه وسلم | none | 2 |
+| رجل الي علي بن الحسين عليهما السلام | none | 2 |
+| رجل فسلم عليه | none | 2 |
+| رجل قد راي رسول الله | companion | 2 |
+| رجل قد سماه | none | 2 |
+| رجل لم يسمه من اصحاب النبي | companion | 2 |
+| رجل معه قطعه اديم | none | 2 |
+| رجل مقعد فسالته | none | 2 |
+| رجل من اخواله | none | 2 |
+| رجل من اصحاب النبي المسجد | companion | 2 |
+| رجل من اصحاب النبي سماه | companion | 2 |
+| رجل من اصحاب النبي عاملا بمصر | companion | 2 |
+| رجل من اصحاب النبي عليه السلام | companion | 2 |
+| رجل من اصحاب النبي من بني بياضه في العشر الاواخر من | companion | 2 |
+| رجل من اصحاب النبي من جهينه | companion | 2 |
+| رجل من اصحاب النبي من غفار | companion | 2 |
+| رجل من اصحاب النبي من غفار رضي الله عنه | companion | 2 |
+| رجل من اصحاب رسول الله من الاشعريين | companion | 2 |
+| رجل من اصحاب عكرمه | none | 2 |
+| رجل من اصحابالنبي | none | 2 |
+| رجل من ال وداعه | none | 2 |
+| رجل من الاعراب | none | 2 |
+| رجل من الانصار فيما يري النايم | ansar_muhajir | 2 |
+| رجل من الانصار لا اعرف اسمه | ansar_muhajir | 2 |
+| رجل من الانصار من بني خطمه | ansar_muhajir | 2 |
+| رجل من اهل الباديه فقلنا له | none | 2 |
+| رجل من اهل البصره | none | 2 |
+| رجل من اهل الصفه | none | 2 |
+| رجل من اهل بدر | companion | 2 |
+| رجل من اهل حمص | none | 2 |
+| رجل من بلحريش | none | 2 |
+| رجل من بني الديل | none | 2 |
+| رجل من بني المصطلق | none | 2 |
+| رجل من بني غفار من اصحاب النبي | companion | 2 |
+| رجل من صحابه رسول الله | none | 2 |
+| رجل من صدا | none | 2 |
+| رجل من قريش رفع الحديث | none | 2 |
+| رجل من قومه من الصحابه | companion | 2 |
+| رجل من كنانه | none | 2 |
+| رجل يحدث قوما | none | 2 |
+| رجلا ببخاري علي | none | 2 |
+| رجلا صحب النبي اربع سنين كما صحبه ابو هريره | companion | 2 |
+| رجلا صحب النبي كما صحب ابا هريره اربع سنين | companion | 2 |
+| رجلا صحب النبي كما صحبه ابو هريره | companion | 2 |
+| رجلا صحب النبي كما صحبه ابو هريره رضي الله عنه ارب | companion | 2 |
+| رجلا قد صحب النبي اربع سنين | companion | 2 |
+| رجلا من اصحاب النبي كان اميرا | companion | 2 |
+| رجلا من اصحابه | none | 2 |
+| رجلا من الانصار اتي النبي بوليده سوداء | ansar_muhajir | 2 |
+| رجلا من اهل العلم | none | 2 |
+| رجلا من بني عامر | none | 2 |
+| رجلا من جهينه لم ار رجلا قط اعظم منه ولا اطول | none | 2 |
+| رجلان ادركا نبي الله صلي الله عليه وسلم اخوان | none | 2 |
+| رجلان مرتدفان | none | 2 |
+| رجلين من اصحاب رسول الله | companion | 2 |
+| رجلين من بني بكر | none | 2 |
+| ردف رسول الله | unclassified | 2 |
+| رهطا من الانصار | ansar_muhajir | 2 |
+| رهطا من الانصار من اصحاب النبي | companion | 2 |
+| رهطا من الانصار من اصحاب رسول الله اخبروه | companion | 2 |
+| زوج النبي | unclassified | 2 |
+| سمعه | unclassified | 2 |
+| شيخ ادرك النبي | none | 2 |
+| شيخ جليل في مسجد النبي في بصره بعض الضعف | none | 2 |
+| شيخ لنا | none | 2 |
+| شيخ من ازد شنوءه | none | 2 |
+| شيخ من اصحاب محمد | companion | 2 |
+| شيخ من اهل الشام | none | 2 |
+| شيخ من اهل المدينه | none | 2 |
+| شيخ من بني قريظه | none | 2 |
+| شيخا من بني سليم بالكناسه | none | 2 |
+| صهر لنا من اسلم | unclassified | 2 |
+| صهر لنا من الانصار | ansar_muhajir | 2 |
+| عبد الله | unclassified | 2 |
+| عجوز بن نمير | unclassified | 2 |
+| عده انهم | unclassified | 2 |
+| عم ابي | none | 2 |
+| عماي | unclassified | 2 |
+| عمته | unclassified | 2 |
+| عمن صلي مع رسول الله يوم ذات الرقاع | companion | 2 |
+| عمن يخدم النبي | unclassified | 2 |
+| عمه له اتت النبي في حاجه له | none | 2 |
+| عمومته من الانصار | ansar_muhajir | 2 |
+| عمومته من الانصار يعني انالناس اصبحوا صياما فجاء ركب من | ansar_muhajir | 2 |
+| عمومه له من الانصار من اصحاب النبي | companion | 2 |
+| عمي | unclassified | 2 |
+| غلاما كان يخدم النبي | unclassified | 2 |
+| غير ابن اسحاق | unclassified | 2 |
+| غير واحد من اهل العلم | none | 2 |
+| فلان رجل من اصحاب رسول الله فعرفه عمر | companion | 2 |
+| فلان من عند رسول الله | none | 2 |
+| قوم من اصحاب رسول الله | companion | 2 |
+| قومه غسان | unclassified | 2 |
+| كبراءهم يذكرون | unclassified | 2 |
+| لازواج النبي | unclassified | 2 |
+| لرجل من جلسايه | unclassified | 2 |
+| لوالده صحبه مع النبي | unclassified | 2 |
+| مشيختنا | unclassified | 2 |
+| مصدق النبي فاتيته فجلست اليه فسمعته | companion | 2 |
+| مصدق رسول الله صلي الله عليه وسلم | companion | 2 |
+| من سمع النبي وهو بوادي القري | companion | 2 |
+| من سمع رسول الله في حجه الوداع وهو يعظ الناس ويام | companion | 2 |
+| من سمعالنبي | unclassified | 2 |
+| من شهد النبي | unclassified | 2 |
+| من صحب رسول الله | companion | 2 |
+| من كان رديف رسول الله | unclassified | 2 |
+| من لا اتهم من الانصار | ansar_muhajir | 2 |
+| منادي رسول الله | unclassified | 2 |
+| مولي ام سلمه | unclassified | 2 |
+| مولي لعايشه | unclassified | 2 |
+| مولي لهم | unclassified | 2 |
+| ناس | unclassified | 2 |
+| ناس من الانصار | ansar_muhajir | 2 |
+| ناسا من الصحابه يروون | companion | 2 |
+| نفر من الانصار | ansar_muhajir | 2 |
+| والدي | unclassified | 2 |
+| وامراه من قيس انهما سمعا النبي | unclassified | 2 |
+| وبعض ولد محمد بن مسلمه | unclassified | 2 |
+| وبلغني | unclassified | 2 |
+| ورجل اخر من اصحاب النبي | companion | 2 |
+| ورجل يقود دابته | unclassified | 2 |
+| وغيره | unclassified | 2 |
+| وناسا من الانصار من اصحاب النبي | companion | 2 |
+| يوسف | unclassified | 2 |
+| ابا ثابت بن حزم | unclassified | 1 |
+| ابا عبد الله | unclassified | 1 |
+| ابا عطيه البكري بكر بن وايل | unclassified | 1 |
+| ابايه رضي الله عنهم | none | 1 |
+| ابايه قالوا | none | 1 |
+| ابايه واحدا | none | 1 |
+| ابايي | unclassified | 1 |
+| ابن ابنها | unclassified | 1 |
+| ابن اخ له | unclassified | 1 |
+| ابن سعد بن معاذ | unclassified | 1 |
+| ابن عم له من بني تميم | none | 1 |
+| ابن عم له وكانت له صحبه | companion | 1 |
+| ابن لسعير بن عداء | unclassified | 1 |
+| ابن لعبد الله بن عمر | unclassified | 1 |
+| ابن لعثمان بن عفان | unclassified | 1 |
+| ابنا قريظه انهم | unclassified | 1 |
+| ابناء قريظه | unclassified | 1 |
+| ابناء مليكه الجعفيان | unclassified | 1 |
+| ابنه النبي حدثتها | unclassified | 1 |
+| ابنه لخباب | unclassified | 1 |
+| ابني عني | unclassified | 1 |
+| ابو عبيد | unclassified | 1 |
+| ابي امه رجل من بني تغلب | none | 1 |
+| ابي يحدث | none | 1 |
+| ابيه او عن عمه | none | 1 |
+| ابيها او | unclassified | 1 |
+| اتانا مصدق النبي فاخذت بيده | companion | 1 |
+| احد الوفد الذين وفدوا الي نبي الله من وفد عبد القيس | unclassified | 1 |
+| احد الوفد الذين وفدوا علي النبي من عبد القيس | unclassified | 1 |
+| احدهما | unclassified | 1 |
+| احمد بن سليم | unclassified | 1 |
+| اخ لي في بني زريق | unclassified | 1 |
+| اخ لي من بني زريق اساله | none | 1 |
+| اخ لي من بني زريق اساله لمن قضي رسول الله | none | 1 |
+| اخا رافع اتي عشيرته | unclassified | 1 |
+| اخت لعمره | unclassified | 1 |
+| اختها | unclassified | 1 |
+| اختها وكان زوجها قد غزا مع النبي بضع عشره غزوه | unclassified | 1 |
+| اخر من اصحاب النبي | companion | 1 |
+| اربعه من اصحابرسول الله | unclassified | 1 |
+| ازواج النبي واصحابه | companion | 1 |
+| ازواج النبي يسالهن | companion | 1 |
+| اسقف من النصاري قد ادرك ذلك الزمان | unclassified | 1 |
+| اشياخ | none | 1 |
+| اشياخ الانصار | none | 1 |
+| اشياخ النخع | none | 1 |
+| اشياخ جهينه | none | 1 |
+| اشياخ قومي | none | 1 |
+| اشياخ لهم | none | 1 |
+| اشياخ من جهينه | none | 1 |
+| اشياخا لبني عبد المطلب | unclassified | 1 |
+| اشياخا ممن صدق علي عهد رسول الله فاختلفوا علي | unclassified | 1 |
+| اشياخا ممن صدق علي عهد رسول الله وسالتهم فاختلفوا علي | unclassified | 1 |
+| اشياخا من اهل قباء يقرءون | none | 1 |
+| اشياخنا الذين ادركوا النبي | none | 1 |
+| اصحاب النبي النبي | companion | 1 |
+| اصحاب النبي الي ابن عباس | companion | 1 |
+| اصحاب النبي الي ابن عباس رضي الله عنهما | companion | 1 |
+| اصحاب النبي انهم سمعوا رسول الله في يوم جمعه من الجمع | companion | 1 |
+| اصحاب النبي رفعه | companion | 1 |
+| اصحاب النبي عليه السلام | companion | 1 |
+| اصحاب النبي قالوا | companion | 1 |
+| اصحاب النبي ليس انس بن مالك | companion | 1 |
+| اصحاب النبي من الانصار | companion | 1 |
+| اصحاب النبي وساءلتهم | companion | 1 |
+| اصحاب رسول الله انهم | companion | 1 |
+| اصحاب رسول الله انهم كانوا يسيرون مع رسول الله في مسي | companion | 1 |
+| اصحاب رسول الله صلي الله عليه واله وسلم | companion | 1 |
+| اصحاب رسول الله صلي الله عليه وسلم | companion | 1 |
+| اصحاب رسول الله صلي الله عليه وسلم قالوا | companion | 1 |
+| اصحاب رسول الله فسالهم | companion | 1 |
+| اصحاب رسول الله ففقدني يوما | companion | 1 |
+| اصحاب رسول الله فقالوا | companion | 1 |
+| اصحاب رسول الله قالوا | companion | 1 |
+| اصحاب رسول الله كلهم الا من قتل يوم احد | companion | 1 |
+| اصحاب رسول الله من بني بياضه | companion | 1 |
+| اصحاب رسول الله وتعلمنا منهم وانهم حدثونا | companion | 1 |
+| اصحاب رسول الله يرون | companion | 1 |
+| اصحاب رسول الله يقولون | companion | 1 |
+| اصحاب محمد عليه السلام انهم | companion | 1 |
+| اصحاب محمد عليه الصلاه والسلام انهم | companion | 1 |
+| اصحاب محمد وساءلتهم | companion | 1 |
+| اصحاب محمد وسمعنا منهم وحدثونا | companion | 1 |
+| اصحاب معاذ من اهل حمص | none | 1 |
+| اصحابنا انهم بينا هم مع رسول الله في سفر لهم | none | 1 |
+| اصحابنا يقريونا ويعلمونا ويخبرونا | none | 1 |
+| اصحابي ولم اسمعه من رسول الله | unclassified | 1 |
+| اعرابي بقطعه جراب فيها | none | 1 |
+| اعرابي شعث الراس | none | 1 |
+| اعرابي معه قطعه اديم او قطعه من جراب | none | 1 |
+| اعرابي ونحن بالمربد | none | 1 |
+| اعرابيا | unclassified | 1 |
+| اعرابيا لهم | unclassified | 1 |
+| ال جبير بن مطعم | unclassified | 1 |
+| ال حزم | unclassified | 1 |
+| الاشجعي | unclassified | 1 |
+| الاشياخ | unclassified | 1 |
+| الاعرابي الذي جاءهم بالمربد | none | 1 |
+| الاعرابي الذي سمع رسول الله | companion | 1 |
+| الاعرابي اني اتيت رسول الله فسالته | none | 1 |
+| الانصاري لجاريته | ansar_muhajir | 1 |
+| الجهني رسول قيصر الي رسول الله | unclassified | 1 |
+| الحضرمي وكان من اصحاب رسول الله | companion | 1 |
+| الداريه | unclassified | 1 |
+| الذي سال النبي او عمن سمعه منه | unclassified | 1 |
+| الرجال من اهل العلم | none | 1 |
+| الرجل الذي | none | 1 |
+| الرجل الذي بلغني عنه الحديث فقرعت الباب فخرج الي ممل | none | 1 |
+| الرجل الذي كان في السريه | none | 1 |
+| الرجل الذي مر برسول الله وهو يناجي جبريل عليه السلام | none | 1 |
+| الرجل قد صحب رسول الله في بعض اسفاره | companion | 1 |
+| الرجل لعلي رضي الله عنه | none | 1 |
+| الرسول الذي سال النبي | unclassified | 1 |
+| الركبان الذين يقدمون من عند رسول الله | unclassified | 1 |
+| الركبان تجوز من عند رسول الله فاستقري بهم | unclassified | 1 |
+| الركبان من قبل رسول الله | unclassified | 1 |
+| السلمي | unclassified | 1 |
+| الشيباني | unclassified | 1 |
+| الشيخ | unclassified | 1 |
+| الصحابه اناسا اكثر فتياهم حديث النبي | unclassified | 1 |
+| الصدوق | unclassified | 1 |
+| الطيب المبارك | unclassified | 1 |
+| العبد الذي اتي النبي | unclassified | 1 |
+| الفراسي | unclassified | 1 |
+| المراه التي | unclassified | 1 |
+| المراه التي سالت رسول الله | unclassified | 1 |
+| المراه التي سالت رسول الله صلي الله عليه وسلم | unclassified | 1 |
+| المراه من المبايعات | companion | 1 |
+| المزني | unclassified | 1 |
+| المقضي له | unclassified | 1 |
+| النسوه | unclassified | 1 |
+| الي رجل من الانصار | ansar_muhajir | 1 |
+| ام المومنين فسمعتها | companion | 1 |
+| ام ولد حاطب بن ابي بلتعه | none | 1 |
+| ام ولد له | unclassified | 1 |
+| امام | unclassified | 1 |
+| امراه اتت النبي | none | 1 |
+| امراه اخري | none | 1 |
+| امراه بمكه كثيره الحشم ليس عليها حلي الا الفضه | none | 1 |
+| امراه سالت رسول الله فلم يتيسر لها | none | 1 |
+| امراه سماها | none | 1 |
+| امراه ظير محمد بن طلحه | none | 1 |
+| امراه من اشجع | none | 1 |
+| امراه من الانصار وهي حيه اليوم | ansar_muhajir | 1 |
+| امراه من العرب | none | 1 |
+| امراه من بني الحارث من الخزرج حدثته | none | 1 |
+| امراه من بني غفار قد سماها لي | none | 1 |
+| امراه من بني غفار وقد سماها لي | none | 1 |
+| امراه من بني نوفل | none | 1 |
+| امراه من بني نوفل رضي الله عنها | none | 1 |
+| امراه من نسايهم وكانت قد صلت القبلتين مع النبي | none | 1 |
+| امراه من همدان | none | 1 |
+| امراه من همدان سماها | none | 1 |
+| امراه منا | none | 1 |
+| امراه منبني اسد | none | 1 |
+| امراه هي مصدقه | none | 1 |
+| امهات المومنين | companion | 1 |
+| امهات المومنين فسالناهن عما نحلوا عليه يعني النبي من العمل ل | companion | 1 |
+| اميرهم من شاء منكم انيصوم فليصم | unclassified | 1 |
+| اناس من اصحاب رسول الله عليه السلام | companion | 1 |
+| اناس من اهل حمص | none | 1 |
+| اناس من مزينه من اصحاب النبي | companion | 1 |
+| اناس من مزينه من اصحاب النبي صلي الله عليه وسلم | companion | 1 |
+| اناسا من اصحاب رسول الله ذهبوا يتطرقون فلقوا اناسا من | companion | 1 |
+| اناسا من اصحاب رسول الله يقولون | companion | 1 |
+| اناسا من الصحابه يروون | companion | 1 |
+| اهل العسل | unclassified | 1 |
+| اهل العسل فشهدوا | unclassified | 1 |
+| اهل العلم | unclassified | 1 |
+| اهل بيت من عبد القيس بكتاب | unclassified | 1 |
+| اهل بيتي | unclassified | 1 |
+| بابي سعيد | unclassified | 1 |
+| بازواج النبي | unclassified | 1 |
+| برجل قايم في ظل القصر | unclassified | 1 |
+| بشيخ قاعد علي باب في بني سليم | unclassified | 1 |
+| بعض ازواج النبي قد سماها ونسيت | companion | 1 |
+| بعض ازواج النبي كانت | companion | 1 |
+| بعض ازواج رسول الله | companion | 1 |
+| بعض اشياخ الانصار رضي الله عنهم | none | 1 |
+| بعض اشياخه | none | 1 |
+| بعض اشياخهم | none | 1 |
+| بعض اصحاب الرسول | unclassified | 1 |
+| بعض اصحاب النبي صلي الله عليه وسلم بالكناسه | companion | 1 |
+| بعض اصحاب النبي عليه السلام | companion | 1 |
+| بعض اصحاب النبي مثله | companion | 1 |
+| بعض اصحاب رسول الله صلي الله عليه وسلم من الانصار | companion | 1 |
+| بعض اصحاب محمد صلي الله عليه وسلم | companion | 1 |
+| بعض اصحابالنبي | unclassified | 1 |
+| بعض ال خارجه | unclassified | 1 |
+| بعض ال عمر بن الخطاب | unclassified | 1 |
+| بعض الانصار | ansar_muhajir | 1 |
+| بعض الصحابه | unclassified | 1 |
+| بعض المحدثين بالبصره | unclassified | 1 |
+| بعض المشيخه | unclassified | 1 |
+| بعض امهات المومنين رضي الله عنهن | companion | 1 |
+| بعض اهل العلم | unclassified | 1 |
+| بعض اهل النبي | unclassified | 1 |
+| بعض ايمه الكوفه | unclassified | 1 |
+| بعض بني رافع بن مكيث | unclassified | 1 |
+| بعض بني سعد بن بكر | unclassified | 1 |
+| بعض بني عبد الله بن مسعود | unclassified | 1 |
+| بعض بني كعب بن عجره | unclassified | 1 |
+| بعض رجال الانصار | none | 1 |
+| بعض عمات النبي | unclassified | 1 |
+| بعض عمومته اتاه | none | 1 |
+| بعض عمومتي وابايي | unclassified | 1 |
+| بعض قومه | unclassified | 1 |
+| بعض قومي | unclassified | 1 |
+| بعض مشيختهم | unclassified | 1 |
+| بعض من شهد النبي بخيبر | unclassified | 1 |
+| بعض من صلي مع رسول الله صلاه الصبح | companion | 1 |
+| بعض من صلي مع رسول الله صلاه الصبح فلما | companion | 1 |
+| بعض من عنده | unclassified | 1 |
+| بعض من كان مع رسول الله | unclassified | 1 |
+| بعض من كان يرعي غنم حليمه | unclassified | 1 |
+| بعض وفد عبد القيس | unclassified | 1 |
+| بعض وفد عبد القيس سمعه يذكر | unclassified | 1 |
+| بعض وفد عبد القيس وهو | unclassified | 1 |
+| بعضهم رفع الحديث | none | 1 |
+| بنت النبي | unclassified | 1 |
+| بنت النبي حدثتها | unclassified | 1 |
+| بنت خباب | unclassified | 1 |
+| بني ساعده | unclassified | 1 |
+| ثقه من بني عمرو بن عوف | none | 1 |
+| ثلاثه من اصحاب رسول الله انهم | companion | 1 |
+| ثلاثه من بني سعد بن ابي وقاص قد حدثوني هذا الحديث | none | 1 |
+| ثلاثون من اصحاب النبي | companion | 1 |
+| ثلاثين من اصحاب رسول الله صلي الله عليه وسلم | companion | 1 |
+| ثور بن محمد الاسلمي | unclassified | 1 |
+| جار النبي | unclassified | 1 |
+| جاره للنبي | unclassified | 1 |
+| جدته رضي الله عنها | unclassified | 1 |
+| جدتها | unclassified | 1 |
+| جده ابي امه | none | 1 |
+| جده او جد ابيه | none | 1 |
+| جده رجل من اهل الطايف | none | 1 |
+| جده له | none | 1 |
+| جده وافد بني المنتفق | none | 1 |
+| جده وكان رسول الله قد | none | 1 |
+| جدي بابي الي رسول الله صلي الله عليه واله وسلم | none | 1 |
+| جدي والحسن يسمع حديثه فيصدقه | none | 1 |
+| جليس لايوب | unclassified | 1 |
+| جماعه من اصحاب رسول الله فسالتهم | companion | 1 |
+| جمله من اصحاب النبي | companion | 1 |
+| حارثه | unclassified | 1 |
+| حذاء بمكه | unclassified | 1 |
+| حذاء ليشركهما | unclassified | 1 |
+| حذيفه | unclassified | 1 |
+| خادم خديجه بنت خويلد | unclassified | 1 |
+| خادم للنبي رجل او امراه | none | 1 |
+| خالته اخبرته | unclassified | 1 |
+| خاله | unclassified | 1 |
+| خالي رجل من الانصار | ansar_muhajir | 1 |
+| خلق | unclassified | 1 |
+| راعي النبي | unclassified | 1 |
+| راعي النبي صلي الله عليه وسلم | unclassified | 1 |
+| رجال اخرين من اهل العلم يزيد بعضهم علي بعض فيما ذكروا | none | 1 |
+| رجال اهل رضا وقناعه من ابناء الصحابه | none | 1 |
+| رجال من اصحاب النبي صلي الله عليه وسلم | companion | 1 |
+| رجال من اصحاب النبي صلي الله عليه وسلم ادركهم يذكرون | companion | 1 |
+| رجال من اصحاب النبي في الصلاه علي الجنازه | companion | 1 |
+| رجال من اصحاب النبي يحدثون | companion | 1 |
+| رجال من اصحاب رسول الله صلي الله عليه واله وسلم | companion | 1 |
+| رجال من اصحاب رسول الله من الانصار | companion | 1 |
+| رجال من اصحاب معاذ | none | 1 |
+| رجال من الانصار انهم كانوا مع رسول الله ذات ليله | ansar_muhajir | 1 |
+| رجال من بني سلمه | none | 1 |
+| رجال من بنيسلمه | none | 1 |
+| رجال من قومه الانصار | none | 1 |
+| رجال من قومه من الانصار | ansar_muhajir | 1 |
+| رجال من قومه من بني عمرو بن عوف | none | 1 |
+| رجال من قومي من الانصار | ansar_muhajir | 1 |
+| رجال من كبراءقومه | none | 1 |
+| رجال منهم | none | 1 |
+| رجالا من اصحاب النبي حدثوا | companion | 1 |
+| رجالا من اصحاب النبي حدثوه | companion | 1 |
+| رجالا من علماينا | unclassified | 1 |
+| رجل اخر من اصحاب النبي | companion | 1 |
+| رجل اخر منهم | none | 1 |
+| رجل اسود | none | 1 |
+| رجل اشعث الراس بيده قطعه اديم احمر | none | 1 |
+| رجل اعور من ثقيف | none | 1 |
+| رجل النبي وهو يصلي | none | 1 |
+| رجل الي النبي | none | 1 |
+| رجل او رجال من اصحاب محمد | companion | 1 |
+| رجل بالرقه | none | 1 |
+| رجل جالس | none | 1 |
+| رجل جعل يرصد نبي الله | none | 1 |
+| رجل خدم النبي | none | 1 |
+| رجل خدم النبي ثماني سنين | none | 1 |
+| رجل خدم النبي صلي الله عليه وسلم ثمان سنين | none | 1 |
+| رجل خدم رسول الله ثمان سنين | none | 1 |
+| رجل خدم رسول الله ثمان سنين او تسع سنين | none | 1 |
+| رجل ذكره | none | 1 |
+| رجل رفع الي النبي | none | 1 |
+| رجل زمن زياد الي الكوفه | none | 1 |
+| رجل سقط من كتاب ابن مالك اسمه | none | 1 |
+| رجل شامي | none | 1 |
+| رجل شهد رسول الله يخطب | none | 1 |
+| رجل ضرب من الرجال كانه ليس من هذه الامه | none | 1 |
+| رجل طوال اشعث | none | 1 |
+| رجل علي باب المسجد ونحن في الصلاه | none | 1 |
+| رجل علي باب المسجد ونحن في الصلاه فنادي | none | 1 |
+| رجل عند مجاهد | none | 1 |
+| رجل عنده | none | 1 |
+| رجل فدعاه | none | 1 |
+| رجل فقرا | none | 1 |
+| رجل فقمت اليه | none | 1 |
+| رجل قد راي النبي | companion | 1 |
+| رجل قد سمي لي | none | 1 |
+| رجل قد كان سماه نسيت اسمه يحدث | none | 1 |
+| رجل كان بابيه اليسر | none | 1 |
+| رجل كان مع رسول الله يوم حنين | none | 1 |
+| رجل للنبي | none | 1 |
+| رجل معنا | none | 1 |
+| رجل معه قطعه ادم | none | 1 |
+| رجل ممن جاء معه وفي كمه جوز | none | 1 |
+| رجل من اسلم من اصحاب النبي | companion | 1 |
+| رجل من اسلم من اصحاب رسول الله | companion | 1 |
+| رجل من اسلم وكان واعيه | none | 1 |
+| رجل من اصحاب النبي المسجد وكعب يقص | companion | 1 |
+| رجل من اصحاب النبي صلي الله عليه واله وسلم | companion | 1 |
+| رجل من اصحاب النبي صلي الله عليه وسلم المسجد | companion | 1 |
+| رجل من اصحاب النبي صلي الله عليه وسلم المسجد فاذا كعب يقص | companion | 1 |
+| رجل من اصحاب النبي صلي الله عليه وسلم يحدثهم | companion | 1 |
+| رجل من اصحاب النبي فاخذ بمنكبي من ورايي | companion | 1 |
+| رجل من اصحاب النبي فساله هل تذكر | companion | 1 |
+| رجل من اصحاب النبي فسكت عتبه وكانه هابه فلما جل | companion | 1 |
+| رجل من اصحاب النبي فلقيته فحدثني | companion | 1 |
+| رجل من اصحاب النبي في ايام الطاعون | companion | 1 |
+| رجل من اصحاب النبي في غرفتي هذه | companion | 1 |
+| رجل من اصحاب النبي في قصه بني النضير وما اجمعوا علي | companion | 1 |
+| رجل من اصحاب النبي قد سماه نافع فنسيته | companion | 1 |
+| رجل من اصحاب النبي ليس انس بن مالك | companion | 1 |
+| رجل من اصحاب النبي من بني بياضه | companion | 1 |
+| رجل من اصحاب النبي من بني غفار | companion | 1 |
+| رجل من اصحاب النبي يحدثهم | companion | 1 |
+| رجل من اصحاب رسول الله حين استخلف يزيد بن معاويه | companion | 1 |
+| رجل من اصحاب رسول الله صلي الله عليه وسلم | companion | 1 |
+| رجل من اصحاب رسول الله صلي الله عليه وسلم فقلنا | companion | 1 |
+| رجل من اصحاب رسول الله علي سريه انهزمت | companion | 1 |
+| رجل من اصحاب رسول الله فاتي فقيل له | companion | 1 |
+| رجل من اصحاب رسول الله فقلنا | companion | 1 |
+| رجل من اصحاب رسول الله في غرفتي هذه | companion | 1 |
+| رجل من اصحاب رسول الله مرضي | companion | 1 |
+| رجل من اصحاب رسول الله مسجد دمشق | companion | 1 |
+| رجل من اصحاب رسول الله مغموما لما رايت من عقوبته | companion | 1 |
+| رجل من اصحاب رسول الله من الانصار رضي الله عنهم | companion | 1 |
+| رجل من اصحاب رسول الله من الانصار وهو وجع | companion | 1 |
+| رجل من اصحاب رسول الله من مزينه | companion | 1 |
+| رجل من اصحاب محمد صلي الله عليه وسلم | companion | 1 |
+| رجل من اصحاب محمد عند هذه الساريه | companion | 1 |
+| رجل من اصحابه | none | 1 |
+| رجل من ال ابن مسعود | none | 1 |
+| رجل من ال سرات | none | 1 |
+| رجل من ال عبد الله بن مسعود | none | 1 |
+| رجل من ال عمر بن الخطاب رضي الله عنه | none | 1 |
+| رجل من الاسد ادم طوال | none | 1 |
+| رجل من الانصار اساله | ansar_muhajir | 1 |
+| رجل من الانصار الي ابي | ansar_muhajir | 1 |
+| رجل من الانصار انهم بينا هم جلوس مع رسول الله | ansar_muhajir | 1 |
+| رجل من الانصار رفع الحديث | ansar_muhajir | 1 |
+| رجل من الانصار كان معنا | ansar_muhajir | 1 |
+| رجل من الانصار له صحبه | companion | 1 |
+| رجل من الانصار من اصحاب الرسول صلي الله عليه وسلم | ansar_muhajir | 1 |
+| رجل من الانصار من اصحاب رسول الله | companion | 1 |
+| رجل من الانصار من اصحاب محمد | companion | 1 |
+| رجل من الانصار من بني وايل | ansar_muhajir | 1 |
+| رجل من الانصار وكان بدريا | ansar_muhajir | 1 |
+| رجل من الصحابه من اهل الشجره ممن شهد بيعه الرضوان | companion | 1 |
+| رجل من الطفاوه طريقه علينا | none | 1 |
+| رجل من العرب | none | 1 |
+| رجل من المسلمين | none | 1 |
+| رجل من المهاجرين اعجبني زهده | ansar_muhajir | 1 |
+| رجل من المهاجرين رضي الله عنه | ansar_muhajir | 1 |
+| رجل من المهاجرين عما يصنع | ansar_muhajir | 1 |
+| رجل من المهاجرين من اصحاب النبي | companion | 1 |
+| رجل من المهاجرين يعجبني تواضعه | ansar_muhajir | 1 |
+| رجل من اهل الشام من اصحاب النبي | companion | 1 |
+| رجل من اهل الطايف | none | 1 |
+| رجل من اهل العراق | none | 1 |
+| رجل من اهل المدينه شيخ | none | 1 |
+| رجل من اهل مكه | none | 1 |
+| رجل من بكر | none | 1 |
+| رجل من بكر بن وايل | none | 1 |
+| رجل من بني ابي بكر بن كلاب | none | 1 |
+| رجل من بني الحريش | none | 1 |
+| رجل من بني اميه | none | 1 |
+| رجل من بني بحتر من طيء | none | 1 |
+| رجل من بني بكر | none | 1 |
+| رجل من بني ثعلبه | none | 1 |
+| رجل من بني حريش | none | 1 |
+| رجل من بني زريق | none | 1 |
+| رجل من بني سالم او فهم | none | 1 |
+| رجل من بني سدوس | none | 1 |
+| رجل من بني سليم احسبه قد راي النبي | companion | 1 |
+| رجل من بني سليم وكانت له صحبه | companion | 1 |
+| رجل من بني ضمره | none | 1 |
+| رجل من بني عامر جاء الي النبي | none | 1 |
+| رجل من بني عدي بن كعب | none | 1 |
+| رجل من بني عذره | none | 1 |
+| رجل من بني عقيل | none | 1 |
+| رجل من بني فزاره | none | 1 |
+| رجل من بني فزاره اتي النبي بضباب احترسها | none | 1 |
+| رجل من بني فهم | none | 1 |
+| رجل من بني فهم رضي الله عنه | none | 1 |
+| رجل من بني قشير | none | 1 |
+| رجل من بني كنانه | none | 1 |
+| رجل من بني ليث فاخذ بيدي | none | 1 |
+| رجل من بني ليث واخذ يدي | none | 1 |
+| رجل من بني ليث يدي | none | 1 |
+| رجل من بني مازن | none | 1 |
+| رجل من بني مالك بن كنانه | none | 1 |
+| رجل من ثقيف اعور | none | 1 |
+| رجل من جهينه سمع النبي صلي الله عليه وسلم | companion | 1 |
+| رجل من حلب | none | 1 |
+| رجل من حمير ادرك رسول الله ووفد عليه | none | 1 |
+| رجل من خثعم من اصحاب رسول الله | companion | 1 |
+| رجل من خزاعه | none | 1 |
+| رجل من ربيعه | none | 1 |
+| رجل من رهط عبد الله بن خازم السلمي | none | 1 |
+| رجل من شنوءه | none | 1 |
+| رجل من عذره | none | 1 |
+| رجل من عمومتي | none | 1 |
+| رجل من قدماء اهل الشام | none | 1 |
+| رجل من قريش رفعه | none | 1 |
+| رجل من قوم طارق بن عبد الله | none | 1 |
+| رجل من قومه شهد ذاك يوم حنين | none | 1 |
+| رجل من قومه من اشجع | none | 1 |
+| رجل من قومه وكانت له صحبه | companion | 1 |
+| رجل من قومي | none | 1 |
+| رجل من مزينه من اصحاب النبي | companion | 1 |
+| رجل من مزينه ونحن عند ابن المسيب | none | 1 |
+| رجل من ناحيه كذا من نواحي ما وراء النهر | none | 1 |
+| رجل من ولد جعفر بن ابي طالب | none | 1 |
+| رجل من يربوع | none | 1 |
+| رجل منا | none | 1 |
+| رجل منا من اشجع | none | 1 |
+| رجل مناصحاب النبي من الانصار | ansar_muhajir | 1 |
+| رجل منثعلبه | none | 1 |
+| رجل منقريش | none | 1 |
+| رجل منهم سال رسول الله | none | 1 |
+| رجل منهم صلي مع رسول الله الصلاه التي وجه فيها رسول | companion | 1 |
+| رجل منهم في وجوه القوم فكانه عرفهم غيري | none | 1 |
+| رجل منهم من خزاعه | none | 1 |
+| رجل والله ما كذبني | none | 1 |
+| رجل وهو | none | 1 |
+| رجل وهو يتمجع لبنا بتمر | none | 1 |
+| رجل يحدث قوما فجلست | none | 1 |
+| رجل يحدثهم وصف رسول الله ووصف صفته | none | 1 |
+| رجل يستقبل الحاج | none | 1 |
+| رجل يصلي فوق بيته | none | 1 |
+| رجل يقود دابته | none | 1 |
+| رجلا اعرابيا اتي رسول الله | none | 1 |
+| رجلا بالكوفه | none | 1 |
+| رجلا بالمدينه | none | 1 |
+| رجلا بالمدينه وقد طاف الناس به | none | 1 |
+| رجلا ببخاري علي بغله وعليه | none | 1 |
+| رجلا بتبوك مقعدا فسالته | none | 1 |
+| رجلا حدث | none | 1 |
+| رجلا ذكر عند النبي بحياء | none | 1 |
+| رجلا صحب النبي صلي الله عليه وسلم كما صحبه ابو هريره رضي الله عنه اربع سنين | companion | 1 |
+| رجلا صحبهم في سفر | none | 1 |
+| رجلا عند المغيره بن شعبه | none | 1 |
+| رجلا في امره ابن الزبير | none | 1 |
+| رجلا قد اخذ جريده من نخل | none | 1 |
+| رجلا قرا خلف رسول الله سبح اسم ربك الاعلي | none | 1 |
+| رجلا كان يطوف بمني علي بعير | none | 1 |
+| رجلا مقعدا بتبوك | none | 1 |
+| رجلا مقعدا شوال فسالته | none | 1 |
+| رجلا من اسد | none | 1 |
+| رجلا من اسلم | none | 1 |
+| رجلا من اسلممن اصحاب النبي | companion | 1 |
+| رجلا من اصحاب النبي اتي عمر بن الخطاب رضي الله عنه فشهد عنده | companion | 1 |
+| رجلا من اصحاب النبي اتي عمر بن الخطاب فشهد | companion | 1 |
+| رجلا من اصحاب النبي ادركته الوفاه | companion | 1 |
+| رجلا من اصحاب النبي استعمل علي سجستان | companion | 1 |
+| رجلا من اصحاب النبي بالكوفه | companion | 1 |
+| رجلا من اصحاب النبي رحل الي فضاله بن عبيد وهو بمصر | companion | 1 |
+| رجلا من اصحاب النبي صحبه مثل ما صحبه ابو هريره | companion | 1 |
+| رجلا من اصحاب النبي صلي الله عليه وسلم | companion | 1 |
+| رجلا من اصحاب النبي فقلت له | companion | 1 |
+| رجلا من اصحاب النبي كان يمشي حافيا ولا يدهن | companion | 1 |
+| رجلا من اصحاب النبي كان يمشي حافيا ولا يدهن فقيل له | companion | 1 |
+| رجلا من اصحاب النبي ممن شهد معه حنينا | companion | 1 |
+| رجلا من اصحاب النبي من اهل بدر | companion | 1 |
+| رجلا من اصحاب النبي يحدث عبد الملك بن مروان | companion | 1 |
+| رجلا من اصحاب رسول الله حدثوه | companion | 1 |
+| رجلا من اصحاب رسول الله صلي الله عليه واله وسلم | companion | 1 |
+| رجلا من اصحاب رسول الله صلي الله عليه وسلم | companion | 1 |
+| رجلا من اصحاب رسول الله كان | companion | 1 |
+| رجلا من اصحاب رسول الله ما بيني وبين رسول الله غيره | companion | 1 |
+| رجلا من اصحاب رسول الله من بني عبد الاشهل | companion | 1 |
+| رجلا من اصحاب محمد | companion | 1 |
+| رجلا من الانصار جاء الي رسول الله بجاريه له سوداء | ansar_muhajir | 1 |
+| رجلا من الانصار من اصحاب رسول الله | companion | 1 |
+| رجلا من الانصار من بني سلمه | ansar_muhajir | 1 |
+| رجلا من الصحابه | companion | 1 |
+| رجلا من المهاجرين | ansar_muhajir | 1 |
+| رجلا من المهاجرين تصدق بارض له عظيمه علي امه | ansar_muhajir | 1 |
+| رجلا من اهل الصفه | none | 1 |
+| رجلا من اهل دمشق يحدث ابن ابي كبشه بالهند | none | 1 |
+| رجلا من اهل دمشق يحدث ابن ابي كبشه بالهند زعم | none | 1 |
+| رجلا من بني بياضه من اصحاب النبي | companion | 1 |
+| رجلا من بني حنظله | none | 1 |
+| رجلا من بني حواله | none | 1 |
+| رجلا من بني سلمه يحدث عبد الله بن عمر | none | 1 |
+| رجلا من بني كنانه | none | 1 |
+| رجلا من بني ليث | none | 1 |
+| رجلا من بني ليثحدثه | none | 1 |
+| رجلا من جهينه لم ار رجلا اعظم منه ولا اطول | none | 1 |
+| رجلا من جهينه لم ار رجلا قط اعظم منه ولا اطول منه | none | 1 |
+| رجلا من خزاعه | none | 1 |
+| رجلا من خزاعه كان اميرا علي مكه منصرف الحاج | none | 1 |
+| رجلا من خزاعه منصرف الحجاج من مكه | none | 1 |
+| رجلا من غفار من اصحاب النبي | companion | 1 |
+| رجلا من قريش | none | 1 |
+| رجلا من قريش علي صدقات اهل العاليه | none | 1 |
+| رجلا منصرف الحجاج | none | 1 |
+| رجلا يذكر | none | 1 |
+| رجلا يسال سفيان بن عيينه | none | 1 |
+| رجلان انهم سمعا رسول الله | none | 1 |
+| رجلان انهما اتيا النبي في حجه الوداع يسالانه الصدقه | none | 1 |
+| رجلان انهما اتيا النبي في حجه الوداع يسالانه مما بي | none | 1 |
+| رجلان علي بعير فقالا | none | 1 |
+| رجلان فقالا | none | 1 |
+| رجلان مرتدفان بعيرا | none | 1 |
+| رجلان من اصحاب النبي | companion | 1 |
+| رجلان من بني سليم من اصحاب النبي | companion | 1 |
+| رجلين اخبراه انهما اتيا رسول الله | none | 1 |
+| رجلين من اصحاب النبي | companion | 1 |
+| رجلين من اهل الباديه | none | 1 |
+| رجلين من بني سليم من اصحاب النبي التقيا | companion | 1 |
+| رجلين من بني غفار | none | 1 |
+| ردف النبي عليه السلام | companion | 1 |
+| ردف رسول الله نحو | unclassified | 1 |
+| رديف رسول الله صلي الله عليه واله وسلم | unclassified | 1 |
+| رهط من اصحاب النبي | companion | 1 |
+| رهط من الانصار | ansar_muhajir | 1 |
+| رهط من عضل والقاره | unclassified | 1 |
+| رهط من قومه | none | 1 |
+| رهط من قومه فنهوه | none | 1 |
+| رهطا من الانصار من اصحاب رسول الله | companion | 1 |
+| زوج دره | unclassified | 1 |
+| زوج رسول الله | unclassified | 1 |
+| سته | unclassified | 1 |
+| سعد مولي ابي بكر الصديق | none | 1 |
+| سعيد بن علي بن ابي طالب عليهم السلام | none | 1 |
+| سيدي | unclassified | 1 |
+| شاب اذا تكلم انصت القوم له | unclassified | 1 |
+| شاب منهم | unclassified | 1 |
+| شيخ ادرك الصدر الاول | none | 1 |
+| شيخ جليل | none | 1 |
+| شيخ جميل من بني غفار وفي اذنيه صمم او | none | 1 |
+| شيخ في مسجد النبي | none | 1 |
+| شيخ لقيه بالبحرين | none | 1 |
+| شيخ لنا اعرابي من محارب | none | 1 |
+| شيخ من ادني القوم من الانصار | ansar_muhajir | 1 |
+| شيخ من اشياخهم | none | 1 |
+| شيخ من اصحاب النبي | companion | 1 |
+| شيخ من اصحاب النبي صلي الله عليه وسلم رواه | companion | 1 |
+| شيخ من اصحاب النبي في مسجد الكوفه فحدثني | companion | 1 |
+| شيخ من اصحاب رسول الله في مسجد الكوفه فحدثني | companion | 1 |
+| شيخ من اهل البصره | none | 1 |
+| شيخ من اهل البصره رضي الله عنه | none | 1 |
+| شيخ من اهل القريه | none | 1 |
+| شيخ من اهل المداين | none | 1 |
+| شيخ من اهل اليمن | none | 1 |
+| شيخ من اهل دومه | none | 1 |
+| شيخ من بكر بن وايل | none | 1 |
+| شيخ من بني تميم | none | 1 |
+| شيخ من بني سعد | none | 1 |
+| شيخ من بني سعد بن بكر | none | 1 |
+| شيخ من بني سليط | none | 1 |
+| شيخ من بني كنانه | none | 1 |
+| شيخ من خثعم فذكر حجاج | none | 1 |
+| شيخ من قريش | none | 1 |
+| شيخ من قريش من اهل مكه | none | 1 |
+| شيخ من كنانه | none | 1 |
+| شيخ من همدان | none | 1 |
+| شيخ منهم | none | 1 |
+| شيخ يتوكا علي عصا له | none | 1 |
+| شيخا بالشام فقلت | none | 1 |
+| شيخا من بني كنانه | none | 1 |
+| شيخا من خزاعه مصرف الحجاج من مكه حين قتل ابن الزبير | none | 1 |
+| شيخا يحتجم في راسه | none | 1 |
+| شيوخ من بني عبد الاشهل | none | 1 |
+| شيوخه الذين روي عنهم قصه احد | none | 1 |
+| شيوخه في وفود العرب علي النبي | none | 1 |
+| صاحب الجاريه نفسه | unclassified | 1 |
+| صاحب رسول الله | unclassified | 1 |
+| صاحب لنا سمع النبي | companion | 1 |
+| صاحب له | unclassified | 1 |
+| صالحا الحكمي | unclassified | 1 |
+| صهر لنا من الانصار فحضرت الصلاه | ansar_muhajir | 1 |
+| صهر لنا من الانصار نعوده | ansar_muhajir | 1 |
+| صهر لنا نعوده | unclassified | 1 |
+| ظير لرسول الله | unclassified | 1 |
+| ظير لمحمد بن طلحه | unclassified | 1 |
+| ظير محمد بن طلحه رضي الله عنها | unclassified | 1 |
+| عبادا | unclassified | 1 |
+| عجوز من جهينه | unclassified | 1 |
+| عجوز منهم | unclassified | 1 |
+| عجوزا لنا كانت فيمن بايع رسول الله | unclassified | 1 |
+| عجوزا لنا كانت فيمن بايعن النبي | unclassified | 1 |
+| عجوزا لنا ممن بايع النبي | unclassified | 1 |
+| عدد ممن ادرك النبي | none | 1 |
+| عده | unclassified | 1 |
+| عده من الهاشميين | unclassified | 1 |
+| عريف لجهينه | unclassified | 1 |
+| عشره من اصحاب الرسول | unclassified | 1 |
+| عمات النبي تحدث | unclassified | 1 |
+| عمتي | unclassified | 1 |
+| عمر | unclassified | 1 |
+| عمن خدم النبي ثمان سنين | unclassified | 1 |
+| عمن خدم النبي ثماني سنين | unclassified | 1 |
+| عمن راي رسول الله | companion | 1 |
+| عمن روي عنه قصه بدر | unclassified | 1 |
+| عمن سمع | unclassified | 1 |
+| عمن سمع النبي يقرا | companion | 1 |
+| عمن سمي من رجاله من اهل العلم | none | 1 |
+| عمن شهد ذلك | unclassified | 1 |
+| عمن شهد رسول الله يوم ذات الرقاع | unclassified | 1 |
+| عمن صلي مع رسول الله ذات يوم الرقاع صلاه الخوف | companion | 1 |
+| عمن كان رديف النبي | companion | 1 |
+| عمن كان رديف رسول الله | unclassified | 1 |
+| عمن يرضي به | unclassified | 1 |
+| عمه رضي الله عنه | none | 1 |
+| عمومته جاءوا الي النبي ثم رجعوا الي رافع بعدما رووا | none | 1 |
+| عمومته من اصحاب النبي صلي الله عليه وسلم | companion | 1 |
+| عمومته من اصحاب رسول الله صلي الله عليه واله وسلم | companion | 1 |
+| عمومتي | unclassified | 1 |
+| عمومتي من الانصار من اصحاب النبي | companion | 1 |
+| عمومه له قدم النبي وليس احد منا الا له لقب او لقبان | none | 1 |
+| عمومه له من اصحاب النبي صلي الله عليه واله وسلم | companion | 1 |
+| عمومه له من اصحاب رسول الله | companion | 1 |
+| عمومه له من اصحاب رسول الله صلي الله عليه وسلم | companion | 1 |
+| عمومه لي من اصحاب النبي | companion | 1 |
+| عمومه لي من الانصار | ansar_muhajir | 1 |
+| عمومه لي من الانصار من اصحاب النبي | companion | 1 |
+| عمومه من اصحاب النبي | companion | 1 |
+| عمي رضي الله عنه | unclassified | 1 |
+| عميه وقد كانا شهدا بدرا | unclassified | 1 |
+| عميه وكانا شهدا بدرا حدثاه | unclassified | 1 |
+| غلام من اهل قباء | none | 1 |
+| غير ابن ابي سبره | none | 1 |
+| غير واحد ممن نثق به من اهل البلد | none | 1 |
+| غير واحد من اصحاب النبي | companion | 1 |
+| غير واحد من اصحاب رسول الله | companion | 1 |
+| غير واحد من اصحابهم | none | 1 |
+| غير واحد منهم | none | 1 |
+| غير واحد منهم من اهل بلدهم | none | 1 |
+| غيره شك ابو جعفر الرازي | none | 1 |
+| غيره من اصحاب النبي | companion | 1 |
+| غيره من اهل مكه | none | 1 |
+| غيرهما من ازواج النبي | companion | 1 |
+| فقهاء اهل المدينه | unclassified | 1 |
+| فلان ابن فلان | none | 1 |
+| فلان رجل من اصحاب النبي رضي الله عنه | companion | 1 |
+| فلان من اصحاب النبي | companion | 1 |
+| فلان من اصحاب رسول الله | companion | 1 |
+| فلانا اتانا | none | 1 |
+| فلانا نسي عباد اسمه | none | 1 |
+| فلانا نسي عباد اسمه ما بيني وبين رسول الله غيره | none | 1 |
+| قايلا | unclassified | 1 |
+| قومه | unclassified | 1 |
+| لابي | unclassified | 1 |
+| لازواج النبي فحدثنني | unclassified | 1 |
+| لال حزم | unclassified | 1 |
+| لامراته | unclassified | 1 |
+| لامه من الانصار في زمن ابن الزبير | ansar_muhajir | 1 |
+| لرجل قريب مني | unclassified | 1 |
+| لرجل من اصحاب النبي | companion | 1 |
+| لفلان نفقه ايتام | unclassified | 1 |
+| مالك رجل من الانصار | ansar_muhajir | 1 |
+| مجلس بني عبد المطلب وهم متوافرون | unclassified | 1 |
+| محدث | unclassified | 1 |
+| مشيختنا من جهينه | unclassified | 1 |
+| مشيخه | none | 1 |
+| مشيخه بني عامر | none | 1 |
+| مشيخه بني عبد الاشهل | none | 1 |
+| مشيخه من الانصار رضي الله عنهم | ansar_muhajir | 1 |
+| مشيخه من قومه | none | 1 |
+| مصدق النبي فاخذت بيده | companion | 1 |
+| مصدق النبي فاخذت بيده وقرات في عهده | companion | 1 |
+| مصدق النبي فقعدت اليه | companion | 1 |
+| مقعدا بتبوك فسالت | unclassified | 1 |
+| مقعدا في تبوك | unclassified | 1 |
+| ممن اثق به | unclassified | 1 |
+| من ابصر نعلي النبي | unclassified | 1 |
+| من اصدق | unclassified | 1 |
+| من اقراه النبي او من اقراه من اقراه النبي | unclassified | 1 |
+| من راي النبي صلي الله عليه وسلم | companion | 1 |
+| من راي النبي صلي الله عليه وسلم عند احجار الزيت | companion | 1 |
+| من راي النبي صلي الله عليهوسلم | companion | 1 |
+| من سار مع مصدق رسول الله | companion | 1 |
+| من سار مع مصدق رسول الله صلي الله عليه وسلم | companion | 1 |
+| من سمع الاعرابي | none | 1 |
+| من سمع النبي صلي الله عليه وسلم | companion | 1 |
+| من سمع النبي وامر برجم رجل بين مكه والمدينه | companion | 1 |
+| من سمع النبي وهو بوادي القري وهو علي فرسه | companion | 1 |
+| من سمع خطبه رسول الله في وسط ايام التشريق | unclassified | 1 |
+| من سمع رسول الله وهو بوادي القري وهوواقف علي فرسه | companion | 1 |
+| من سمع من النبي | unclassified | 1 |
+| من سمع من رسول الله صلي الله عليه وسلم | unclassified | 1 |
+| من سمع منادي رسول الله حين قامت | unclassified | 1 |
+| من سمعه من رسول الله | unclassified | 1 |
+| من سمي من رجاله في صدر هذا الكتاب | unclassified | 1 |
+| من شهد النبي وامر برجم رجل بين مكه والمدينه | none | 1 |
+| من شهد خطبه النبي بمني | unclassified | 1 |
+| من شهد خطبه النبي في ايام التشريق | unclassified | 1 |
+| من شهد خطبه النبي في ايام التشريق شك الجريري | unclassified | 1 |
+| من شهد خطبه النبي وسط ايام التشريق | unclassified | 1 |
+| من شهد خطبه رسول الله بمني في ايام التشريق وهو عل | unclassified | 1 |
+| من صلي مع النبي | companion | 1 |
+| من صلي مع النبي صلاه الصبح | companion | 1 |
+| من صلي مع النبي صلاه الغداه | companion | 1 |
+| من صلي مع رسول الله | companion | 1 |
+| من كان يخدم النبي | unclassified | 1 |
+| من كان يخدم رسول الله | unclassified | 1 |
+| من كان يقرينا من اصحاب النبي انهم كانوا | companion | 1 |
+| من لا اتهمه | unclassified | 1 |
+| من لا يتهم من قومه | none | 1 |
+| من لقي الوفد الذين قدموا علي رسول الله من عبد القي | unclassified | 1 |
+| من نثق به من ال حزم وغيرهم | unclassified | 1 |
+| من هو اعلم من هذا | unclassified | 1 |
+| من يخبرنا | unclassified | 1 |
+| مناد يوم صفين افيكم اويس القرني قيل | unclassified | 1 |
+| مناد يوم صفين فيكم اويس القرني قالوا | unclassified | 1 |
+| منادي النبي | unclassified | 1 |
+| منادي رسول الله حين قامت الصلاه او حين حانت الصلوه اذ ن | unclassified | 1 |
+| مولاه لام هاني | unclassified | 1 |
+| مولاه لرسول الله | unclassified | 1 |
+| مولاه لرسول الله صلي الله عليه واله وسلم | unclassified | 1 |
+| مولي ابي سعيد | none | 1 |
+| مولي ام هاني | unclassified | 1 |
+| مولي لابي بكر الصديق | unclassified | 1 |
+| مولي لابي قتاده | unclassified | 1 |
+| مولي لال الزبير | unclassified | 1 |
+| مولي لال الزبير يرفعه الي النبي | unclassified | 1 |
+| مولي لام سلمه | unclassified | 1 |
+| مولي لعثمان | unclassified | 1 |
+| مولي لعمرو بن العاص | unclassified | 1 |
+| مولي لفضاله بن عبيد | unclassified | 1 |
+| ناس من اصحاب النبي | companion | 1 |
+| ناس من الانصار انهم | ansar_muhajir | 1 |
+| ناس ينطلقون | unclassified | 1 |
+| ناسا من اصحاب النبي | companion | 1 |
+| ناسا من الصحابه | companion | 1 |
+| ناسا من الصحابه اكثر فتياهم حديث النبي | companion | 1 |
+| ناسا من الصحابه يقولون | companion | 1 |
+| ناسا يروون | unclassified | 1 |
+| نسوتي | unclassified | 1 |
+| نسوه النبي عليه السلام | unclassified | 1 |
+| نسوه رسول الله | companion | 1 |
+| نسوه من بني عبد الدار اللايي ادركن رسول الله | none | 1 |
+| نفر من اصحابه | unclassified | 1 |
+| نفر من بني سلمه | none | 1 |
+| نفر من بني غفار | none | 1 |
+| نفر من قومه من اصحاب محمد | companion | 1 |
+| نفرا من اصحاب النبي حدثوه | companion | 1 |
+| نفرا من اصحاب رسول الله قالوا | companion | 1 |
+| نقباء الانصار | unclassified | 1 |
+| و رجل يقود دابته | none | 1 |
+| واجدادهم | unclassified | 1 |
+| واحد من اصحاب النبي | companion | 1 |
+| وامراه من ازواج النبي | companion | 1 |
+| وامراه من قريش | unclassified | 1 |
+| وبعض العلماء يزعم | unclassified | 1 |
+| وجماعه سماهم | unclassified | 1 |
+| ورجال من كبراء قومه | unclassified | 1 |
+| ورجل اخر سماه | none | 1 |
+| ورجلين معه من اهل العلم | none | 1 |
+| وعمي | unclassified | 1 |
+| وعمي وكانا شهدا حنينا مع رسول الله | unclassified | 1 |
+| وغيره اخبروه | unclassified | 1 |
+| وغيرها | unclassified | 1 |
+| وغيرهما يقولون | unclassified | 1 |
+| وفد جيشان الذين قدموا علي رسول الله انهم ذكروا لرسو | unclassified | 1 |
+| وفدنا | unclassified | 1 |
+| وناسا من اصحاب رسول الله يقولون | companion | 1 |
+
+
+_Audit computed in 20.0s._

@@ -1,0 +1,12 @@
+# Stage 11 (PR 6 §4): + the mudallis set is Tabaqat al-Mudallisin's union (mudallis_set: union; D57
+# amended). = PR 6 defaults.
+structure:
+  unnamed_companion: {enabled: true}
+  bundle: {book_transmitters: true}
+  structure: {compiler_terminal: edge}
+  number_class: {basis: kappa}
+  derive:
+    corroboration: {witness: attested, avoid: each_defect, shahid_scope: group, unknown_repair: named_elsewhere}
+    conditional: true
+    tadlis: {mudallis_set: union, tiers: true, tasrih_scope: group, sahihayn_muanan_accepted: true}
+    variants: null

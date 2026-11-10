@@ -3,7 +3,8 @@ needs the 1.6 GB source. Contains the gold-set groups, the sibling groups of the
 gold entries that assert a cross-group shahid (`classical_claim_holds_with_siblings`),
 the ten most-narrated groups (the companion-band gate), a seeded random sample, and
 a few groups without chains. Narrators are every narrator in the sampled chains plus
-all members of their same-name clusters (so kappa_lower is reproduced exactly);
+all members of their same-name clusters (so kappa_lower is reproduced exactly), plus
+the narrators with conditional rulings in force and the ids their conditions name;
 topics are the sampled groups' leaves and their ancestors. matn_idf.parquet carries
 the full corpus's idf for the sampled matns, so shahid overlaps equal the full run's.
 Other groups' sibling witnesses are not in the fixture, so on those groups v2 can
@@ -44,12 +45,17 @@ def build(out_dir=None) -> dict:
     con.execute("CREATE TEMP TABLE fx_groups AS SELECT unnest(?::BIGINT[]) AS id", [groups])
     con.execute("CREATE TEMP TABLE fx_hadiths AS SELECT id FROM hadiths WHERE group_id IN (SELECT id FROM fx_groups)")
     con.execute("CREATE TEMP TABLE fx_sanads AS SELECT id FROM sanads WHERE hadith_id IN (SELECT id FROM fx_hadiths)")
+    # the narrators with conditional rulings in force and the ids in their conditions (PR 6)
+    from itibar import conditional
+    rul = conditional.load_rulings()
+    rids = sorted({r for rid, rs in rul.items() for x in rs for r in ({rid} | set(x.ids))}) or [-1]
+    con.execute("CREATE TEMP TABLE fx_ruled AS SELECT unnest(?::BIGINT[]) AS id", [rids])
     con.execute("""CREATE TEMP TABLE fx_rawis AS
         WITH used AS (SELECT DISTINCT rawi_id AS id FROM sanad_rawis WHERE sanad_id IN (SELECT id FROM fx_sanads)
                       UNION SELECT DISTINCT rawi_id FROM hadith_rawis WHERE hadith_id IN (SELECT id FROM fx_hadiths)
                             AND rawi_id IS NOT NULL),
              names AS (SELECT DISTINCT r.name, r.nickname FROM rawis r JOIN used USING (id) WHERE r.is_stub = 0)
-        SELECT id FROM used UNION
+        SELECT id FROM used UNION SELECT id FROM fx_ruled UNION
         SELECT r.id FROM rawis r JOIN names n ON n.name = r.name AND n.nickname = r.nickname WHERE r.is_stub = 0""")
     queries = {
         "meta": "SELECT * FROM meta",

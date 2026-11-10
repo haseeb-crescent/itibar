@@ -325,21 +325,24 @@ entries:
     chain_v2:
       path: [r4095, r4879, r4069]          # 'Amir b. Rabi'a -> 'Abdullah b. 'Amir -> 'Asim b. 'Ubaydallah (rank_no 8, ضعيف الحديث)
       weakest: {node: r4069, level: 8}
-      ibn_hajar: {code: 1, rule: hasan_li_ghayrihi, divergence: shahid}
-      ibn_al_salah: {code: 1, rule: hasan_li_ghayrihi, divergence: shahid}
-      alt_shahid_group: {code: 2}          # no witness inside the meaning group
+      ibn_hajar: {code: 2, rule: daif}      # PR 6 default shahid_scope group: no witness inside the meaning group
+      ibn_al_salah: {code: 2, rule: daif}
+      alt_siblings: {code: 1}               # the siblings variant (PR 5's default): repaired by a shahid
+      alt_siblings_strict: {code: 2}        # at the strict floor 0.38 the sibling pair (0.333) does not count
   classical_claim: "hasan li-ghayrihi (corroboration fires)"
   classical_claim_holds_in_group: false
   classical_claim_holds_with_siblings: true
   notes: >
     Inside the meaning group corroboration cannot fire: 47 of its 51 chains pass through 'Asim, and the
-    other four carry a different report (Maymuna bint Kardam, through unnamed persons); the shahid_group
-    variant keeps code 2 (PR 4's assertion, D54). The routes al-Tirmidhi relies on are his "fi al-bab"
+    other four carry a different report (Maymuna bint Kardam, through unnamed persons); the default
+    (shahid_scope group since PR 6, D58 amended) keeps code 2, PR 4's in-group finding (D54). The routes al-Tirmidhi relies on are his "fi al-bab"
     reports from other companions, filed by the source as other meaning groups under the same topic
     (أقل المهر). With shahid_scope siblings (D58) the witness is sanad 261755 of group 763 (Sahl b. Sa'd's
     report, Musannaf Ibn Abi Shayba): «زوج رجلا امرأة على أن يعلمها سورة من القرآن», a man married for a
     minimal dowry, approved — al-Tirmidhi's Sahl b. Sa'd. Its matn overlap with the 'Asim chain's matn is
     0.333 (idf-weighted Dice), above the floor 0.32 and below the strict variant's 0.38 (code 2 there).
+    PR 6 made sibling shawahid a variant: the repair is asserted under `siblings`, the in-group result
+    under the default.
 
 - id: maqbul-repaired
   group_id: 3487
@@ -525,6 +528,175 @@ entries:
     report: «حدثنا» in al-Bukhari's (sanad 159) and Muslim's (sanad 8909), «سمعت» in Ibn Manda's al-Iman
     (sanads 360990, 360992) and al-Bayhaqi's. With tasrih_scope group the 'an is covered and the chain has
     no defect; under PR 4 it was a light defect.
+
+# ---------------------------------------------------------------- PR 6: the unnamed companion, conditional narrators
+
+- id: unnamed-companion-humayd-himyari
+  group_id: 6524
+  title: "نهى أن تغتسل المرأة بفضل الرجل — Humayd al-Himyari «لقيت رجلا صحب النبي ﷺ»"
+  class: unnamed-companion
+  source:
+    - {work: "Fath al-Bari 1/300 (Shamela 1673)", author: "Ibn Hajar", confidence: high,
+       url: "https://shamela.ws/book/1673/786",
+       claim: "رِجَالُهُ ثِقَاتٌ … وَدَعْوَى الْبَيْهَقِيُّ أَنَّهُ فِي مَعْنَى الْمُرْسَلِ مَرْدُودَةٌ؛ لِأَنَّ إِبْهَامَ الصَّحَابِيِّ لَا يَضُرُّ، وَقَدْ صَرَّحَ التَّابِعِيُّ بِأَنَّهُ لَقِيَهُ"}
+    - {work: "Bulugh al-Maram, hadith 7 (Shamela 17757)", author: "Ibn Hajar", confidence: high,
+       url: "https://shamela.ws/book/17757/51", claim: "وَعَنْ رَجُلٍ صَحِبَ النَّبِيَّ … أَخْرَجَهُ أَبُو دَاوُدَ وَالنَّسَائِيُّ، وَإِسْنَادُهُ صَحِيحٌ"}
+    - {work: "Muqaddimat Ibn al-Salah, naw' 9, p. 56 (Shamela 22870)", author: "Ibn al-Salah", confidence: high,
+       url: "https://shamela.ws/book/22870/53", claim: "وَالْجَهَالَةَ بِالصَّحَابِيِّ غَيْرُ قَادِحَةٍ، لِأَنَّ الصَّحَابَةَ كُلَّهُمْ عُدُولٌ"}
+  scope: {threshold: all}
+  expect:
+    edges_include: [[P, u6524]]
+    chain_check:
+      sanad_id: 27546                      # Abu Dawud <- Ahmad b. Yunus <- Zuhayr <- Dawud b. 'Abdallah al-Awdi <- Humayd <- «رجل صحب النبي»
+      unnamed_companion: true
+      ibn_hajar: {defects_eq: [], notes_include: [unnamed_companion_companion]}
+      ibn_al_salah: {defects_eq: []}
+      alt_unnamed_top_mursal: {code: 1}    # PR 5's reading: mursal, repaired by the named chains
+  notes: >
+    The designation read from the text is «رجلا صحب النبي ﷺ كما صحبه أبو هريرة رضي الله عنه أربع سنين»
+    (class companion, phrase «صحب النبي»). PR 5 read the unnamed top as mursal (D36). Two chains of the group
+    end at Abu Hurayra (r4396), a misresolution of «كما صحبه أبو هريرة»; the unnamed companion is not
+    identified with him (D70), so the PROPHET edge goes to the group's node u6524.
+
+- id: ibn-lahia-via-ibn-al-mubarak
+  group_id: 3555
+  title: "يمن الخيل في الشقر — Ibn Lahi'a through 'Abdallah b. al-Mubarak, one of the 'Abadila (al-Tirmidhi's chain)"
+  class: conditional-via-student
+  source:
+    - {work: "Tahrir Taqrib al-Tahdhib 2/258, entry 3563 (Shamela 127715)", author: "Bashshar 'Awwad Ma'ruf, Shu'ayb al-Arna'ut", confidence: high,
+       url: "https://shamela.ws/book/127715/686",
+       claim: "بل: ضعيفٌ يُعتَبر به، وحديثه صحيح إذا روى عنه العبادلة: ابن المبارك، وابن وهب، وابن يزيد المقرئ، وابن مسلمة القعنبي"}
+    - {work: "Taqrib al-Tahdhib p. 319, entry 3563 (Shamela 8609)", author: "Ibn Hajar", confidence: high,
+       url: "https://shamela.ws/book/8609/245", claim: "صدوق … خلط بعد احتراق كتبه ورواية ابن المبارك وابن وهب عنه أعدل من غيرهما"}
+  scope: {threshold: all}
+  expect:
+    chain_check:
+      sanad_id: 24523                      # al-Tirmidhi <- Ahmad b. Muhammad al-Marwazi <- Ibn al-Mubarak <- Ibn Lahi'a <- …
+      ibn_hajar: {rulings_include: [via_student, ikhtilat_before], defects_eq: []}
+      alt_conditional_off: {code: 1}       # his own level 8 without the ruling: hasan li-ghayrihi at best
+  notes: >
+    The Taqrib names Ibn al-Mubarak and Ibn Wahb (level 4 for that link: Ibn Hajar's «صدوق»); Tahrir's wider
+    ruling (the four 'Abadila, «صحيح») waits for review because «ابن يزيد المقرئ» fits several of his
+    students. A student the via_student ruling vouches for is also placed before the burning of his books.
+
+- id: ibn-lahia-via-another-student
+  group_id: 2
+  title: "Wudu' (one handful for mouth and nose) — Ibn Lahi'a through Yahya b. Hassan, outside the 'Abadila (al-Darimi)"
+  class: conditional-via-student
+  source:
+    - {work: "Tahrir Taqrib al-Tahdhib 2/258, entry 3563 (Shamela 127715)", author: "Bashshar 'Awwad Ma'ruf, Shu'ayb al-Arna'ut", confidence: high,
+       url: "https://shamela.ws/book/127715/686", claim: "بل: ضعيفٌ يُعتَبر به"}
+  scope: {threshold: all}
+  expect:
+    chain_check:
+      sanad_id: 46242                      # al-Darimi <- Yahya b. Hassan <- Ibn Lahi'a <- Habban b. Wasi' <- …
+      ibn_hajar: {defects_include: [level_8+conditional], weak_nodes_include: [r5033], rulings_eq: [ikhtilat_after]}
+
+- id: ismail-b-ayyash-from-a-hijazi
+  group_id: 1990
+  title: "لا تقرأ الحائض ولا الجنب شيئا من القرآن — Isma'il b. 'Ayyash from Musa b. 'Uqba (Madinan)"
+  class: conditional-region
+  source:
+    - {work: "Jami' al-Tirmidhi no. 131, 1/174 (Shamela 7895)", author: "al-Tirmidhi, quoting al-Bukhari", confidence: high,
+       url: "https://shamela.ws/book/7895/231",
+       claim: "إِنَّ إِسْمَاعِيلَ بْنَ عَيَّاشٍ يَرْوِي عَنْ أَهْلِ الْحِجَازِ وَأَهْلِ الْعِرَاقِ أَحَادِيثَ مَنَاكِيرَ، كَأَنَّهُ ضَعَّفَ رِوَايَتَهُ عَنْهُمْ فِيمَا يَتَفَرَّدُ بِهِ … وَقَالَ: إِنَّمَا حَدِيثُ إِسْمَاعِيلَ بْنَ عَيَّاشٍ، عَنْ أَهْلِ الشَّامِ"}
+    - {work: "Taqrib al-Tahdhib p. 109, entry 473 (Shamela 8609)", author: "Ibn Hajar", confidence: high,
+       url: "https://shamela.ws/book/8609/35", claim: "صدوق في روايته عن أهل بلده مخلط في غيرهم"}
+  scope: {threshold: all}
+  expect:
+    chain_check:
+      sanad_id: 22342                      # al-Tirmidhi <- 'Ali b. Hujr, al-Hasan b. 'Arafa <- Isma'il b. 'Ayyash <- Musa b. 'Uqba <- Nafi' <- Ibn 'Umar
+      ibn_hajar: {defects_include: [level_5], weak_nodes_include: [r1050], rulings_eq: []}
+
+- id: ismail-b-ayyash-from-a-syrian
+  group_id: 458
+  title: "إن الله قد أعطى كل ذي حق حقه فلا وصية لوارث — Isma'il b. 'Ayyash from Shurahbil b. Muslim (Syrian)"
+  class: conditional-region
+  source:
+    - {work: "Jami' al-Tirmidhi no. 2120, 3/620 (Shamela 7895)", author: "al-Tirmidhi, quoting al-Bukhari", confidence: high,
+       url: "https://shamela.ws/book/7895/3717",
+       claim: "وَهُوَ حَدِيثٌ حَسَنٌ … وَرِوَايَةُ إِسْمَاعِيلَ بْنِ عَيَّاشٍ عَنْ أَهْلِ الْعِرَاقِ وَأَهْلِ الْحِجَازِ لَيْسَ بِذَلِكَ فِيمَا تَفَرَّدَ بِهِ … وَرِوَايَتُهُ عَنْ أَهْلِ الشَّامِ أَصَحُّ"}
+    - {work: "Sharh 'Ilal al-Tirmidhi 2/773 (Shamela 9552)", author: "Ibn Rajab", confidence: high,
+       url: "https://shamela.ws/book/9552/712", claim: "إذا حدث عن الشاميين (فحديثه) عنهم (جيد) . وإذا حدث عن غيرهم فحديثه مضطرب"}
+  scope: {threshold: all}
+  expect:
+    chain_check:
+      sanad_id: 25090                      # al-Tirmidhi <- 'Ali b. Hujr <- Isma'il b. 'Ayyash <- Shurahbil b. Muslim <- Abu Umama
+      ibn_hajar: {rule: sahih_li_ghayrihi, code: 0, defects_eq: [], rulings_include: [region_of_shaykh]}
+      alt_conditional_off: {code: 1}       # his own level 5 (light) without the ruling
+
+- id: ikhtilat-said-b-abi-aruba
+  group_id: 13
+  title: "قنت رسول الله شهرا — Sa'id b. Abi 'Aruba through Waki': heard after the confusion"
+  class: conditional-ikhtilat
+  source:
+    - {work: "Tahrir Taqrib al-Tahdhib 2/38, entry 2365 (Shamela 127715)", author: "Bashshar 'Awwad Ma'ruf, Shu'ayb al-Arna'ut", confidence: high,
+       url: "https://shamela.ws/book/127715/468", claim: "أما اختلاطه فنحن ذاكرون هنا من روى عنه قبل الاختلاط وهم: … ويزيد بن زُرَيع، ويزيد بن هارون"}
+    - {work: "Muqaddimat Ibn al-Salah, naw' 62, p. 393 (Shamela 22870)", author: "Ibn al-Salah", confidence: high,
+       url: "https://shamela.ws/book/22870/390", claim: "وَمِمَّنْ عُرِفَ أَنَّهُ سَمِعَ مِنْهُ بَعْدَ اخْتِلَاطِهِ وَكِيعٌ، وَالْمُعَافَى بْنُ عِمْرَانَ الْمَوْصِلِيُّ"}
+    - {work: "al-Mukhtalitin, entry 18 (Shamela 25846)", author: "al-'Ala'i", confidence: high,
+       url: "https://shamela.ws/book/25846/38", claim: "وممن سمع منه بعد الاختلاط: وكيع بن الجراح والمعافى بن عمران الموصلي"}
+  scope: {threshold: all}
+  expect:
+    chain_check:
+      sanad_id: 211607                     # Abu Ya'la <- … <- Waki' <- Sa'id b. Abi 'Aruba <- Qatada <- Anas: heard after
+      ibn_hajar: {rulings_include: [ikhtilat_after], defects_include: [conditional]}
+
+- id: ikhtilat-said-b-abi-aruba-before
+  group_id: 13
+  title: "قنت رسول الله شهرا — Sa'id b. Abi 'Aruba through Yazid b. Zuray': heard before the confusion"
+  class: conditional-ikhtilat
+  source:
+    - {work: "Tahrir Taqrib al-Tahdhib 2/38, entry 2365 (Shamela 127715)", author: "Bashshar 'Awwad Ma'ruf, Shu'ayb al-Arna'ut", confidence: high,
+       url: "https://shamela.ws/book/127715/468", claim: "من روى عنه قبل الاختلاط وهم: … ويزيد بن زُرَيع"}
+  scope: {threshold: all}
+  expect:
+    chain_check:
+      sanad_id: 160230                     # al-Bayhaqi <- … <- Yazid b. Zuray' <- Sa'id b. Abi 'Aruba <- Qatada <- Anas: heard before
+      ibn_hajar: {rulings_include: [ikhtilat_before], weak_nodes_exclude: [r3281]}
+
+- id: simak-from-ikrima
+  group_id: 407
+  title: "الماء لا يجنب — Simak b. Harb from 'Ikrima"
+  class: conditional-from-shaykh
+  source:
+    - {work: "Taqrib al-Tahdhib p. 255, entry 2624 (Shamela 8609)", author: "Ibn Hajar", confidence: high,
+       url: "https://shamela.ws/book/8609/181", claim: "صدوق وروايته عن عكرمة خاصة مضطربة وقد تغير بأخرة فكان ربما تلقن"}
+    - {work: "Sharh 'Ilal al-Tirmidhi 2/796, those weakened in some of their teachers (Shamela 9552)", author: "Ibn Rajab", confidence: high,
+       url: "https://shamela.ws/book/9552/736", claim: "ومن الحفاظ من ضعف حديثه عن عكرمة خاصة، وقال: يسند عنه عن ابن عباس ما يرسله غيره. وقال ابن المديني: رواية سماك عن عكرمة مضطربة"}
+  scope: {threshold: all}
+  expect:
+    chain_check:
+      sanad_id: 22256                      # al-Tirmidhi <- Qutayba <- … <- Simak <- 'Ikrima <- Ibn 'Abbas
+      ibn_hajar: {rulings_include: [from_shaykh], weak_nodes_include: [r3638]}
+      ibn_al_salah: {rulings_include: [from_shaykh], defects_include: [conditional]}
+
+- id: muanan-tier-4-covered-ibn-ishaq
+  group_id: 37
+  title: "لا صلاة لمن لم يقرأ بفاتحة الكتاب — Ibn Ishaq 'an Makhul in al-Tirmidhi, «حدثني مكحول» elsewhere in the report"
+  class: tadlis-tier-4-tasrih
+  source:
+    - {work: "Tabaqat al-Mudallisin, introduction, tier 4 (Shamela 1186)", author: "Ibn Hajar", confidence: high,
+       url: "https://shamela.ws/book/1186/10", claim: "من اتفق على أنه لا يحتج بشئ من حديثهم الا بما صرحوا فيه بالسماع"}
+    - {work: "Tabaqat al-Mudallisin, tier 4 no. 125, ed. al-Qaryuti p. 51 (Shamela 1186)", author: "Ibn Hajar", confidence: high,
+       url: "https://shamela.ws/book/1186/49", claim: "محمد بن إسحاق بن يسار المطلبي المدني صاحب المغازي صدوق مشهور بالتدليس عن الضعفاء والمجهولين"}
+    - {work: "al-Qira'a khalf al-imam no. 114, p. 57 (Shamela 1378)", author: "al-Bayhaqi", confidence: high,
+       url: "https://shamela.ws/book/1378/101",
+       claim: "حدَّثَنِي مَكْحُولٌ , بِهَذَا وَهَذَا إِسْنَادٌ صَحِيحٌ ذَكَرَ فِيهِ سَمَاعَ مُحَمَّد بْنِ إِسْحَاقَ مِنْ مَكْحُولٍ"}
+    - {work: "Jami' al-Tirmidhi no. 311, 1/343 (Shamela 7895)", author: "al-Tirmidhi", confidence: high,
+       url: "https://shamela.ws/book/7895/544", claim: "حَدِيثُ عُبَادَةَ حَدِيثٌ حَسَنٌ"}
+  scope: {threshold: all}
+  expect:
+    chain_check:
+      sanad_id: 22578                      # al-Tirmidhi <- Hannad <- 'Abda b. Sulayman <- Ibn Ishaq 'an Makhul <- Mahmud b. al-Rabi' <- 'Ubada
+      ibn_hajar: {notes_include: [muanan_covered_tasrih_tier_4], weak_nodes_exclude: [r6811]}
+      alt_tasrih_tier_3_only: {code: 2}    # without the hearing check on tier 4 the 'an is not repairable
+  notes: >
+    Ibn Ishaq (tier 4) narrates from Makhul with 'an in al-Tirmidhi's chain; the same link carries «حدثني» in
+    other chains of the report (al-Daraqutni, al-Bayhaqi), so his 'an is no defect and his node is not among
+    the positions to cover. The chain's remaining defect is Makhul's own uncovered 'an from Mahmud b. al-Rabi'
+    (Makhul is matched to the Tabaqat at tier 3; the default mudallis set is the union since PR 6), which a
+    witness repairs (hasan li-ghayrihi).
 
 # ---------------------------------------------------------------- lists
 
