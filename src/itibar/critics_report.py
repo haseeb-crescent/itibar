@@ -63,8 +63,8 @@ def write() -> str:
       "outputs. Every claim is quoted from the hadith text it closes (`out/verdicts.parquet`: the span, a substring "
       "of `hadiths.nass`, gated); names are resolved among the narrators of that hadith's own chain(s); each claim "
       "is tested as it is stated — a relative claim as relative. **A failed claim is reported with what breaks it, "
-      "never as the critic being wrong**: a route in a later book, a misresolved name and a route the critic judged "
-      "unreliable are different findings and are kept apart.\n")
+      "never as the critic being wrong**: a route in a later book, a misresolved name and a route the critic did "
+      "not accept are different findings and are kept apart.\n")
     # ---- 1. survey
     w("## 1. The survey: what the authors write after the matn\n")
     w("For every book whose author comments, the most frequent 3–5 token n-grams in the text after `matn_end` "

@@ -112,7 +112,8 @@ DECISIONS D97–D105).
   where many, with the independent lines drawn in colour and a filter in words (Everyone · Excluding abandoned
   narrators · Truthful and above · Trustworthy only) that says what changes; *Why this grade* — the best chain
   with each narrator's rating, the rule in one sentence, the weak point and the second chain that covers it;
-  the books, every chain, the classical notes, and *For specialists*: κ and κ_lower at each step, the cut
+  the books, every chain, the classical notes (with the critics' own remarks on the report, quoted from the
+  corpus text, from PR 7's `out/verdicts.parquet`), and *For specialists*: κ and κ_lower at each step, the cut
   vertices, common links, number class and dates, every receipt, the full graph and the record as JSON.
 * **A narrator page** says who he was (English and Arabic names, generation, dates in AH and CE, where he lived),
   his rating on Ibn Ḥajar's twelve-step scale with its meaning, tadlīs and conditional rulings, his place in
@@ -893,6 +894,8 @@ into 31 formula families: one row per claim in `out/verdicts.parquet` with the q
 `hadiths.nass` at its offsets, gated), the claim type, its slots and the names resolved among the narrators of the
 hadith's own chain(s) (D71's resolver; unresolved slots keep the reason). Each claim type is scored as stated, relative
 claims as relative (D91–D94); a failed claim is reported with what breaks it, never as the critic being wrong.
+`out/verdicts.parquet` also carries `quote`, `citation` and `result` (one line on what the scoring found, filled by
+`make verdicts`): the site's critics panel on each report page reads them.
 
 **Tafarrud** («لم يرو هذا الحديث عن X إلا Y», «تفرد به Y», «لا نعلم رواه عن X إلا Y»): every route from X to a book passes
 through Y in the group's bundle. Ibn al-Ṣalāḥ's division of the afrād (ص ٨٨, [22870/85](https://shamela.ws/book/22870/85)):
@@ -1073,10 +1076,10 @@ two-break rule 68. PR 6's `chain_choice` (44.8%) and `source_severe` are retired
 that sit on the wrong chains, and both were the editors' layer.
 
 **The critics' verdicts** (PR 7, [reports/verdicts.md](reports/verdicts.md), fig7). 38,569 claims in 27 books, every span a
-substring of its hadith text. Tafarrud, tested as relative claims on the bundle: al-Ṭabarānī's hold in 65.3% of 10,075
-testable (the named narrator a cut vertex of the routes through his teacher), al-Bazzār's 52.3%, Abū Nuʿaym's 50.9%; of
-al-Ṭabarānī's 3,492 failures 1,100 are broken by a chain in his own works, 1,546 by a book compiled before he died, 822 only
-by later books; in 238 failures (4.4%) every breaking chain is a misresolution candidate. al-Tirmidhī's «غريب» is gharīb by
+substring of its hadith text. Tafarrud, tested as relative claims on the bundle: al-Ṭabarānī's hold in 65.3% of 10,114
+testable (the named narrator a cut vertex of the routes through his teacher), al-Bazzār's 52.1%, Abū Nuʿaym's 50.8%; of
+al-Ṭabarānī's 3,514 failures 1,110 are broken by a chain in his own works, 1,556 by a book compiled before he died, 824 only
+by later books; in 239 failures (4.4%) every breaking chain is a misresolution candidate. al-Tirmidhī's «غريب» is gharīb by
 κ in 24.4% (the meaning group pools later books and other companions); his «وفي الباب» companions are found in the same
 group for 57.9% of names, with the sibling groups 71.0%, under the grandparent topic 79.2%, and PR 5's Dice floor keeps
 7.3% of those true pairs against 0.8% of non-pairs. al-Ḥākim's «على شرط الشيخين»: every man of his chain a narrator of

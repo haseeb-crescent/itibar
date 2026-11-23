@@ -23,7 +23,7 @@ out/verdicts_scored.parquet.
                whose compiler's teacher is X.
 
 A failed claim is reported with what breaks it, never as the critic being wrong: a later book, a misresolved name and a
-route the critic judged unreliable are different findings and are kept apart.
+route the critic did not accept are different findings and are kept apart.
 """
 
 from __future__ import annotations
@@ -107,15 +107,17 @@ class World:
         return self._graph[gid]
 
 
-def reaches_book_avoiding(succ: dict, x: str, y: str) -> bool:
-    if x == y:
+def reaches_book_avoiding(succ: dict, x: str, y) -> bool:
+    """A route from x to a book node avoiding y (a node or a set of nodes)."""
+    ys = {y} if isinstance(y, str) else set(y)
+    if x in ys:
         return False
     seen = {x}
     stack = [x]
     while stack:
         u = stack.pop()
         for w in succ.get(u, ()):
-            if w == y or w in seen:
+            if w in ys or w in seen:
                 continue
             if w.startswith("b"):
                 return True
@@ -222,24 +224,34 @@ def score_tafarrud(v: pd.DataFrame, W: World) -> pd.DataFrame:
                 res["status"] = "x_not_on_path"
             elif r.Y not in on_nodes:
                 res["status"] = "y_not_on_path"
-            elif reaches_book_avoiding(succ, r.X, r.Y):
-                res["status"] = "fails"
-                res.update(breaking_routes(W, gid, r, contd))
             else:
-                res["status"] = "holds"
+                # «إلا Y1 وY2»: the other named narrators directly below X in the group's chains join Y
+                ys = [r.Y]
+                alts = list(r.y_alt_ids) if r.y_alt_ids is not None and r.anchor == "stated" else []
+                if alts:
+                    xi = rid_int(r.X)
+                    below = {c[3][c[3].index(xi) - 1] for c in W.chains(gid) if xi in c[3] and c[3].index(xi) > 0}
+                    ys += [a for a in alts if rid_int(a) in below]
+                res["Y_set"] = ys
+                if reaches_book_avoiding(succ, r.X, ys):
+                    res["status"] = "fails"
+                    res.update(breaking_routes(W, gid, r, contd, ys))
+                else:
+                    res["status"] = "holds"
         out.append(res)
     s = pd.DataFrame(out)
     return t.merge(s, on="claim_id")
 
 
-def breaking_routes(W: World, gid: int, r, contd: dict) -> dict:
-    """The attested chains of the group through X that avoid Y below him."""
+def breaking_routes(W: World, gid: int, r, contd: dict, ys=None) -> dict:
+    """The attested chains of the group through X that avoid Y (every narrator of the Y slot) below him."""
     x, y = rid_int(r.X), rid_int(r.Y)
+    yset = {rid_int(a) for a in (ys or [r.Y])}
     crit_d = CRITIC_DEATH.get(r.critic_of_claim)
     rows = []
     for sid, hid, bid, ch in W.chains(gid):
         if r.X == "P":
-            if not ch or ch[-1] in GAPS | {MUBHAM} or y in ch:
+            if not ch or ch[-1] in GAPS | {MUBHAM} or yset & set(ch):
                 continue
             p = len(ch)
             if int(W.rw.loc[ch[-1], "rank_no"]) != 1:
@@ -248,7 +260,7 @@ def breaking_routes(W: World, gid: int, r, contd: dict) -> dict:
             if x not in ch:
                 continue
             p = ch.index(x)
-            if y in ch[:p]:
+            if yset & set(ch[:p]):
                 continue
         seg = ch[:p]
         if not seg:
@@ -537,6 +549,7 @@ def score(write: bool = True) -> dict[str, pd.DataFrame]:
     wafi, pairs = score_wafi(v, W)
     out["wafi"], out["pairs"] = wafi, pairs
     if write:
+        write_results(v, out)
         d = paths.OUT_DIR / "critics"
         d.mkdir(parents=True, exist_ok=True)
         for k, df in out.items():
@@ -547,6 +560,76 @@ def score(write: bool = True) -> dict[str, pd.DataFrame]:
                                         if isinstance(z, (list, np.ndarray)) else z)
             df2.to_parquet(d / f"{k}.parquet", index=False)
     return out
+
+
+def result_text(row, kind: str) -> str:
+    """One short line on what scoring found, for out/verdicts.parquet `result` (the site's critics panel; the
+    report page has a size budget, D81)."""
+    def ok(x):
+        return x is not None and x == x
+    if kind == "tafarrud":
+        st = row.get("status")
+        X = "the Prophet" if row.get("X") == "P" else row.get("X")
+        if st == "holds":
+            return f"holds: from {X}, every route passes {row.get('Y')}"
+        if st == "fails":
+            how = {"own_book": "in his own works", "earlier_book": "in an earlier book",
+                   "later_book_only": "in later books only", "spliced_route_only": "spliced"}.get(row.get("break_kind"), "")
+            return f"not here: {X} has another route ({how}, {int(row.get('n_breaking') or 0)})"
+        return {"x_not_on_path": "untestable: the anchor is on no route", "y_not_on_path": "untestable: the named "
+                "narrator is on no route", "unresolved": "untestable: a name unresolved",
+                "no_group": "untestable: no group"}.get(st, "not scored")
+    if kind == "gharib":
+        s = f"κ_all {int(row['kappa_all'])}" if ok(row.get("kappa_all")) else "no κ"
+        if ok(row.get("relative_holds")):
+            s += "; relative: " + ("one student" if row["relative_holds"] else "several students")
+        return s
+    if kind == "shart":
+        if not ok(row.get("men_ok")):
+            return "untestable"
+        s = "men in the named Ṣaḥīḥ" if row["men_ok"] else \
+            f"outside the named Ṣaḥīḥ: {len(row.get('men_not_in_sahih') or [])}"
+        return s + ("; pairings too" if row.get("pairs_ok") else "")
+    if kind == "attribution":
+        return "the Ṣaḥīḥ chain through him is in this group" if row.get("attr_status") == "teacher_found" else \
+            "not in this group"
+    if kind == "words":
+        parts = [f"{lab} {int(row[c])}" for c, lab in (("chain_template", "template"), ("chain_v1", "v1"),
+                                                         ("chain_v2_ibn_hajar_classical", "v2"),
+                                                         ("group_v2_ibn_hajar_classical", "group v2"), ("kappa_all", "κ"))
+                 if ok(row.get(c))]
+        return " · ".join(parts) or "not scored"
+    return "not scored"
+
+
+def write_results(v: pd.DataFrame, out: dict[str, pd.DataFrame]) -> None:
+    """Fill out/verdicts.parquet `result` from the scores (the claim's own row in each scored table)."""
+    nick = dict(data.views().sql("SELECT id, nickname FROM rawis").fetchall())
+
+    def nm(n):
+        return n if not (isinstance(n, str) and n.startswith("r")) else nick.get(int(n[1:]), n)
+    res: dict[int, str] = {}
+    t = out.get("tafarrud")
+    if t is not None and len(t):
+        t = t.copy()
+        t["X"] = t["X"].map(nm)
+        t["Y"] = [" / ".join(nm(y) for y in ys) if isinstance(ys, list) and ys else nm(y)
+                  for ys, y in zip(t.get("Y_set", [None] * len(t)), t["Y"])]
+        out = {**out, "tafarrud": t}
+    for kind in ("words", "attribution", "shart", "gharib", "tafarrud"):
+        df = out.get(kind)
+        if df is None or not len(df):
+            continue
+        for row in df.to_dict("records"):
+            res[int(row["claim_id"])] = result_text(row, kind)
+    wf = out.get("wafi")
+    if wf is not None and len(wf):
+        for cid, x in wf.groupby("claim_id"):
+            found = x["in_group"] | x["in_siblings"] | x["in_grandparent"]
+            res[int(cid)] = f"{int(found.sum())} of {len(x)} named companions found (group, siblings or topic)"
+    v = v.copy()
+    v["result"] = [res.get(int(c), "not scored") for c in v["claim_id"]]
+    v.to_parquet(verdicts.out_path(), index=False)
 
 
 def main() -> None:

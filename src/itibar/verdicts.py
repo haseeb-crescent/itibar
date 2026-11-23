@@ -318,11 +318,32 @@ def extract(con=None, books=None, write: bool = True, hadith_ids=None) -> pd.Dat
                 for k in ("x", "y", "z"):
                     rid, why = R.resolve(row[f"{k}_text"], ids_links) if row[f"{k}_text"] else (None, None)
                     row[f"{k}_id"], row[f"{k}_reason"] = rid, why
+                # «إلا Y1 وY2»: the other names of the Y slot (critics.py keeps those directly below X)
+                row["y_alt_ids"] = []
+                if row["y_text"]:
+                    parts = split_names(row["y_text"])
+                    if len(parts) > 1:
+                        if row["y_id"] is None:
+                            rid, why = R.resolve(parts[0], ids_links)
+                            if rid:
+                                row["y_id"], row["y_reason"] = rid, None
+                        for part in parts[1:]:
+                            rid, _ = R.resolve(part, ids_links)
+                            if rid and rid != row["y_id"] and rid not in row["y_alt_ids"]:
+                                row["y_alt_ids"].append(rid)
                 rows.append(row)
     df = pd.DataFrame(rows)
     if len(df):
         df = df.sort_values(["hadith_id", "span_start", "claim_type"]).reset_index(drop=True)
         df.insert(0, "claim_id", range(1, len(df) + 1))
+        # the columns the site's critics panel reads (src/itibar/site/data.py): the quote, where it is, and the
+        # result of scoring it (critics.score fills `result`; until then the claim is not scored)
+        bn = dict(con.sql("SELECT id, name FROM books").fetchall())
+        df["quote"] = df["span"]
+        df["citation"] = [f"{bn.get(b, b)}, p. {p}, hadith {h}" for b, p, h in
+                          zip(df["book_id"], df["page_no"], df["hadith_id"])]
+        df["url"] = None
+        df["result"] = "not scored"
     if write:
         out_path().parent.mkdir(parents=True, exist_ok=True)
         df.to_parquet(out_path(), index=False)

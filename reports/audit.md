@@ -1,6 +1,6 @@
 # itibar — source audit
 
-Generated 2026-11-23 18:20 by `make audit` (`itibar.audit`) from the Parquet copy of `hadith-kg.db` (Hugging Face `emadjumaah/hadith-kg` @ `8ae7e3d5be28`, sha256 `d528084321e71500…`). Upstream comparison values are from `DATA_REPORT.md` at `emadjumaah/hadith@b5a0cf2`.
+Generated 2026-11-23 18:41 by `make audit` (`itibar.audit`) from the Parquet copy of `hadith-kg.db` (Hugging Face `emadjumaah/hadith-kg` @ `8ae7e3d5be28`, sha256 `d528084321e71500…`). Upstream comparison values are from `DATA_REPORT.md` at `emadjumaah/hadith@b5a0cf2`.
 
 Every number below is recomputed. Where itibar's definition differs from upstream's, both are shown.
 
@@ -239,7 +239,7 @@ So `tabaka` is the source's generation scale anchored on Taqrib, not a copy of T
 | 12 | 2,923 | 947 | 28 | 1,948 | 91 | 0 | 2,832 |
 | 13+ | 16,135 | 8,832 | 15 | 7,288 | 4,319 | 0 | 11,816 |
 
-Raw-only values are ranges or approximations the build declined to parse, e.g. `130 - 121` (16), `290 - 281` (14), `300 - 291` (11), `23 - 13` (7), `40 - 20` (6), `158 - 136` (6), `35 - 23` (5), `530 - 540` (4). itibar keeps them beside the parsed value (terminus columns) and never parses them itself. Where both the teacher's death and the student's birth are known the continuity check uses years; otherwise it falls back to tabaka (§8.5).
+Raw-only values are ranges or approximations the build declined to parse, e.g. `130 - 121` (16), `290 - 281` (14), `300 - 291` (11), `23 - 13` (7), `158 - 136` (6), `40 - 20` (6), `35 - 23` (5), `60 - 41` (4). itibar keeps them beside the parsed value (terminus columns) and never parses them itself. Where both the teacher's death and the student's birth are known the continuity check uses years; otherwise it falls back to tabaka (§8.5).
 
 ## 5. Inline mentions and transmission words
 
@@ -300,27 +300,27 @@ A cluster can only change kappa inside a group where two of its members both occ
 | 47,654 | كُرَيْبٍ السَّحُولِيِّ | 6 | 6 | 10 |
 | 44,306 | مُحَمَّدِ بْنِ عَبْدِ الصَّمَدِ | 5 | 4 | 9 |
 | 51,756 | بِنْتِ كُرْزٍ | 5 | 5 | 7 |
-| 50,119 | أَبِي | 4 | 8 | 10 |
 | 44,304 | عَبْدُ الْمُؤْمِنِ | 4 | 2 | 7 |
-| 50,437 | السُّمَيْطِ الْبَجَلِيِّ | 2 | 6 | 6 |
-| 47,655 | عَبْدِ اللَّهِ بْنِ حُذَيْمٍ | 2 | 5 | 5 |
-| 40,138 | مُحَمَّدُ بْنُ عَمْرٍو | 2 | 1 | 3 |
-| 47,653 | النُّعْمَانِ بْنِ نُعَيْمٍ | 2 | 5 | 7 |
-| 60,137 | مَخْرَمَةَ الْعَبْدِيِّ | 2 | 5 | 5 |
+| 50,119 | أَبِي | 4 | 8 | 10 |
 | 40,741 | وَأَبُو مُسْلِمٍ | 2 | 2 | 2 |
 | 9,481 | غير معرف | 2 | 7 | 7 |
-| 50,436 | أَبِيهِ | 2 | 6 | 7 |
-| 44,305 | أَبَاهُ | 2 | 4 | 4 |
-| 26,043 | عِيسَى بْنُ الأَشْعَثِ | 2 | 4 | 8 |
 | 40,740 | وَمُحَمَّدُ بْنُ الْحُسَيْنِ | 2 | 2 | 2 |
-| 40,260 | قَيْسٌ السَّعِيدِيُّ | 1 | 4 | 4 |
+| 47,655 | عَبْدِ اللَّهِ بْنِ حُذَيْمٍ | 2 | 5 | 5 |
+| 40,138 | مُحَمَّدُ بْنُ عَمْرٍو | 2 | 1 | 3 |
+| 50,437 | السُّمَيْطِ الْبَجَلِيِّ | 2 | 6 | 6 |
+| 50,436 | أَبِيهِ | 2 | 6 | 7 |
+| 26,043 | عِيسَى بْنُ الأَشْعَثِ | 2 | 4 | 8 |
+| 44,305 | أَبَاهُ | 2 | 4 | 4 |
+| 47,653 | النُّعْمَانِ بْنِ نُعَيْمٍ | 2 | 5 | 7 |
+| 60,137 | مَخْرَمَةَ الْعَبْدِيِّ | 2 | 5 | 5 |
+| 40,142 | مُحَمَّدِ بْنِ مَطَرٍ | 1 | 2 | 2 |
 | 61,758 | الأَخْنَسِ بْنِ زُهَيْرٍ | 1 | 7 | 7 |
 | 60,136 | مَنْدُوسٍ | 1 | 6 | 6 |
-| 40,142 | مُحَمَّدِ بْنِ مَطَرٍ | 1 | 2 | 2 |
-| 45,025 | جَعْفَر بْنِ الْفُرَافِصَةِ الْحَنَفِيِّ | 1 | 4 | 4 |
-| 40,139 | سَعْدِ بْنِ عُثْمَانَ | 1 | 4 | 4 |
-| 60,677 | سَنْجَوَيْهِ النَّاهِكِيُّ | 1 | 3 | 3 |
 | 45,024 | سَعِيدِ بْنِ عَوْسَجَةَ | 1 | 3 | 3 |
+| 45,025 | جَعْفَر بْنِ الْفُرَافِصَةِ الْحَنَفِيِّ | 1 | 4 | 4 |
+| 60,677 | سَنْجَوَيْهِ النَّاهِكِيُّ | 1 | 3 | 3 |
+| 40,260 | قَيْسٌ السَّعِيدِيُّ | 1 | 4 | 4 |
+| 40,139 | سَعْدِ بْنِ عُثْمَانَ | 1 | 4 | 4 |
 
 Stubs touch 60 chain links. They get ordinal 0 (below every threshold but `all`) and are dropped in `kappa_lower`. Several names are relational (`أبي`, `أبيه`, `أباه`).
 
@@ -668,7 +668,7 @@ Every gold entry whose chains were inspected one by one (`deviation_key` and `kn
 Pooled: **14 of 843 in-scope chains (1.66%)** carry a documented misresolution or dropped link; misresolution alone 10 (1.19%).
 
 
-**From the critics' claims (PR 7, reports/verdicts.md §4).** Of 28,815 chains that break a tafarrud claim (up to 12 listed per failure, 5,355 failures), 613 (2.13%) carry, right below the critic's X, a namesake of the narrator the critic names (same ism and father, or the same name cluster), and 456 (1.58%) join X by a link the continuity rule marks incompatible: misresolution candidates in the sense of the table above. In 238 failures every breaking chain is one; these are where a homonym resolved wrongly may manufacture a second route.
+**From the critics' claims (PR 7, reports/verdicts.md §4).** Of 29,132 chains that break a tafarrud claim (up to 12 listed per failure, 5,408 failures), 614 (2.11%) carry, right below the critic's X, a namesake of the narrator the critic names (same ism and father, or the same name cluster), and 459 (1.58%) join X by a link the continuity rule marks incompatible: misresolution candidates in the sense of the table above. In 239 failures every breaking chain is one; these are where a homonym resolved wrongly may manufacture a second route.
 
 ## 11. Derived grade v2: corroboration, after the PR 5, PR 6 and PR 7 changes
 
@@ -3109,4 +3109,4 @@ Every designation of an unnamed person at a chain top (normalized, `lists.normal
 | وناسا من اصحاب رسول الله يقولون | companion | 1 |
 
 
-_Audit computed in 23.4s._
+_Audit computed in 21.6s._

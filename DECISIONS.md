@@ -870,7 +870,9 @@ chain, ambiguous, several names). *Alternative:* resolve against the whole `rawi
 edges, threshold everyone) every route from X to a book passes through Y. Where the claim leaves X or Y implicit, they are
 read off the hadith's own chain: «تفرد به Y» — X is Y's teacher there; «لا يروى عن X إلا بهذا الإسناد» and «لا نعلمه يروى
 عن X إلا من هذا الوجه» — Y is X's student there (X absent = the Prophet, Y the companion); «لا نعرفه / لا نعلمه / لم نكتبه
-إلا من حديث Y» — from the Prophet, only through Y; «ولا عنه إلا Z» — from the previous Y, only Z. A narrator on no
+إلا من حديث Y» — from the Prophet, only through Y; «ولا عنه إلا Z» — from the previous Y, only Z. «إلا Y1 وY2» (582 Y slots hold more than one name, some of them a trailing
+remark such as «وفلان يضعف»): the further names join Y when they resolve to a narrator directly below X in the group's
+chains, so the test is that {Y1, Y2} separate X from the books. A narrator on no
 Prophet → book route is *not on path* and the claim untestable there. A failure is classed by its strongest breaking chain:
 in the critic's own works, in a book whose compiler died before him, only in later books, or only a spliced route; a
 breaking chain is a *misresolution candidate* when the narrator below X in it is a namesake of Y (same ism and father, or
