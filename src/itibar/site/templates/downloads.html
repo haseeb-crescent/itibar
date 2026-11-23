@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+<header class="simple-heading"><h1>Downloads</h1><p>Pipeline outputs and figure data for inspection and reuse.</p></header>
+<div class="download-grid">
+  <section class="panel profile"><h2>Parquet outputs</h2>
+    <ul class="files">{% for name, size, description in files %}<li>
+      <div><a href="{{ name }}">{{ name }}</a><small class="quiet">{{ description }}</small></div><span class="quiet">{{ size }}</span>
+    </li>{% endfor %}</ul>
+  </section>
+  <section class="panel profile"><h2>Figure CSVs</h2>
+    <ul class="files">{% for stem, title, caption, csvs in figures %}{% for name in csvs %}<li><a href="{{ name }}.csv">{{ name }}.csv</a></li>{% endfor %}{% endfor %}</ul>
+    <p><a href="{{ root }}figures/">See the figures and captions</a></p>
+  </section>
+  <section class="panel profile" id="licences"><h2>Licences and attribution</h2>
+    <p>Data and figures are distributed under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>, derived from <a href="https://huggingface.co/datasets/emadjumaah/hadith-kg">emadjumaah’s Hadith Knowledge Graph</a>. <a href="DATA_LICENSE.md">Data licence notice</a>.</p>
+    <p>Code is <a href="LICENSE">MIT licensed</a>. The Arabic face, Noto Naskh Arabic, is distributed under the <a href="{{ root }}assets/fonts/OFL.txt">SIL Open Font License</a>.</p>
+  </section>
+  <section class="panel profile" id="cite"><h2>How to cite</h2>
+    <blockquote>Chaudhry, Haseeb. <i>itibar</i>, Hadith transmission atlas. Corpus analysis derived from the Hadith Knowledge Graph by emadjumaah.</blockquote>
+    <p>For an individual report, include the report number, its page URL, and the retrieval date. For a data build, include the <a href="{{ repo }}/commits/main">repository commit</a>.</p>
+  </section>
+</div>
+{% endblock %}

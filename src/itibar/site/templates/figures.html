@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block content %}
+<header class="simple-heading"><h1>Corpus figures</h1><p>Results across the full corpus, with the source CSVs for each figure.</p></header>
+<div class="figure-grid">
+  {% for stem, heading, caption, csvs in figures %}
+  <figure class="panel" id="{{ stem }}">
+    <figcaption><h2>Figure {{ loop.index }} · {{ heading }}</h2><p>{{ caption }}</p></figcaption>
+    <a href="{{ root }}downloads/{{ stem }}.svg"><img src="{{ root }}downloads/{{ stem }}.svg" loading="lazy" alt="{{ heading }}"></a>
+    <div class="file-links">{% for csv in csvs %}<a href="{{ root }}downloads/{{ csv }}.csv">{{ csv }}.csv</a>{% endfor %}<a href="{{ root }}downloads/{{ stem }}.png">PNG</a></div>
+  </figure>
+  {% endfor %}
+</div>
+{% endblock %}

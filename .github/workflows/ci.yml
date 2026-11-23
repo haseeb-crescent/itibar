@@ -4,6 +4,10 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   test:
@@ -11,6 +15,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
       - name: Install Graphviz
         run: sudo apt-get update && sudo apt-get install -y graphviz
       - name: Install dependencies
@@ -23,3 +30,36 @@ jobs:
             uv run itibar render 319
           ITIBAR_PARQUET_DIR=$PWD/tests/fixture/parquet ITIBAR_OUT_DIR=$PWD/.ci-out \
             uv run itibar show 319 > /dev/null
+      - name: Build and check the fixture site
+        run: make site-fixture
+
+  pages:
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    concurrency:
+      group: itibar-pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{steps.deployment.outputs.page_url}}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - uses: actions/configure-pages@v5
+      - name: Rebuild the full corpus outputs
+        run: |
+          make data bundles
+          uv run python -c 'from itibar.narrators import build; build()'
+      - name: Build and check the publish tree
+        run: make site site-check
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: site/dist
+      - uses: actions/deploy-pages@v4
+        id: deployment

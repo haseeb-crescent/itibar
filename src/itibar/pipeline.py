@@ -89,6 +89,46 @@ def sibling_index(group_chains: dict[int, list[load.Chain]], gids: list[int], co
     return siblings.SiblingIndex.build(rows, sib, list(params), matn.Matns(hids))
 
 
+def structure_receipt(B: bundle_mod.Bundle, S: structure.Structure, rec: dict, scale) -> str:
+    """Persist evidence the site can show without running any of the graph algorithms."""
+    evidence = {}
+    for name, ordinal in scale.thresholds.items():
+        routes = [{"nodes": route, "sanads": [min(o[0] for o in B.edges[u, v].occurrences)
+                                             for u, v in zip(route, route[1:])]}
+                  for route in S.routes_by[name]]
+        evidence[name] = [
+            {"check": "Independent routes", "rule": "Minimum internal vertex cut from the Prophet to the books. "
+             "The same number of vertex-disjoint paths certifies the cut (Menger’s theorem).",
+             "data": {"minimum_ordinal": ordinal, "cut": S.cut_set[name], "routes": routes},
+             "result": S.kappa[name]},
+            {"check": "Lower bound", "rule": "Take the smallest κ across three hypotheses. All drop stubs. "
+             "The merged graph joins same-name clusters and unnamed persons per student. The third drops "
+             "continuity-incompatible links from the unmerged graph.",
+             "data": {**S.lower_values[name], "attained_by": S.kappa_lower_source[name]},
+             "result": S.kappa_lower[name]},
+            {"check": "Cut vertices", "rule": "Follow the dominators of the book sink from the Prophet down.",
+             "data": {"minimum_ordinal": ordinal}, "result": S.cut_vertices_by[name]},
+        ]
+    cfg = config.load("structure")["number_class"]
+    evidence["structure"] = [
+        {"check": "Number class", "rule": "Apply the configured number ladder to the selected basis. For κ = 1, "
+         "the topmost cut vertex distinguishes the two gharīb classes.",
+         "data": {"basis": cfg["basis"], "kappa_all": S.kappa["all"], "tawatur_n": cfg["tawatur_n"],
+                  "topmost_cut_kind": S.gharib_cut_kind, "minimum_width": S.min_width},
+         "result": S.number_class},
+        {"check": "Common links", "rule": "Keep partial common links with no partial common-link ancestor. "
+         "A branch qualifies when it reaches a compiler or book directly or carries a branching narrator.",
+         "data": {"required_branches": config.load("structure")["structure"]["common_link_k"],
+                  "qualifying_branches": S.common_link_branches, "cycle_tie": S.cl_in_cycle},
+         "result": S.common_links},
+        {"check": "Terminus", "rule": "Read the dates of the cut vertices and common links from rawis. "
+         "Keep the original date strings alongside parsed years.",
+         "data": {"cut_vertices": S.cut_vertices, "common_links": S.common_links},
+         "result": {k: rec[k] for k in ("cut_death_year", "cut_death_year_raw", "cl_death_year", "cl_death_year_raw")}},
+    ]
+    return json.dumps(evidence, ensure_ascii=False, separators=(",", ":"))
+
+
 def analyse_group(gid: int, chains: list[load.Chain], corpus: load.Corpus, mg: dict,
                   sibling_idx: siblings.SiblingIndex | None = None) -> dict:
     """Returns {'record': {...}, 'nodes': [...], 'edges': [...], 'chains': [...]}."""
@@ -320,6 +360,7 @@ def analyse_group(gid: int, chains: list[load.Chain], corpus: load.Corpus, mg: d
         "n_chains_maxrank_agree_full": sum(g.agree_full for g in cgr),
         "n_chains_maxrank_agree_derived": sum(g.agree_derived for g in cgr),
     })
+    rec["receipt_structure"] = structure_receipt(B, S, rec, scale)
 
     # ---- bundle rows
     nodes_rows = []
@@ -346,6 +387,7 @@ def analyse_group(gid: int, chains: list[load.Chain], corpus: load.Corpus, mg: d
             "words": [o[2] for o in occ], "words_raw": [o[3] for o in occ],
             "word_classes": [o[4] for o in occ],
             "on_path": u in on and v in on,
+            "threshold_mask": S.edge_thresholds.get((u, v), 0),
             "continuity": S.edge_continuity.get((u, v)),
             "continuity_basis": S.edge_basis.get((u, v)),
             "muanan_mudallis": S.edge_muanan.get((u, v)),

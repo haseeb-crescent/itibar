@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% from 'components.html' import lookup with context %}
+{% block content %}
+<section class="home-hero">
+  <p class="eyebrow">Hadith transmission atlas</p>
+  <h1>How hadith reached the books</h1>
+  <p class="home-intro">An isnad names the people who passed down a report. itibar brings those chains together so you can trace where a report’s routes converge, where they branch, and how each number was calculated.</p>
+  {{ lookup(root, 'corpus-query', large=true) }}
+  <p class="quiet">Explore {{ number(total) }} meaning groups, including {{ number(chained) }} with recorded chains.</p>
+</section>
+{% if example %}
+<section class="worked">
+  <div>
+    <p class="eyebrow">Worked example</p>
+    <h2>Actions are only by intentions</h2>
+    <p>In the classical account through ʿUmar, the report passed through a single narrator for four generations before spreading among Yaḥyā ibn Saʿīd’s students.</p>
+    <p>itibar’s scoped gold-set check finds κ = <strong>{{ example.scoped['κ all'] }}</strong> after accounting for the documented deviations. The report page gives that check alongside the full bundle.</p>
+    <a class="button" href="{{ root }}reports/319/">Explore the intentions report</a>
+  </div>
+  <div class="worked-routes" aria-label="Classical route through Umar">
+    <div lang="ar" dir="rtl">النبي ﷺ</div>
+    <div lang="ar" dir="rtl">عمر بن الخطاب</div>
+    <div lang="ar" dir="rtl">علقمة بن وقاص</div>
+    <div lang="ar" dir="rtl">محمد بن إبراهيم التيمي</div>
+    <div lang="ar" dir="rtl">يحيى بن سعيد الأنصاري</div>
+    <div class="branch-ends"><span></span><span></span><span></span><span></span><span></span></div>
+  </div>
+</section>
+{% endif %}
+<section class="home-links" aria-label="Explore the corpus">
+  <a href="{{ root }}method/"><h2>Method</h2><p>How the bundles, counts, and derived codes are built.</p></a>
+  <a href="{{ root }}gold/"><h2>Gold set</h2><p>Classical cases checked against the corpus.</p></a>
+  <a href="{{ root }}figures/"><h2>Figures</h2><p>Patterns across the corpus and the data behind them.</p></a>
+</section>
+{% endblock %}

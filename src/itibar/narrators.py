@@ -41,6 +41,10 @@ def build(con=None) -> pd.DataFrame:
          btg AS (SELECT rawi_id, count(DISTINCT group_id) AS groups_book_transmitter_role FROM n0
                  WHERE on_path AND bt AND NOT nr GROUP BY 1),
          nn AS (SELECT * FROM n0 WHERE nr OR NOT bt),
+         all_roles AS (SELECT rawi_id,
+                              count(DISTINCT group_id) FILTER (WHERE on_path) AS groups_on_route,
+                              count(DISTINCT group_id) FILTER (WHERE cut_vertex) AS groups_cut_all_roles
+                       FROM n0 GROUP BY 1),
          thq AS (SELECT group_id, unnest(cut_vertices_thiqa_up) AS node FROM r WHERE status = 'ok'),
          agg AS (SELECT rawi_id,
                         count(DISTINCT group_id) FILTER (WHERE on_path) AS groups_on_path,
@@ -62,12 +66,14 @@ def build(con=None) -> pd.DataFrame:
            w.has_tadlis::BOOLEAN AS mudallis, w.is_stub::BOOLEAN AS stub,
            a.groups_in_bundle, a.groups_on_path, a.groups_cut_all, coalesce(c.groups_cut_thiqa_up, 0) AS groups_cut_thiqa_up,
            a.groups_common_link, a.groups_pcl_k2, a.groups_in_bypass, a.groups_compiler_role,
+           ar.groups_on_route, ar.groups_cut_all_roles,
            coalesce(b.groups_book_transmitter_role, 0) AS groups_book_transmitter_role,
            coalesce(i.incoming_links, 0) AS incoming_links, coalesce(i.incoming_muanan, 0) AS incoming_muanan,
            coalesce(i.incoming_word_known, 0) AS incoming_word_known,
            CASE WHEN w.has_tadlis = 1 AND coalesce(i.incoming_word_known, 0) > 0
                 THEN i.incoming_muanan / i.incoming_word_known END AS muanan_share
     FROM agg a LEFT JOIN rawis w ON w.id = a.rawi_id LEFT JOIN cth c USING (rawi_id) LEFT JOIN inc i USING (rawi_id)
+         LEFT JOIN all_roles ar USING (rawi_id)
          LEFT JOIN btg b USING (rawi_id)
     ORDER BY a.groups_common_link DESC, a.groups_on_path DESC, a.rawi_id"""
     df = d.sql(q).df()

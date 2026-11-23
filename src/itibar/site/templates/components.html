@@ -1,0 +1,57 @@
+{% macro arab(value, class='') %}<bdi lang="ar" dir="rtl" class="{{ class }}">{{ value }}</bdi>{% endmacro %}
+{% macro lookup(root, input_id, value='', large=false) %}
+<form class="lookup{% if large %} lookup-large{% endif %}" action="{{ root }}search/" role="search">
+  <label for="{{ input_id }}">Search by Arabic text, narrator, or book and hadith number</label>
+  <div><input id="{{ input_id }}" type="search" name="q" dir="auto" autocomplete="off" maxlength="180"
+              placeholder="إنما الأعمال · البخاري ١" value="{{ value }}" required><button>Search</button></div>
+</form>
+{% endmacro %}
+{% macro chain_link(root, id, other=none) -%}
+<a href="{% if other is not none %}{{ root }}reports/{{ other }}/{% endif %}#chain-{{ id }}">Chain {{ id }}</a>
+{%- endmacro %}
+{% macro grade(code, label) -%}
+{% if code is not none %}<strong class="grade-code">{{ code }}</strong>{% endif %}{% if label %} {{ arab(label, 'grade-label') }}{% endif %}{% if code is none and not label %}<span class="quiet">Unrecorded</span>{% endif %}
+{%- endmacro %}
+{% macro gold_case(case, root, linked=false) %}
+<div class="gold-case" id="{{ case.id }}">
+  {% if linked %}<h2><a href="{{ root }}reports/{{ case.group_id }}/#{{ case.id }}" dir="auto">{{ case.title }}</a></h2>
+  {% else %}<h3 dir="auto">{{ case.title }}</h3>{% endif %}
+  <p class="quiet">Classical case <span class="middot">·</span> {{ case.class | replace('-', ' ') }}</p>
+  {% for source in case.source %}
+  <div class="gold-source"><p dir="auto">{{ source.claim }}</p>
+    <p class="quiet">{{ source.author }}, <cite>{{ source.work }}</cite>{% if source.url and clean_url(source.url) %} · <a href="{{ source.url }}">Source text</a>{% endif %}{% if source.confidence == 'medium' %} · Citation marked for edition check{% endif %}</p>
+  </div>
+  {% endfor %}
+  <div class="gold-result">
+    <strong>itibar’s scoped result</strong>
+    <p>Checks {{ 'passed' if case.scoped.pass == 'yes' else 'failed' }}.
+    {% if case.scoped['κ all'] %}Independent routes (κ) <strong>{{ case.scoped['κ all'] }}</strong> with everyone and <strong>{{ case.scoped['κ thiqa+'] }}</strong> with thiqa and above.{% endif %}
+    {% if case.scoped['cut vertices (all)'] %} Cut vertices {{ arab(case.scoped['cut vertices (all)']) }}.{% endif %}</p>
+    <details><summary>Scope and validation evidence</summary>
+      {% if case.notes %}<p dir="auto">{{ case.notes }}</p>{% endif %}
+      <dl class="pairs">
+        {% if case.scope is defined and case.scope.companion is defined %}<dt>Companion in scope</dt><dd>{% if case.companion_page %}<a href="{{ root }}narrators/{{ case.scope.companion }}/">Narrator {{ case.scope.companion }}</a>{% else %}Narrator {{ case.scope.companion }}{% endif %}</dd>{% endif %}
+        {% for key in ['scope chains (kept)', 'κ ≥matruk', 'κ saduq+', 'κ_lower all', 'attained by', 'companions'] %}
+        {% if case.scoped[key] %}<dt>{{ key }}</dt><dd>{{ case.scoped[key] }}</dd>{% endif %}
+        {% endfor %}
+        {% for key in ['number class (κ)', 'by width', 'v2 ibn_hajar', 'v2 ibn_al_salah', 'chain-level'] %}
+        {% if case.mechanism[key] and case.mechanism[key] != 'None' %}<dt>{{ key }}</dt><dd>{{ case.mechanism[key] }}</dd>{% endif %}
+        {% endfor %}
+      </dl>
+      {% if case.known_deviations and not linked %}
+      <h4>Documented deviations</h4>
+      <ul>{% for item in case.known_deviations %}<li>{{ item.reason }}
+        <span class="reference-links">{% for sid in item.sanad_ids %}{{ chain_link(root, sid) }}{% if not loop.last %}, {% endif %}{% endfor %}</span>
+      </li>{% endfor %}</ul>
+      {% endif %}
+    </details>
+  </div>
+</div>
+{% endmacro %}
+{% macro report_links(root, gids, catalog) %}
+<ul class="report-links">
+{% for gid in gids %}
+<li><a href="{{ root }}reports/{{ gid }}/">{{ arab(catalog[gid].opening or 'Report') }}<span class="quiet">#{{ gid }}</span></a></li>
+{% endfor %}
+</ul>
+{% endmacro %}

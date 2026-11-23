@@ -8,4 +8,6 @@ __pycache__/
 .ci-out/
 .pytest_cache/
 figures/bundles/
+/site/dist/
+/site/.site-build-*/
 *.parquet.tmp

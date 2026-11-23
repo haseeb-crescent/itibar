@@ -736,3 +736,44 @@ their conditions name.
 **D79. Versions.** `structure.version: 5`, `derive.version: 4`; stages 0–7 set the new switches off
 (`unnamed_companion.enabled: false`, `conditional: false`, `mudallis_set: source_flag`) and stage 7 reproduces PR 5's
 records group by group (κ, cut vertices, v2 codes and rules, receipts).
+
+## Site
+
+**D80. Static pages with precomputed bundle layouts.** Each report and every named narrator on a
+route gets an HTML page. Python lays out the stored generations and writes a bounded bundle view
+and its expandable drawing as compact JSON. The overview contracts runs of at least three
+unmarked single-strand narrators where the drawing stays unbranched. When it hits 220 nodes it
+prioritizes marked nodes and stored paths, then samples across generations by chain occurrence.
+Canvas draws the positions, cut and common-link marks, and the stored threshold edge masks.
+The browser reads the same κ values and receipts as the page. The pipeline now persists
+`receipt_structure` with threshold cuts, disjoint paths, chain citations for their edges, the
+lower-bound inputs, number class, common-link branches and dates. The census includes route and
+cut counts covering book-role occurrences alongside its existing counts.
+*Alternative:* a Graphviz SVG per report and threshold, with repeated node labels and fixed layouts.
+
+**D81. Published size and page budgets.** The first full tree measured 1.47 GB with plain JSON
+and HTML for every narrator-list continuation. The build now stores per-report drawings, chains
+and receipts as gzip JSON and pages the longer narrator lists through gzip JSON. They are read
+on demand using the browser's gzip support. Report and narrator landing pages stay in HTML.
+The full build is about **825 MB** across **64,866 HTML pages**, including **20,745** reports
+and **44,114** narrators. Reports account for about 450 MB, narrators 258 MB, downloads 102 MB,
+and search 16 MB. `make site-check` enforces the
+[1 GB GitHub Pages cap](https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits)
+using the sum of published file sizes. It also caps HTML and compressed drawings at 192 KiB
+each, and report HTML plus its initial drawing at 256 KiB. Those budgets leave room for the
+long residue report and the densest graph while keeping initial phone loads bounded. The
+largest HTML measured about 141 KB (residue). Group 2 had the largest initial report at
+about 189 KB, including a 115 KB drawing. *Alternative:* publish links and images as expanded
+HTML and SVG and rely on HTTP compression, which reduces transfer size while leaving the
+publish tree over its storage budget.
+
+**D82. Sharded Arabic search.** The Python index uses `lists.normalize` v1 on each opening,
+the representative full text shown on its page, and both sourced narrator names. The browser's
+matching normalizer is tested against Python. Queries intersect exact Arabic tokens and rank
+opening and name hits first. Sorted posting lists use variable-length differences,
+with individual files for high-frequency tokens and hashed shards for the rest. Result labels
+are in blocks of 24 records. A separate index covers source book and hadith number pairs,
+with aliases for common collection names and Arabic and Western digit forms. Five cold-index
+queries covering opening, full text, name, and Arabic and English citations returned in
+819–826 ms on a 390-pixel Chrome viewport with 4× CPU throttling, 100 ms latency, and 4 Mbit/s
+download. *Alternative:* a single browser search index with all text and titles loaded up front.
