@@ -52,6 +52,14 @@ the column after it names the first hypothesis attaining it.
 | simak-from-ikrima | 407 | conditional-from-shaykh | yes | 258 (258) | 8 | 8 | 4 | 4 | 8 | unmerged | 10 |  |
 | muanan-tier-4-covered-ibn-ishaq | 37 | tadlis-tier-4-tasrih | yes | 763 (763) | 17 | 16 | 11 | 9 | 17 | unmerged | 17 |  |
 | kattani-man-kadhaba | 1 | list-match | yes | 1690 (1690) | 63 | 55 | 34 | 22 | 60 | nocompat | 66 |  |
+| tabarani-tafarrud-nafi-ibn-ishaq | 12641 | critic-tafarrud | yes | 4 (4) | 1 | 1 | 0 | 0 | 1 | unmerged | 2 | سليمان بن أحمد الطبراني |
+| tabarani-tafarrud-ibn-suqa-hafs | 10011 | critic-tafarrud | yes | 4 (4) | 1 | 0 | 0 | 0 | 1 | unmerged | 1 | عبد الله بن عمر العدوي, وبرة بن عبد الرحمن المسلي, محمد بن سوقة الغنوي, حفص بن أبي داود الأسدي, يحيى بن سعيد العطار, أحمد بن محمد الأزدي |
+| tabarani-tafarrud-broken-by-later-book | 11754 | critic-tafarrud | yes | 3 (3) | 1 | 1 | 0 | 0 | 1 | unmerged | 1 | أنس بن مالك الأنصاري, الربيع بن أنس البكري, عيسى بن ماهان الرازي |
+| tirmidhi-hasan-gharib-kappa | 11435 | critic-tirmidhi | yes | 3 (3) | 1 | 1 | 0 | 0 | 1 | unmerged | 1 | أنس بن مالك الأنصاري, سعيد بن المسيب القرشي, علي بن زيد القرشي, عبد الله بن المثنى الأنصاري, محمد بن عبد الله الأنصاري, مسلم بن حاتم الأنصاري |
+| tirmidhi-hasan-sahih-kappa | 14519 | critic-tirmidhi | yes | 3 (3) | 1 | 1 | 1 | 1 | 1 | unmerged | 1 | عاصم بن عدي العجلاني, عدي بن عاصم العجلاني, أبو بكر بن عمرو الأنصاري, عبد الله بن أبي بكر الأنصاري, مالك بن أنس الأصبحي, عبد الرزاق بن همام الحميري |
+| tirmidhi-wafi-al-bab-siblings | 9736 | critic-wafi | yes | 4 (4) | 1 | 0 | 0 | 0 | 1 | unmerged | 1 | سمرة بن جندب الفزاري, الحسن البصري, إسماعيل بن مسلم المكي |
+| hakim-shart-shaykhayn-holds | 13468 | critic-shart | yes | 3 (3) | 1 | 1 | 1 | 1 | 1 | unmerged | 1 | أبو هريرة الدوسي, سليمان بن مهران الأعمش, محمد بن ميمون المروزي |
+| hakim-shart-corrected-by-dhahabi | 437 | critic-shart | yes | 243 (243) | 15 | 14 | 10 | 6 | 12 | nocompat | 18 |  |
 
 ## Bucket-2 mechanisms (scoped values)
 
@@ -104,6 +112,14 @@ both rulesets for the group's v2 chain; for chain-level entries, the selected ch
 | simak-from-ikrima | mashhur | mashhur | [] | False | sahih_li_dhatihi → 0 | sahih_li_dhatihi → 0 |  sanad 22256: ibn_hajar hasan_li_ghayrihi, defects ['level_5+conditional'], notes [] |
 | muanan-tier-4-covered-ibn-ishaq | mutawatir_count | mashhur | [] | True | sahih_li_dhatihi → 0 | sahih_li_dhatihi → 0 |  sanad 22578: ibn_hajar hasan_li_ghayrihi, defects ['mudallis_muanan_tier_3'], notes ['muanan_covered_tasrih_tier_4'] |
 | kattani-man-kadhaba | mutawatir_count | mutawatir_count | [] | True | sahih_li_dhatihi → 0 | sahih_li_dhatihi → 0 |  |
+| tabarani-tafarrud-nafi-ibn-ishaq | gharib_nisbi | gharib_nisbi | [2, 3, 5, 6, 8] | False | not_repairable → 2 | not_repairable → 2 |  |
+| tabarani-tafarrud-ibn-suqa-hafs | gharib_mutlaq | gharib_mutlaq | [1, 4, 5, 8, 9, 11] | False | fatal → 4 | fatal → 4 |  |
+| tabarani-tafarrud-broken-by-later-book | gharib_mutlaq | gharib_mutlaq | [1, 5, 7, 8, 9, 11] | False | daif → 2 | daif → 2 |  |
+| tirmidhi-hasan-gharib-kappa | gharib_mutlaq | gharib_mutlaq | [1, 2, 4, 6, 9, 10, 12] | False | daif → 2 | daif → 2 |  |
+| tirmidhi-hasan-sahih-kappa | gharib_mutlaq | gharib_mutlaq | [1, 3, 7, 9, 10, 11] | False | sahih_li_dhatihi → 0 | sahih_li_dhatihi → 0 |  |
+| tirmidhi-wafi-al-bab-siblings | gharib_mutlaq | gharib_mutlaq | [1, 3, 5, 8, 9] | False | fatal → 3 | fatal → 3 |  |
+| hakim-shart-shaykhayn-holds | gharib_mutlaq | gharib_mutlaq | [1, 5, 7, 11, 12] | False | daif → 2 | daif → 2 |  |
+| hakim-shart-corrected-by-dhahabi | mutawatir_count | mashhur | [] | False | sahih_li_dhatihi → 0 | sahih_li_dhatihi → 0 |  |
 
 ## Whole-group records
 
@@ -151,3 +167,11 @@ both rulesets for the group's v2 chain; for chain-level entries, the selected ch
 - **simak-from-ikrima** (group 407, whole group): n_chains=258, kappa_all=8, kappa_above_matruk=8, kappa_saduq_up=4, kappa_thiqa_up=4, kappa_nocompat_all=8, kappa_lower_all=8, kappa_lower_source_all=unmerged, companions=10, sahaba_qty=12
 - **muanan-tier-4-covered-ibn-ishaq** (group 37, whole group): n_chains=763, kappa_all=17, kappa_above_matruk=16, kappa_saduq_up=11, kappa_thiqa_up=9, kappa_nocompat_all=17, kappa_lower_all=17, kappa_lower_source_all=unmerged, companions=17, sahaba_qty=19
 - **kattani-man-kadhaba** (group 1, whole group): n_chains=1690, kappa_all=63, kappa_above_matruk=55, kappa_saduq_up=34, kappa_thiqa_up=22, kappa_nocompat_all=60, kappa_lower_all=60, kappa_lower_source_all=nocompat, companions=66, sahaba_qty=68
+- **tabarani-tafarrud-nafi-ibn-ishaq** (group 12641, whole group): n_chains=4, kappa_all=1, kappa_above_matruk=1, kappa_saduq_up=0, kappa_thiqa_up=0, kappa_nocompat_all=1, kappa_lower_all=1, kappa_lower_source_all=unmerged, companions=2, sahaba_qty=2
+- **tabarani-tafarrud-ibn-suqa-hafs** (group 10011, whole group): n_chains=4, kappa_all=1, kappa_above_matruk=0, kappa_saduq_up=0, kappa_thiqa_up=0, kappa_nocompat_all=1, kappa_lower_all=1, kappa_lower_source_all=unmerged, companions=1, sahaba_qty=1
+- **tabarani-tafarrud-broken-by-later-book** (group 11754, whole group): n_chains=3, kappa_all=1, kappa_above_matruk=1, kappa_saduq_up=0, kappa_thiqa_up=0, kappa_nocompat_all=1, kappa_lower_all=1, kappa_lower_source_all=unmerged, companions=1, sahaba_qty=1
+- **tirmidhi-hasan-gharib-kappa** (group 11435, whole group): n_chains=3, kappa_all=1, kappa_above_matruk=1, kappa_saduq_up=0, kappa_thiqa_up=0, kappa_nocompat_all=1, kappa_lower_all=1, kappa_lower_source_all=unmerged, companions=1, sahaba_qty=1
+- **tirmidhi-hasan-sahih-kappa** (group 14519, whole group): n_chains=3, kappa_all=1, kappa_above_matruk=1, kappa_saduq_up=1, kappa_thiqa_up=1, kappa_nocompat_all=1, kappa_lower_all=1, kappa_lower_source_all=unmerged, companions=1, sahaba_qty=1
+- **tirmidhi-wafi-al-bab-siblings** (group 9736, whole group): n_chains=4, kappa_all=1, kappa_above_matruk=0, kappa_saduq_up=0, kappa_thiqa_up=0, kappa_nocompat_all=1, kappa_lower_all=1, kappa_lower_source_all=unmerged, companions=1, sahaba_qty=2
+- **hakim-shart-shaykhayn-holds** (group 13468, whole group): n_chains=3, kappa_all=1, kappa_above_matruk=1, kappa_saduq_up=1, kappa_thiqa_up=1, kappa_nocompat_all=1, kappa_lower_all=1, kappa_lower_source_all=unmerged, companions=1, sahaba_qty=1
+- **hakim-shart-corrected-by-dhahabi** (group 437, whole group): n_chains=243, kappa_all=15, kappa_above_matruk=14, kappa_saduq_up=10, kappa_thiqa_up=6, kappa_nocompat_all=12, kappa_lower_all=12, kappa_lower_source_all=nocompat, companions=18, sahaba_qty=19
