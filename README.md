@@ -84,6 +84,26 @@ mechanical cause, is [reports/residue.md](reports/residue.md); the bucket-2 repo
 [reports/chapters.md](reports/chapters.md) and [reports/pools/](reports/pools/); the reading behind the
 shāhid overlap floor is [reports/shahid_inspection.md](reports/shahid_inspection.md).
 
+## The site
+
+Browse [itibar on GitHub Pages](https://haseeb-crescent.github.io/itibar/). Search Arabic report
+openings and full texts, narrator names, or a book and hadith number. Each report brings together
+its transmission bundle, chains, structural receipts, and both derived and recorded grades.
+Narrator pages trace each person's roles back to the reports. The home page works through
+“Actions are only by intentions,” with the classical scope through ʿUmar beside the full bundle.
+
+```bash
+make data
+make bundles narrators
+make site site-check
+uv run python -m http.server 8000 --directory site/dist
+```
+
+Open [the local site](http://localhost:8000/). Build fresh Parquet outputs to include the structural
+receipts and bundle threshold masks. `make ci` followed by `make site-fixture` builds and checks the
+site on the committed fixture. The Actions workflow rebuilds and publishes the full corpus from
+`main`. See the [site brief](docs/prompts/site.md) and [representation and size decisions](DECISIONS.md#site).
+
 ## Reproduce from scratch
 
 Requires [uv](https://docs.astral.sh/uv/) (Python 3.12 is fetched by uv) and Graphviz (`dot`) for rendering.

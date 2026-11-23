@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% from 'components.html' import lookup with context %}
+{% block head %}<script type="module" src="{{ root }}assets/search.js"></script>{% endblock %}
+{% block content %}
+<header class="simple-heading"><h1>Search the corpus</h1>{{ lookup(root, 'query', large=true) }}</header>
+<div id="search-results">
+  <p id="search-status" class="quiet" aria-live="polite">Try a few words, a name, or a citation.</p>
+  <ul class="search-examples"><li><a href="?q=إنما+الأعمال">إنما الأعمال</a></li><li><a href="?q=يحيى+بن+سعيد">يحيى بن سعيد</a></li><li><a href="?q=Bukhari+1">Bukhari 1</a></li></ul>
+  <ul class="search-list"></ul>
+  <div class="pagination" hidden><button type="button" data-prev>Previous</button><span></span><button type="button" data-next>Next</button></div>
+  <noscript><p>Search requires JavaScript. You can browse reports from the <a href="{{ root }}gold/">gold set</a>.</p></noscript>
+</div>
+{% endblock %}

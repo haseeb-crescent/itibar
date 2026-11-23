@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="Explore how hadith reached the books, route by route, with evidence from the itibar corpus.">
+<title>{{ title }} · itibar</title>
+<link rel="stylesheet" href="{{ root }}assets/site.css">
+{% block head %}{% endblock %}
+</head>
+<body data-root="{{ root }}">
+<a class="skip" href="#content">Skip to content</a>
+<header class="site-header">
+  <div class="shell header-inner">
+    <a class="brand" href="{{ root }}" aria-label="itibar home">itibar <span lang="ar" dir="rtl">اعتبار</span></a>
+    <nav aria-label="Main menu">
+      <a href="{{ root }}search/">Search</a><a href="{{ root }}method/">Method</a><a href="{{ root }}figures/">Figures</a><a href="{{ root }}gold/">Gold set</a><a href="{{ root }}downloads/">Downloads</a>
+    </nav>
+  </div>
+</header>
+<main id="content" class="shell {% block main_class %}{% endblock %}">
+{% block content %}{% endblock %}
+</main>
+<footer class="site-footer"><div class="shell footer-inner">
+  <span>itibar <span class="quiet">·</span> Hadith transmission atlas</span>
+  <div><a href="{{ root }}residue/">Residue report</a><a href="{{ repo }}">Source code</a><a href="{{ root }}downloads/#licences">Licences</a></div>
+</div></footer>
+</body>
+</html>

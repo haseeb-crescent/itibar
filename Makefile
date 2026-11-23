@@ -9,7 +9,7 @@ PYTEST  := $(UV) run pytest
 FIXTURE := tests/fixture/parquet
 CI_OUT  ?= .ci-out
 
-.PHONY: all setup data book-compilers audit words matn bundles stages narrators lists lists-fetch mudallisin mudallisin-fetch provenance-fetch conditional conditional-fetch residue residue-fetch shahid-inspection chapters pools gold gates test figures fixture ci render-gold clean
+.PHONY: all setup data book-compilers audit words matn bundles stages narrators lists lists-fetch mudallisin mudallisin-fetch provenance-fetch conditional conditional-fetch residue residue-fetch shahid-inspection chapters pools gold gates test figures fixture ci site site-check site-fixture render-gold clean
 
 all: data conditional bundles stages audit narrators lists chapters pools residue gold figures
 
@@ -123,6 +123,19 @@ ci:
 	ITIBAR_PARQUET_DIR=$(CURDIR)/$(FIXTURE) ITIBAR_OUT_DIR=$(CURDIR)/$(CI_OUT) $(PY) -m itibar.matn
 	ITIBAR_PARQUET_DIR=$(CURDIR)/$(FIXTURE) ITIBAR_OUT_DIR=$(CURDIR)/$(CI_OUT) $(PY) -m itibar.pipeline
 	ITIBAR_PARQUET_DIR=$(CURDIR)/$(FIXTURE) ITIBAR_OUT_DIR=$(CURDIR)/$(CI_OUT) $(PYTEST) -q
+
+## make site: build the static reader from existing pipeline outputs
+site:
+	$(PY) -m itibar.site
+
+site-check:
+	$(PY) -m itibar.site --check
+
+## make site-fixture: use the Parquet outputs from make ci
+site-fixture:
+	ITIBAR_PARQUET_DIR=$(CURDIR)/$(FIXTURE) ITIBAR_OUT_DIR=$(abspath $(CI_OUT)) $(PY) -c 'from itibar.narrators import build; build()'
+	ITIBAR_PARQUET_DIR=$(CURDIR)/$(FIXTURE) ITIBAR_OUT_DIR=$(abspath $(CI_OUT)) $(PY) -m itibar.site --dest $(CI_OUT)/site
+	$(PY) -m itibar.site --check --dest $(CI_OUT)/site
 
 render-gold:
 	for g in 319 276 397 2852 1581; do $(UV) run itibar render $$g; done

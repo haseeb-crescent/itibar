@@ -285,6 +285,10 @@ class Structure:
     edge_continuity: dict[tuple[str, str], str] = field(default_factory=dict)
     edge_basis: dict[tuple[str, str], str] = field(default_factory=dict)    # years | tabaka | unknown | n/a
     edge_muanan: dict[tuple[str, str], str] = field(default_factory=dict)  # yes | no | unknown_word | n/a
+    edge_thresholds: dict[tuple[str, str], int] = field(default_factory=dict)
+    routes_by: dict[str, list[list[str]]] = field(default_factory=dict)
+    lower_values: dict[str, dict[str, int]] = field(default_factory=dict)
+    common_link_branches: dict[str, list[str]] = field(default_factory=dict)
 
 
 def dominator_cut_vertices(sub: dict[str, set[str]], unc: set[str]) -> tuple[list[str], bool]:
@@ -532,10 +536,15 @@ def analyse(B: Bundle, corpus: Corpus) -> Structure:
     incompatible_years = {e for e in incompatible if basis.get(e) == "years"}
     kappa, kappa_lower, cut_set, cut_by, lower_splice = {}, {}, {}, {}, {}
     lower_source, kappa_nocompat, kappa_nocompat_years = {}, {}, {}
-    routes_all: list[list[str]] = []
+    routes_by, lower_values = {}, {}
+    edge_thresholds: dict[tuple[str, str], int] = defaultdict(int)
     succ_all = None
-    for name, theta in scale.thresholds.items():
+    for index, (name, theta) in enumerate(scale.thresholds.items()):
         succ = threshold_succ(B, corpus, theta)
+        for u, successors in succ.items():
+            for v in successors:
+                if v != SINK:
+                    edge_thresholds[u, v] |= 1 << index
         if succ_all is None:
             succ_all = succ
         _, tsub = on_path_subgraph(succ)
@@ -543,8 +552,7 @@ def analyse(B: Bundle, corpus: Corpus) -> Structure:
         fr = vertex_connectivity(succ, PROPHET, SINK, unc)
         kappa[name] = fr.value
         cut_set[name] = fr.cut
-        if name == "all":
-            routes_all = [[v for v in r if v != SINK] for r in fr.routes]
+        routes_by[name] = [[v for v in r if v != SINK] for r in fr.routes]
         usucc, uunc = lower_succ(B, corpus, theta, merge=False)
         unmerged = vertex_connectivity(usucc, PROPHET, SINK, uunc).value
         lsucc, lunc = lower_succ(B, corpus, theta, merge=True)
@@ -555,6 +563,7 @@ def analyse(B: Bundle, corpus: Corpus) -> Structure:
         else:                     # dropping edges never raises kappa: nothing to drop, or already 0
             nocompat = unmerged
         values = dict(zip(LOWER_HYPOTHESES, (unmerged, merged, nocompat)))
+        lower_values[name] = values
         kappa_lower[name] = min(values.values())
         lower_source[name] = next(h for h in LOWER_HYPOTHESES if values[h] == kappa_lower[name])
         kappa_nocompat[name] = nocompat
@@ -667,7 +676,10 @@ def analyse(B: Bundle, corpus: Corpus) -> Structure:
     return Structure(
         on_path=on, layer=layer, layer_source=lsource, width=dict(sorted(width.items())), width_taqrib=width_taqrib,
         kappa=kappa, kappa_lower=kappa_lower, kappa_lower_source=lower_source, kappa_nocompat=kappa_nocompat,
-        kappa_nocompat_years=kappa_nocompat_years, kappa_lower_splice=lower_splice, cut_set=cut_set, routes_all=routes_all,
+        kappa_nocompat_years=kappa_nocompat_years, kappa_lower_splice=lower_splice, cut_set=cut_set,
+        routes_all=routes_by["all"], routes_by=routes_by, lower_values=lower_values,
+        edge_thresholds=dict(edge_thresholds),
+        common_link_branches={v: sorted(w for w in sub.get(v, ()) if qualifies(v, w)) for v in common_links},
         cut_vertices=cut_vertices, cut_vertices_by=cut_by, single_strand=ss, pcl=pcl, common_links=common_links,
         cl_in_cycle=cl_in_cycle, bypass_paths=bypass, bypass_capped=bcapped,
         paths_total=paths_total, paths_capped=paths_capped, paths_approx=approx,

@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+{% from 'components.html' import arab, grade, chain_link, gold_case with context %}
+{% block head %}{% if report.status == 'ok' %}<script type="module" src="{{ root }}assets/report.js"></script>{% endif %}{% endblock %}
+{% macro receipt(key, label) %}
+<details class="receipt" data-receipt="{{ key }}"><summary>{{ label }}</summary><div class="receipt-content"></div></details>
+{% endmacro %}
+{% macro named(entries) %}
+{% if entries %}<ol class="names">
+  {% for entry in entries %}
+  <li>{% if entry.rid %}<a href="{{ root }}narrators/{{ entry.rid }}/">{{ arab(entry.name) }}</a>{% else %}{{ arab(entry.name) }}{% endif %}
+  <span class="quiet">{{ entry.date }}</span></li>
+  {% endfor %}
+</ol>{% else %}<p class="quiet">None recorded.</p>{% endif %}
+{% endmacro %}
+{% block content %}
+<article class="report" data-group="{{ report.group_id }}">
+<header class="report-heading">
+  <div class="eyebrow"><a href="{{ root }}search/">Reports</a> <span class="middot">/</span> Report {{ report.group_id }}{% if gold_cases %} <a class="small-link" href="#gold-entry">Gold set case</a>{% endif %}</div>
+  {% if report.group_id == 319 %}<h1 class="report-translation">Actions are only by intentions</h1>{% endif %}
+  {% if report.group_id == 319 %}<p{% else %}<h1{% endif %} class="opening" lang="ar" dir="rtl">{{ opening }}{% if report.group_id == 319 %}</p>{% else %}</h1>{% endif %}
+  {% if representative.content %}
+  <details class="text-panel">
+    <summary>Read the full text{% if representative_book %}<span>{{ arab(representative_book.name) }} <span class="quiet">· no. {{ representative.no_inbook }}</span></span>{% endif %}</summary>
+    <blockquote lang="ar" dir="rtl">{{ representative.content }}</blockquote>
+    {% if report.status == 'ok' and representative.sanad_id %}<p class="quiet">Source occurrence {{ chain_link(root, representative.sanad_id) }}</p>{% endif %}
+  </details>
+  {% endif %}
+</header>
+{% if report.status != 'ok' %}
+<section class="panel no-chains"><h2>No chains recorded</h2>
+<p>The source has no chains for this meaning group.</p></section>
+{% else %}
+<nav class="page-nav" aria-label="On this report"><a href="#bundle">Bundle</a><a href="#numbers">Numbers</a><a href="#grades">Grades</a><a href="#chains">Chains</a><a href="#books">Books</a>{% if gold_cases %}<a href="#gold-entry">Gold</a>{% endif %}{% if verdicts %}<a href="#critics">Critics</a>{% endif %}</nav>
+<div class="report-grid">
+<section class="panel bundle-panel" id="bundle" data-graph>
+  <div class="section-head">
+    <div><h2>Transmission bundle</h2><p>From the Prophet through the narrators to the books.</p></div>
+    <output class="kappa-display" aria-live="polite">κ <strong>{{ report.kappa_all }}</strong></output>
+  </div>
+  <fieldset class="thresholds"><legend class="sr-only">Narrator level</legend>
+    {% for key, (label, levels) in thresholds.items() %}
+    <label><input type="radio" name="threshold" value="{{ loop.index0 }}" data-kappa="{{ report['kappa_' ~ key] }}" {% if loop.first %}checked{% endif %}><span>{{ label }}</span></label>
+    {% endfor %}
+  </fieldset>
+  <div class="graph-viewport">
+    <canvas tabindex="0" aria-label="Interactive transmission bundle" aria-describedby="graph-instructions"></canvas>
+    <p class="graph-message" aria-live="polite">Loading the bundle…</p>
+    <div class="zoom-controls" aria-label="Graph zoom">
+      <button type="button" data-zoom="in" aria-label="Zoom in">+</button>
+      <button type="button" data-zoom="out" aria-label="Zoom out">−</button>
+      <button type="button" data-zoom="fit">Fit</button>
+    </div>
+  </div>
+  <div class="node-info" aria-live="polite" hidden></div>
+  <div class="graph-options">
+    <label><input type="checkbox" data-off-route> Include off-route nodes</label>
+    <button type="button" data-expand hidden>Show all nodes</button>
+    <span class="graph-count quiet"></span>
+  </div>
+  <div class="legend" aria-label="Graph legend">
+    <span><i class="legend-cut"></i> Cut vertex</span><span><i class="legend-common"></i> Common link</span>
+    <span><i class="legend-level"></i> Taqrīb level 1–12</span><span><i class="legend-muted"></i> Below threshold</span>
+  </div>
+  <p id="graph-instructions" class="graph-help quiet">Drag to pan. Zoom with the controls, a wheel, or a pinch. Select a node for details. Use arrow keys to pan and [ or ] to inspect nodes.</p>
+  <noscript><p>The interactive drawing requires JavaScript. The numbers and marked narrators are listed below.</p></noscript>
+</section>
+<section class="panel numbers-panel" id="numbers">
+  <div class="section-head"><div><h2>Transmission numbers</h2><p>κ counts independent routes.</p></div></div>
+  <div class="number-grid column-head"><span>Threshold</span><span>κ</span><span>κ lower</span></div>
+  {% for key, (label, levels) in thresholds.items() %}
+  <details class="receipt number-receipt" data-receipt="{{ key }}">
+    <summary class="number-grid"><span>{{ label }}<small>{{ levels }}</small></span><strong>{{ report['kappa_' ~ key] }}</strong><strong>{{ report['kappa_lower_' ~ key] }}</strong></summary>
+    <div class="receipt-content"></div>
+  </details>
+  {% endfor %}
+  {% if reason %}<p class="quiet zero-reason">{{ reason | capitalize }}.</p>{% endif %}
+  <div class="structural-facts">
+    <div><h3>Number class</h3><p class="class-label">{{ number_class }}</p>
+    <details class="receipt" data-receipt="structure" data-step="0"><summary>Class calculation</summary><div class="receipt-content"></div></details></div>
+    <div><h3>Cut vertices</h3><p class="quiet">On every route with everyone retained.</p>{{ named(cut) }}
+    <details class="receipt" data-receipt="all" data-step="2"><summary>Cut-vertex calculation</summary><div class="receipt-content"></div></details></div>
+    <div><h3>Common links</h3><p class="quiet">The earliest qualifying branches.</p>{{ named(common) }}
+    <details class="receipt" data-receipt="structure" data-step="1"><summary>Branch evidence</summary><div class="receipt-content"></div></details></div>
+    <div><details class="receipt" data-receipt="structure" data-step="2"><summary>Terminus and source dates</summary><div class="receipt-content"></div></details></div>
+  </div>
+</section>
+</div>
+<section id="grades" class="section">
+  <div class="section-head"><div><h2>Grades and their receipts</h2><p>Derived codes use the hadith-kg scale. The corpus’s own records are shown beside them.</p></div></div>
+  <div class="grade-grid">
+    <div class="panel grade-panel"><h3>Derived by itibar</h3>
+      <div class="grade-entry">
+        <h4>v1 · Best single chain</h4>
+        <p>{{ grade(report.derived_code, grades.get(report.derived_code)) }}</p>
+        <p>{{ chain_link(root, report.derived_best_sanad_id) }} <span class="quiet">· Shared by both rulesets</span></p>
+        <p><span class="quiet">Lowest graded ordinal</span> {{ report.derived_ordinal }}{% if report.derived_fell_back %} · Selection used all chains{% endif %}</p>
+        {{ receipt('grade-v1', 'Read the v1 receipt') }}
+      </div>
+      {% for rule in rulesets %}
+      <div class="grade-entry">
+        <h4>v2 · {{ rule.label }}</h4>
+        <p>{{ grade(rule.code, grades.get(rule.code)) }}</p>
+        <p><code>{{ rule.rule }}</code> <span class="middot">·</span> {{ chain_link(root, rule.sanad) }}</p>
+        <p><span class="quiet">Defects</span> {% if rule.defects %}<code>{{ rule.defects | join(', ') }}</code>{% else %}None in the selected chain{% endif %}</p>
+        {% if rule.witnesses %}<ul class="witnesses">{% for witness in rule.witnesses %}
+          <li>{{ chain_link(root, witness.witness_sanad, witness.group if witness.cross_group else none) }} <span class="middot">·</span> {{ witness.label }}</li>
+        {% endfor %}</ul>{% endif %}
+        {{ receipt(rule.key, 'Read the ' ~ rule.label ~ ' receipt') }}
+      </div>
+      {% endfor %}
+    </div>
+    <div class="panel grade-panel"><h3>Recorded by hadith-kg</h3>
+      <div class="grade-entry">
+        <h4>Meaning group</h4>
+        <p>{{ grade(report.matn_no_group, report.recorded_label or grades.get(report.matn_no_group)) }}</p>
+      </div>
+      {% if representative %}
+      <div class="grade-entry">
+        <h4>Source text and chain</h4>
+        <p>{{ arab(representative_book.name) }} <span class="quiet">· no. {{ representative.no_inbook }}</span></p>
+        <p>{{ grade(representative.text_code, representative.text_grade) }} <span class="quiet">text</span></p>
+        {% if representative.sanad_id %}
+        <p>{{ grade(representative.chain_code, representative.chain_grade) }} {{ chain_link(root, representative.sanad_id) }}</p>
+        {% endif %}
+        {% if representative.hukum %}<blockquote lang="ar" dir="rtl">{{ representative.hukum }}</blockquote>
+        {% else %}<p class="quiet">Source sentence unrecorded for this chain.</p>{% endif %}
+      </div>
+      {% endif %}
+      {{ receipt('source', 'Read the source receipt') }}
+    </div>
+  </div>
+</section>
+{% endif %}
+{% if references %}<section id="books" class="section">
+  <div class="section-head"><div><h2>Books and hadith numbers</h2><p>References as numbered in hadith-kg.</p></div></div>
+  <div class="panel book-list">
+    {% for book, nums in references %}
+    <details id="book-{{ book.id }}"{% if report.status != 'ok' %} open{% endif %}><summary>{{ arab(book.name) }} <span class="quiet">{{ number(nums|length) }} {{ 'number' if nums|length == 1 else 'numbers' }}</span></summary>
+    <div class="book-numbers" dir="ltr">{{ nums | join(', ') }}</div></details>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+{% if report.status == 'ok' %}
+<section id="chains" class="section" data-chains>
+  <div class="section-head"><div><h2>Recorded chains</h2><p>{{ number(report.n_chains) }} chains in source order, from the book end. A dash marks an unavailable transmission word.</p></div>
+    <label class="chain-filter">Filter by book
+      <select><option value="">All books</option>{% for book in chain_books %}<option lang="ar" value="{{ book.id }}">{{ book.name }}</option>{% endfor %}</select>
+    </label>
+  </div>
+  <p class="chain-status quiet" role="status"></p>
+  <div class="chain-rows"></div>
+  <div class="chain-pagination" hidden><button data-prev type="button">Previous chains</button><span></span><button data-next type="button">Next chains</button></div>
+  <noscript><p>Chain browsing requires JavaScript. Download the <a href="{{ root }}downloads/chains.parquet">chains Parquet</a>.</p></noscript>
+</section>
+{% endif %}
+{% if gold_cases %}
+<section id="gold-entry" class="section"><h2>Gold set</h2>{% for case in gold_cases %}{{ gold_case(case, root) }}{% endfor %}</section>
+{% endif %}
+{% if verdicts %}
+<section id="critics" class="section"><h2>What the critics said</h2>
+  {% for verdict in verdicts %}
+  <div class="panel verdict">
+    <h3 dir="auto">{{ verdict.critic or 'Source remark' }}</h3>
+    <blockquote lang="ar" dir="rtl">{{ verdict.quote }}</blockquote>
+    {% if verdict.citation %}<p dir="auto">{{ verdict.citation }}</p>{% endif %}
+    {% if clean_url(verdict.url) %}<p><a href="{{ verdict.url }}">Read the source</a></p>{% endif %}
+    <p><strong>Bundle result</strong> <span dir="auto">{{ verdict.result }}</span></p>
+  </div>
+  {% endfor %}
+</section>
+{% endif %}
+</article>
+{% endblock %}
