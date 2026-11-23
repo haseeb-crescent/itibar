@@ -1,4 +1,4 @@
-# itibar — buckets 1 and 2, PR 5, PR 6. Every target is reproducible from an empty checkout
+# itibar — buckets 1 and 2, PR 5, PR 6, PR 7. Every target is reproducible from an empty checkout
 # (`make lists-fetch` re-downloads the classical list text from Shamela; its output is committed).
 # Paths can be redirected with ITIBAR_DATA_DIR / ITIBAR_PARQUET_DIR / ITIBAR_OUT_DIR
 # (see src/itibar/paths.py); `make ci` uses that to run on the committed fixture.
@@ -11,9 +11,9 @@ CI_OUT  ?= .ci-out
 
 
 .PHONY: translate translate-pending translate-import translate-status translate-sample translate-checks hadeethenc hadeethenc-fetch
-.PHONY: all setup data book-compilers audit words matn bundles stages narrators lists lists-fetch mudallisin mudallisin-fetch provenance-fetch conditional conditional-fetch residue residue-fetch shahid-inspection chapters pools gold gates test figures fixture ci site site-check site-fixture render-gold clean
+.PHONY: all setup data book-compilers audit words matn bundles stages narrators lists lists-fetch mudallisin mudallisin-fetch provenance-fetch conditional conditional-fetch residue residue-fetch source-template verdicts shahid-inspection chapters pools gold gates test figures fixture ci site site-check site-fixture render-gold clean
 
-all: data conditional bundles stages audit narrators lists chapters pools residue gold figures
+all: data conditional bundles stages source-template verdicts audit narrators lists chapters pools residue gold figures
 
 setup:
 	$(UV) sync
@@ -87,6 +87,18 @@ residue:
 residue-fetch:
 	$(PY) -m itibar.residue fetch
 
+## make source-template: the source's grade decoded (sanads.hukum templates, reproduction, the group rule)
+##   -> out/source_template.parquet, reports/source_grade.md, reports/source_templates.csv (PR 7 §1-2)
+source-template:
+	$(PY) -m itibar.source_template all
+
+## make verdicts: the critics' own verdicts extracted and scored -> out/verdicts.parquet, out/critics/,
+##   reports/verdicts.md, reports/verdicts_survey.csv, figures/fig7_critics.* (PR 7 §4-5)
+verdicts:
+	$(PY) -m itibar.verdicts survey
+	$(PY) -m itibar.verdicts extract
+	$(PY) -m itibar.critics all
+
 ## make shahid-inspection: reports/shahid_inspection.md from lists/shahid_inspection.yaml
 shahid-inspection:
 	$(PY) -m itibar.siblings inspect
@@ -124,6 +136,7 @@ ci:
 	ITIBAR_PARQUET_DIR=$(CURDIR)/$(FIXTURE) ITIBAR_OUT_DIR=$(CURDIR)/$(CI_OUT) $(PY) -m itibar.unnamed
 	ITIBAR_PARQUET_DIR=$(CURDIR)/$(FIXTURE) ITIBAR_OUT_DIR=$(CURDIR)/$(CI_OUT) $(PY) -m itibar.matn
 	ITIBAR_PARQUET_DIR=$(CURDIR)/$(FIXTURE) ITIBAR_OUT_DIR=$(CURDIR)/$(CI_OUT) $(PY) -m itibar.pipeline
+	ITIBAR_PARQUET_DIR=$(CURDIR)/$(FIXTURE) ITIBAR_OUT_DIR=$(CURDIR)/$(CI_OUT) $(PY) -m itibar.verdicts extract
 	ITIBAR_PARQUET_DIR=$(CURDIR)/$(FIXTURE) ITIBAR_OUT_DIR=$(CURDIR)/$(CI_OUT) $(PYTEST) -q
 
 ## The English layer (DECISIONS D102). translations/<kind>.parquet is the contract; any producer writes it

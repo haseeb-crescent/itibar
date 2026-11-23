@@ -163,7 +163,30 @@ derive:
   # 4: conditional narrator rulings on the link (lists/conditional.yaml), the unnamed companion
   #    graded as a companion, sibling shawahid a variant, the mudallis set Tabaqat al-Mudallisin's
   #    union, the residue tags.
-  version: 4
+  # 5: the code-map switch (`codes`) with every code stored under both maps, and the source's grade
+  #    template as a v1 ruleset (`source_template`, src/itibar/source_template.py); the residue in three
+  #    layers (chain, aggregation, substance).
+  version: 5
+  # The level -> code map of the main code columns (config/grades.yaml levels): classical (code; D20:
+  # levels 5-9 -> 2) or source (code_source: the source's template, levels 4-6 -> 1). Both are always
+  # computed: records and chains carry derived_code_<map>, code_v2_<ruleset>_<map>, chain_code_<map>.
+  codes: classical
+  # The source's grade template read as a v1 ruleset (PR 7 §1, reports/source_grade.md). Decoded from
+  # sanads.hukum / sanads.matn_no over the whole corpus; nothing here is tuned to itibar's own grades.
+  #   codes: source        the level -> code map the template reads
+  #   positions: all       every position is graded, the book's compiler at pos 0 included (max_rank)
+  #   stub_level: 7        an undescribed narrator (rank_no 0) reads «مجهول الحال»
+  #   unnamed: ignored_unless_break   the unnamed person is not graded; with an inqita' or ta'liq marker in
+  #                        the chain it reads as one «موضع إرسال» (counted once with an irsal marker)
+  #   breaks: {1: 2, 2: 3} one break -> code >= 2; two or more -> code >= 3
+  #   group: best_chain    the group's template code is its lowest chain code (ties: lowest sanad id)
+  source_template:
+    codes: source
+    positions: all
+    stub_level: 7
+    unnamed: ignored_unless_break
+    breaks: {1: 2, 2: 3}
+    group: best_chain
   exclude_compiler: true          # chain grade ignores the compiler at pos 0
   # Codes in the source matn_no scale (0 = best). A chain that does not reach
   # PROPHET through a companion (mursal), or that contains a break marker, cannot
@@ -305,15 +328,16 @@ derive:
     ansar_muhajir_mursal: {ansar_muhajir: mursal}
 
 residue:
-  # PR 6 §3 (src/itibar/residue.py, reports/residue.md): every group whose v2 grade (`ruleset`)
-  # differs from meaning_groups.matn_no, tagged by mechanical cause (tags not exclusive, all stored in
-  # records.residue_tags); the primary tag is the first of these the group carries. Order: the unit of
-  # grading first, then the causes this machinery can name on the chain (a ruling, a single
-  # structural defect kind, corroboration), then what lies outside the chain (the source's verdict
-  # harsher than any label, the sahih/hasan line), then the plain level mismatch.
+  # PR 6 §3, rebased in PR 7 §3 (src/itibar/residue.py, reports/residue.md): every group whose v2 grade (`ruleset`)
+  # differs from meaning_groups.matn_no, decomposed into three layers that add up — aggregation (the recorded group
+  # grade against its recorded best chain: the editors), chain (the recorded best chain against the source's
+  # template on itibar's chains), substance (the template against v2: what the classical ladder changes) — and
+  # tagged by mechanical cause within its layer (tags not exclusive, all stored in records.residue_tags). A group
+  # is attributed to the first non-zero layer; its primary tag is the first of these among its layer's tags.
   ruleset: ibn_hajar
-  precedence: [chain_choice, conditional_narrator, tadlis_only, mursal_only, unnamed_top, unnamed_mid,
-               corroboration, source_severe, boundary_0_1, level_only, unexplained]
+  precedence: [group_below_best_chain, group_above_best_chain, template_vs_record, code_map, book_role, break_rule,
+               conditional_narrator, unnamed_top, unnamed_mid, undescribed, tadlis, mursal, corroboration,
+               boundary_0_1, level_only, unexplained]
   sample_size: 50
   sample_seed: 20261109
   boundary_top_narrators: 100

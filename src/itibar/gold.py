@@ -239,6 +239,10 @@ def evaluate(entry: dict, con=None, corpus: load.Corpus | None = None) -> Result
     for e in exp.get("edges_include") or []:          # e.g. [P, u6524]: a PROPHET edge to the unnamed companion
         if not any(x["u"] == e[0] and x["v"] == e[1] for x in out["edges"]):
             F.append(f"edge {e[0]} -> {e[1]} not in the bundle")
+    crit = exp.get("critic")
+    crit_obs: dict = {}
+    if crit:
+        crit_obs = _critic_check(crit, gid, out, con, F)
     lm = exp.get("list_match")
     if lm:
         import csv
@@ -263,8 +267,97 @@ def evaluate(entry: dict, con=None, corpus: load.Corpus | None = None) -> Result
         "tafarrud_layers": list(rec.get("tafarrud_layers") or []),
         **{f"{k}_v2_{rs}": rec.get(f"{k}_v2_{rs}") for rs in ruleset_names() for k in ("code", "rule", "divergence")},
         "chain_v2": chain_obs,
+        **({"critic": crit_obs} if crit_obs else {}),
     }
     return res
+
+
+def _critic_check(crit: dict, gid: int, out: dict, con, F: list[str]) -> dict:
+    """A critic's claim (PR 7): extracted from the hadith text, its slots resolved, and tested on the group's
+    bundle as computed by this evaluation (on-path edges at threshold everyone)."""
+    from itibar import critics, verdicts
+    hid = int(crit["hadith_id"])
+    book = con.sql(f"SELECT book_id FROM hadiths WHERE id = {hid}").fetchall()[0][0]
+    v = verdicts.extract(con, books=[int(book)], write=False, hadith_ids=[hid])
+    v = v[v["family"] == crit["family"]] if len(v) else v
+    if crit.get("quote"):
+        # compared as lists.normalize text: hand-copied Arabic can order shadda and vowel differently
+        from itibar import lists
+        q = lists.normalize(crit["quote"])
+        v = v[v["span"].map(lambda s: q in lists.normalize(s))] if len(v) else v
+    obs: dict = {"claims_found": int(len(v))}
+    if not len(v):
+        F.append(f"critic: no {crit['family']} claim in hadith {hid} quoting {crit.get('quote')!r}")
+        return obs
+    c = v.iloc[0]
+    obs.update({"span": c["span"], "x_id": c["x_id"], "y_id": c["y_id"], "z_id": c["z_id"], "grade": c["grade"],
+                "clause": c["clause"]})
+    nass = con.sql(f"SELECT nass FROM hadiths WHERE id = {hid}").fetchall()[0][0]
+    if c["span"] not in nass or nass[int(c["span_start"]):int(c["span_end"])] != c["span"]:
+        F.append("critic: the quoted span is not the hadith text at its offsets")
+    for k in ("grade", "clause"):
+        if k in crit and c[k] != crit[k]:
+            F.append(f"critic {k} = {c[k]}, expected {crit[k]}")
+    for slot in ("x", "y", "z"):
+        if slot in crit and c[f"{slot}_id"] != crit[slot]:
+            F.append(f"critic {slot} resolved to {c[f'{slot}_id']} ({c[f'{slot}_reason']}), expected {crit[slot]}")
+    succ: dict = {}
+    for e in out["edges"]:
+        if e["on_path"]:
+            succ.setdefault(e["u"], []).append(e["v"])
+    if "cut_holds" in crit:
+        X, Y = crit["cut"]
+        holds = not critics.reaches_book_avoiding(succ, X, Y)
+        obs["cut_holds"] = holds
+        if holds != bool(crit["cut_holds"]):
+            F.append(f"critic: {Y} a cut vertex of the routes through {X} = {holds}, expected {crit['cut_holds']}")
+    if "breaking_sanad" in crit:
+        X, Y = crit["cut"]
+        x, y = int(X[1:]), int(Y[1:])
+        ch = con.sql(f"SELECT list(rawi_id ORDER BY pos) FROM sanad_rawis WHERE sanad_id = {int(crit['breaking_sanad'])}"
+                     ).fetchall()[0][0]
+        grp = con.sql(f"""SELECT h.group_id, h.book_id FROM sanads s JOIN hadiths h ON h.id = s.hadith_id
+                          WHERE s.id = {int(crit['breaking_sanad'])}""").fetchall()[0]
+        ok = grp[0] == gid and x in ch and y not in ch[:ch.index(x)]
+        obs["breaking_book"] = int(grp[1])
+        if not ok:
+            F.append(f"critic: sanad {crit['breaking_sanad']} does not pass {X} without {Y} in group {gid}")
+        if "breaking_book" in crit and int(grp[1]) != int(crit["breaking_book"]):
+            F.append(f"critic: breaking chain's book {grp[1]}, expected {crit['breaking_book']}")
+    if "names_include" in crit:
+        miss = [n for n in crit["names_include"] if n not in list(c["names"] if c["names"] is not None else [])]
+        if miss:
+            F.append(f"critic: «وفي الباب» names {list(c['names'])} lack {miss}")
+    if "found_in_siblings" in crit:
+        from itibar import siblings
+        sib = set(siblings.sibling_groups(con, [gid]).get(gid, ()))
+        for comp, groups in crit["found_in_siblings"].items():
+            r = int(str(comp)[1:])
+            for g in groups:
+                ends = con.sql(f"""SELECT count(*) FROM sanads s JOIN hadiths h ON h.id = s.hadith_id
+                                   JOIN (SELECT sanad_id, max(pos) mp FROM sanad_rawis GROUP BY 1) m ON m.sanad_id = s.id
+                                   JOIN sanad_rawis sr ON sr.sanad_id = s.id AND sr.pos = m.mp
+                                   WHERE h.group_id = {int(g)} AND sr.rawi_id = {r}""").fetchall()[0][0]
+                if int(g) not in sib or not ends:
+                    F.append(f"critic: {comp} not found ending a chain of sibling group {g} (sibling: {int(g) in sib})")
+        obs["siblings"] = sorted(sib)
+    if "men_ok" in crit or "men_not_in_sahih_include" in crit:
+        W = critics.World.__new__(critics.World)
+        W.con = con
+        r = con.sql("SELECT id, name, nickname, rank_no, is_bukhari, is_muslim, death_year, tabaka FROM rawis").df()
+        W.rw = r.set_index("id")
+        W._chains = {}
+        sh = critics.score_shart(v.assign(group_id=gid), W)
+        row = sh.iloc[0]
+        obs.update({"men_ok": bool(row["men_ok"]), "pairs_ok": bool(row["pairs_ok"]),
+                    "men_not_in_sahih": [f"r{x}" for x in row["men_not_in_sahih"]]})
+        for k in ("men_ok", "pairs_ok"):
+            if k in crit and bool(row[k]) != bool(crit[k]):
+                F.append(f"critic {k} = {bool(row[k])}, expected {crit[k]}")
+        miss = [x for x in crit.get("men_not_in_sahih_include") or [] if x not in obs["men_not_in_sahih"]]
+        if miss:
+            F.append(f"critic: men outside the Ṣaḥīḥ {obs['men_not_in_sahih']} lack {miss}")
+    return obs
 
 
 _SIB_CACHE: dict = {}

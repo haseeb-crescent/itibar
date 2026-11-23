@@ -710,3 +710,166 @@ entries:
   scope: {threshold: all}
   expect:
     list_match: {list: kattani, entry: "2", confirmed_by: auto}
+
+# ---------------------------------------------------------------- the critics' own claims (PR 7)
+# Each claim is quoted from the hadith text it closes (hadiths.nass, the corpus page given as `page`), extracted by
+# itibar.verdicts, its names resolved among the hadith's own chain(s), and tested on the group's bundle as this
+# evaluation computes it (reports/verdicts.md). `cut: [X, Y]`: every route from X to a book passes through Y.
+
+- id: tabarani-tafarrud-nafi-ibn-ishaq
+  group_id: 12641
+  title: "اغد معه يا أبا بكر — al-Tabarani: «لم يرو هذا الحديث عن نافع إلا محمد بن إسحاق»"
+  class: critic-tafarrud
+  source:
+    - {work: "al-Mu'jam al-Awsat (book 66), corpus page 2310, hadith 276654", author: "al-Tabarani", confidence: high,
+       claim: "لَمْ يَرْوِ هَذَا الْحَدِيثَ عَنْ نَافِعٍ إِلا مُحَمَّدُ بْنُ إِسْحَاقَ"}
+  scope: {threshold: all}
+  expect:
+    critic:
+      hadith_id: 276654
+      family: tabarani_lam_yarwi
+      quote: "عَنْ نَافِعٍ إِلا مُحَمَّدُ بْنُ إِسْحَاقَ"
+      x: r7863                             # نافع مولى ابن عمر
+      y: r6811                             # ابن إسحاق القرشي
+      cut: [r7863, r6811]
+      cut_holds: true
+  notes: >
+    A relative claim that holds: from Nafi', every route of the group passes through Ibn Ishaq. The group's own cut
+    vertex (kappa_all 1) is another narrator further down (r18570): the critic's tafarrud is not the group's.
+
+- id: tabarani-tafarrud-ibn-suqa-hafs
+  group_id: 10011
+  title: "إن الله ليدفع بالمسلم الصالح عن مائة أهل بيت — al-Tabarani: «لم يرو هذا الحديث عن محمد بن سوقة إلا حفص بن سليمان»"
+  class: critic-tafarrud
+  source:
+    - {work: "al-Mu'jam al-Awsat (book 66), corpus page 1206, hadith 273202", author: "al-Tabarani", confidence: high,
+       claim: "لَمْ يَرْوِ هَذَا الْحَدِيثَ عَنْ مُحَمَّدِ بْنِ سُوقَةَ إِلا حَفْصُ بْنُ سُلَيْمَانَ"}
+  scope: {threshold: all}
+  expect:
+    critic:
+      hadith_id: 273202
+      family: tabarani_lam_yarwi
+      quote: "عَنْ مُحَمَّدِ بْنِ سُوقَةَ إِلا حَفْصُ بْنُ سُلَيْمَانَ"
+      x: r7014                             # محمد بن سوقة الغنوي
+      y: r2426                             # حفص بن أبي داود الأسدي (Hafs b. Sulayman al-Qari')
+      cut: [r7014, r2426]
+      cut_holds: true
+    cut_vertices_include: {all: [r7014, r2426]}
+  notes: >
+    The name «حفص بن سليمان» resolves to the source's «حفص بن أبي داود الأسدي», the Qur'an reader Hafs b. Sulayman
+    b. Abi Dawud; both he and Ibn Suqa are cut vertices of the whole bundle (gharib mutlaq).
+
+- id: tabarani-tafarrud-broken-by-later-book
+  group_id: 11754
+  title: "من ذكر الله ففاضت عيناه — al-Tabarani: «لم يرو هذا الحديث عن أبي جعفر الرازي إلا محمد بن سليمان بن أبي داود»; al-Mustadrak has another"
+  class: critic-tafarrud
+  source:
+    - {work: "al-Mu'jam al-Awsat (book 66), corpus page 1893, hadith 275327", author: "al-Tabarani", confidence: high,
+       claim: "لَمْ يَرْوِ هَذَا الْحَدِيثَ عَنْ أَبِي جَعْفَرٍ الرَّازِيِّ إِلا مُحَمَّدُ بْنُ سُلَيْمَانَ بْنِ أَبِي دَاوُدَ"}
+  scope: {threshold: all}
+  expect:
+    critic:
+      hadith_id: 275327
+      family: tabarani_lam_yarwi
+      quote: "عَنْ أَبِي جَعْفَرٍ الرَّازِيِّ"
+      x: r6293                             # عيسى بن ماهان الرازي (Abu Ja'far al-Razi)
+      y: r7003                             # محمد بن سليمان الحراني
+      cut: [r6293, r7003]
+      cut_holds: false
+      breaking_sanad: 101942               # al-Mustadrak (al-Hakim, d. 405): Abu Ja'far -> another student
+      breaking_book: 12
+    cut_vertices_include: {all: [r6293]}
+  notes: >
+    The claim fails on a route the critic could not have known: al-Hakim (d. 405) compiled al-Mustadrak after
+    al-Tabarani (d. 360). Abu Ja'far al-Razi himself stays a cut vertex of the group: the report is his alone,
+    as the critic's claim implies one level up.
+
+- id: tirmidhi-hasan-gharib-kappa
+  group_id: 11435
+  title: "إياك والالتفات في الصلاة — al-Tirmidhi: «هذا حديث حسن غريب»"
+  class: critic-tirmidhi
+  source:
+    - {work: "Jami' al-Tirmidhi (book 3), corpus page 230, hadith 12935", author: "al-Tirmidhi", confidence: high,
+       claim: "هَذَا حَدِيثٌ حَسَنٌ غَرِيبٌ"}
+  scope: {threshold: all}
+  expect:
+    critic: {hadith_id: 12935, family: tirmidhi_verdict, quote: "حَسَنٌ غَرِيبٌ", grade: "حسن غريب"}
+    kappa_eq: {all: 1, above_matruk: 1, saduq_up: 0, thiqa_up: 0}
+    number_class_eq: gharib_mutlaq
+    cut_vertices_include: {all: [r720]}
+  notes: >
+    Recorded, not resolved: the «حسن غريب» report is gharib by kappa (Anas a cut vertex) and has no route of
+    saduq-or-better narrators throughout; the classical discussion of how a hasan report can be gharib is quoted in
+    the README (Ibn Hajar, Nuzha; Ibn Rajab, Sharh 'Ilal al-Tirmidhi).
+
+- id: tirmidhi-hasan-sahih-kappa
+  group_id: 14519
+  title: "رمي الرعاء يوم النحر — al-Tirmidhi: «هذا حديث حسن صحيح»"
+  class: critic-tirmidhi
+  source:
+    - {work: "Jami' al-Tirmidhi (book 3), corpus page 364, hadith 13274", author: "al-Tirmidhi", confidence: high,
+       claim: "هَذَا حَدِيثٌ حَسَنٌ صَحِيحٌ"}
+  scope: {threshold: all}
+  expect:
+    critic: {hadith_id: 13274, family: tirmidhi_verdict, quote: "حَسَنٌ صَحِيحٌ", grade: "حسن صحيح"}
+    kappa_eq: {all: 1, above_matruk: 1, saduq_up: 1, thiqa_up: 1}
+  notes: >
+    A «حسن صحيح» report with a single route at every threshold: one thiqa route, so the two words cannot name two
+    chains here (Ibn Hajar's reading «باعتبار إسنادين» does not apply; his other reading, the critic's hesitation
+    over one narrator, would).
+
+- id: tirmidhi-wafi-al-bab-siblings
+  group_id: 9736
+  title: "إذا كنا ثلاثة أن يتقدمنا أحدنا — al-Tirmidhi: «وفي الباب عن ابن مسعود وجابر وأنس بن مالك»"
+  class: critic-wafi
+  source:
+    - {work: "Jami' al-Tirmidhi (book 3), corpus page 98, hadith 12614", author: "al-Tirmidhi", confidence: high,
+       claim: "وَفِي الْبَاب عَنْ ابْنِ مَسْعُودٍ ، وَجَابِرٍ ، وَأَنَسِ بْنِ مَالِكٍ"}
+  scope: {threshold: all}
+  expect:
+    critic:
+      hadith_id: 12614
+      family: wafi_al_bab
+      quote: "وَفِي الْبَاب"
+      names_include: ["ابن مسعود", "جابر", "انس بن مالك"]
+      found_in_siblings: {r5079: [777], r720: [2652]}
+  notes: >
+    Neither named companion ends a chain of the group itself; Ibn Mas'ud's report is the sibling group 777 and
+    Anas's the sibling group 2652 (same lowest topic node); «جابر» resolves to no companion in the scope.
+
+- id: hakim-shart-shaykhayn-holds
+  group_id: 13468
+  title: "من حافظ على هؤلاء الصلوات المكتوبات لم يكتب من الغافلين — al-Hakim: «صحيح على شرط الشيخين»"
+  class: critic-shart
+  source:
+    - {work: "al-Mustadrak (book 12), corpus page 417, hadith 74783", author: "al-Hakim", confidence: high,
+       claim: "صَحِيحٌ عَلَى شَرْطِ الشَّيْخَيْنِ ، وَلَمْ يُخَرِّجَاهُ"}
+  scope: {threshold: all}
+  expect:
+    critic: {hadith_id: 74783, family: hakim_shart, quote: "عَلَى شَرْطِ الشَّيْخَيْنِ", clause: "الشيخين", men_ok: true}
+  notes: >
+    Every man of al-Hakim's chain up to the Sahihayn's generation is a narrator of both Sahihs; in the full run every
+    link among them is also a pairing al-Bukhari or Muslim uses (reports/verdicts.md §7).
+
+- id: hakim-shart-corrected-by-dhahabi
+  group_id: 437
+  title: "لا طلاق ولا عتاق في إغلاق — al-Hakim: «صحيح على شرط مسلم»; al-Dhahabi: Muhammad b. 'Ubayd «لم يحتج به مسلم»"
+  class: critic-shart
+  source:
+    - {work: "al-Mustadrak (book 12), corpus page 1027, hadith 76417", author: "al-Hakim", confidence: high,
+       claim: "صَحِيحٌ عَلَى شَرْطِ مُسْلِمٍ ، وَلَمْ يُخَرِّجَاهُ"}
+    - {work: "Talkhis al-Mustadrak, no. 2802, 2/216 (Shamela 2266, al-'Ilmiyya edition)", author: "al-Dhahabi",
+       confidence: high, url: "https://shamela.ws/book/2266/2907",
+       claim: "على شرط مسلم كذا قال يعني الحاكم قلت ومحمد بن عبيد لم يحتج به مسلم وقال أبو حاتم ضعيف"}
+  scope: {threshold: all}
+  expect:
+    critic:
+      hadith_id: 76417
+      family: hakim_shart
+      quote: "عَلَى شَرْطِ مُسْلِمٍ"
+      clause: "مسلم"
+      men_ok: false
+      men_not_in_sahih_include: [r7149]    # محمد بن عبيد المكي, the narrator al-Dhahabi names
+  notes: >
+    The check finds what al-Dhahabi found: Muhammad b. 'Ubayd al-Makki is not a narrator of Muslim. It also lists
+    Thawr b. Yazid (r2058), a narrator of al-Bukhari only, whom al-Dhahabi does not mention.

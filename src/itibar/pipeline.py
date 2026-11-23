@@ -16,7 +16,8 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 
 from itibar import bundle as bundle_mod
-from itibar import config, corroborate, data, derive, load, matn, paths, residue, siblings, structure
+from itibar import (config, corroborate, data, derive, grades, load, matn, paths, residue, siblings,
+                    source_template, structure)
 from itibar.bundle import PROPHET
 
 _CORPUS: load.Corpus | None = None
@@ -172,6 +173,10 @@ def analyse_group(gid: int, chains: list[load.Chain], corpus: load.Corpus, mg: d
     for name, verdicts in v2.items():
         i = corroborate.best(verdicts, chains, cgr, infos)
         v = verdicts[i] if i is not None else None
+        # PR 7: the group's v2 code under each code map (its own best chain under that map)
+        for m in grades.CODE_MAPS:
+            im = corroborate.best(verdicts, chains, cgr, infos, codes=m)
+            v2_rec[f"code_v2_{name}_{m}"] = verdicts[im].codes[m] if im is not None else None
         if name.startswith("alt_"):
             v2_rec[f"code_v2_{name}"] = v.code if v else None
             continue
@@ -191,12 +196,24 @@ def analyse_group(gid: int, chains: list[load.Chain], corpus: load.Corpus, mg: d
         v2_receipts[name] = corroborate.receipt(name, params[name], i, verdicts, chains, cgr, B, corpus)
     default_rs = scfg["derive"]["ruleset"]
     v2_rec["v2_differs_from_v1"] = (v2_rec[f"code_v2_{default_rs}"] != best.code) if best else None
+    # ---- PR 7: the source's grade template as a v1 ruleset, and the recorded best chain
+    st_cfg = source_template.cfg()
+    st = [source_template.chain_code(c.rawis, nar.rank_no, nar.is_stub, scale, st_cfg) for c in chains]
+    st_code, st_sid = source_template.group_code([(t.code, c.sanad_id) for t, c in zip(st, chains)])
+    rec_best = min(((c.matn_no, c.sanad_id) for c in chains if c.matn_no is not None), default=(None, None))
+    v2_rec.update({
+        "code_source_template": st_code, "best_sanad_source_template": st_sid,
+        "level_source_template": next((t.level for t, c in zip(st, chains) if c.sanad_id == st_sid), None),
+        "matn_no_best_chain": rec_best[0], "best_sanad_recorded": rec_best[1],
+        "agree_source_template_vs_group": (st_code == mg.get("matn_no")) if st_code is not None else None,
+        "agree_source_template_vs_best_chain": (st_code == rec_best[0]) if st_code is not None else None,
+    })
     # ---- the residue (PR 6 §3): disagreement with the recorded grade, tagged by mechanical cause
     rrs = (scfg.get("residue") or {}).get("ruleset", default_rs)
     if rrs in v2:
         ri = corroborate.best(v2[rrs], chains, cgr, infos)
         v2_rec.update(residue.tag_group(mg.get("matn_no"), v2[rrs], classes[rrs], chains, ri, B, corpus,
-                                        v2_rec.get("code_v2_alt_conditional_off")))
+                                        v2_rec.get("code_v2_alt_conditional_off"), v2_rec, st, cgr))
     v2_rec["v2_by_corroboration"] = (v2_rec[f"rule_v2_{default_rs}"] in corroborate.UPGRADE_RULES) if best else None
     # ---- qara'in (flags only)
     qcfg = scfg["qarain"]
@@ -343,6 +360,7 @@ def analyse_group(gid: int, chains: list[load.Chain], corpus: load.Corpus, mg: d
         "derived_ordinal": best.ordinal if best else None,
         "derived_level": scale.name_of_ordinal(best.ordinal) if best else None,
         "derived_code": best.code if best else None,
+        **{f"derived_code_{m}": (best.code_by_map[m] if best else None) for m in grades.CODE_MAPS},
         "derived_best_sanad_id": best.sanad_id if best else None,
         "derived_best_continuous": best.continuous if best else None,
         "derived_fell_back": fell_back,
@@ -356,6 +374,8 @@ def analyse_group(gid: int, chains: list[load.Chain], corpus: load.Corpus, mg: d
         "hadith_matn_no_counts": json.dumps(dict(sorted(Counter(hadith_codes).items()))),
         "sanad_matn_no_counts": json.dumps(dict(sorted(Counter(sanad_codes).items()))),
         "agree_derived_vs_group": (best.code == mg.get("matn_no")) if best else None,
+        **{f"agree_derived_{m}_vs_group": (best.code_by_map[m] == mg.get("matn_no")) if best else None
+           for m in grades.CODE_MAPS},
         "agree_derived_vs_hadith_mode": (best.code == _mode(hadith_codes)) if best else None,
         "n_chains_maxrank_agree_full": sum(g.agree_full for g in cgr),
         "n_chains_maxrank_agree_derived": sum(g.agree_derived for g in cgr),
@@ -400,6 +420,8 @@ def analyse_group(gid: int, chains: list[load.Chain], corpus: load.Corpus, mg: d
             vv = verdicts[ci]
             v2c[f"code_v2_{name}"] = vv.code
             if not name.startswith("alt_"):
+                for m in grades.CODE_MAPS:
+                    v2c[f"code_v2_{name}_{m}"] = vv.codes[m]
                 v2c[f"rule_v2_{name}"] = vv.rule
                 v2c[f"witness_sanad_v2_{name}"] = vv.witness_sanad
                 v2c[f"divergence_v2_{name}"] = vv.divergence
@@ -420,6 +442,9 @@ def analyse_group(gid: int, chains: list[load.Chain], corpus: load.Corpus, mg: d
             "book_role_positions": list(g.book_role_positions), "self_loops": info.self_loops,
             "n_words": len(c.words),
             "chain_ordinal": g.ordinal, "chain_code_raw": g.code_raw, "chain_code": g.code,
+            **{f"chain_code_{m}": g.code_by_map[m] for m in grades.CODE_MAPS},
+            "code_source_template": st[ci].code, "level_source_template": st[ci].level,
+            "breaks_source_template": list(st[ci].breaks),
             "chain_capped": g.capped, "weakest_positions": g.weakest_positions,
             "weakest_rank_no_full": g.weakest_rank_no_full,
             "weakest_rank_no_derived": g.weakest_rank_no_derived,

@@ -37,6 +37,17 @@ def _ok(r):
     return r[r["status"] == "ok"]
 
 
+def _ag(r, col, m: str = "classical"):
+    """Agreement of a code column with the recorded group grade under a code map (PR 7): `col` as stored follows
+    derive.codes (classical); `<col>_source` / `derived_code_source` the source's map. None when not stored."""
+    src = r["matn_no_group"]
+    if m == "classical":
+        c = col + "_classical" if (col + "_classical") in r else col
+    else:
+        c = col + "_source"
+    return (r[c] == src).mean() if c in r else None
+
+
 def _stage(stem):
     d = stages.out_dir(stem)
     rp, cp = d / "records.parquet", d / "chains.parquet"
@@ -75,6 +86,9 @@ def stage_table() -> tuple[str, dict]:
                      "v1": (r["derived_code"] == src).mean(),
                      "v2 ibn_hajar": (r["code_v2_ibn_hajar"] == src).mean(),
                      "v2 ibn_al_salah": (r["code_v2_ibn_al_salah"] == src).mean(),
+                     "v1 (source map)": _ag(r, "derived_code", "source"),
+                     "v2 ibn_hajar (source map)": _ag(r, "code_v2_ibn_hajar", "source"),
+                     "v2 ibn_al_salah (source map)": _ag(r, "code_v2_ibn_al_salah", "source"),
                      "ours 1 / source 3–5": _block(r),
                      "upgraded groups": int(r["rule_v2_ibn_hajar"].isin(UP).sum()),
                      "groups changed vs previous": changed})
@@ -185,7 +199,9 @@ def corrections_section(c, scale) -> str:
                       ("code_v2_alt_mudallis_source_flag", "the source's flagged narrators only (`mudallis_source_flag`, "
                                                            "PR 5's default; PR 6 made the Ṭabaqāt union the default)")):
         if col in r:
-            out.append(f"- variant {name}: agreement {(r[col] == src).mean():.4f}")
+            sm = _ag(r, col, "source")
+            out.append(f"- variant {name}: agreement {(r[col] == src).mean():.4f}"
+                       + (f" (source map {sm:.4f})" if sm is not None else ""))
     out.append("")
     # ---------------------------------------------------------------- 11.4
     out.append("### 11.4 §3 Shawāhid from sibling groups\n")
@@ -202,22 +218,26 @@ def corrections_section(c, scale) -> str:
                "the *Nuzha*'s definition; classed shāhid because the source files them as another report). PR 6 made "
                "sibling shawāhid a variant (§11.12).\n")
     rows = [{"reading": "in-group witnesses only (default since PR 6, D58 amended)",
-             "agreement": (r["code_v2_ibn_hajar"] == src).mean()}]
+             "agreement": (r["code_v2_ibn_hajar"] == src).mean(),
+             "agreement (source map)": _ag(r, "code_v2_ibn_hajar", "source")}]
     for col, name in (("code_v2_alt_siblings", "with sibling shawāhid (`siblings`, PR 5's default)"),
                       ("code_v2_alt_siblings_strict", "siblings, strict floor 0.38 (`siblings_strict`)")):
         if col in r:
-            rows.append({"reading": name, "agreement": (r[col] == src).mean()})
+            rows.append({"reading": name, "agreement": (r[col] == src).mean(),
+                         "agreement (source map)": _ag(r, col, "source")})
     out.append(_md(pd.DataFrame(rows), "{:.4f}"))
     out.append("\nThe sandals dowry (gold `sandals-asim-b-ubaydallah`, group 2031) is repaired under `siblings` by Sahl b. "
                "Saʿd's report in group 763 at overlap 0.333: above the floor, below the strict variant's.\n")
     # ---------------------------------------------------------------- 11.5
     out.append("### 11.5 §4 Every light defect covered\n")
     rows = [{"positions to cover": "each light defect, a witness of its own (`each_defect`, default)",
-             "agreement": (r["code_v2_ibn_hajar"] == src).mean()}]
+             "agreement": (r["code_v2_ibn_hajar"] == src).mean(),
+             "agreement (source map)": _ag(r, "code_v2_ibn_hajar", "source")}]
     for col, name in (("code_v2_alt_weakest", "the weakest light defects, one witness (`weakest`, PR 4)"),
                       ("code_v2_alt_all_light_defects", "every light defect, one witness (`all_light_defects`)")):
         if col in r:
-            rows.append({"positions to cover": name, "agreement": (r[col] == src).mean()})
+            rows.append({"positions to cover": name, "agreement": (r[col] == src).mean(),
+                         "agreement (source map)": _ag(r, col, "source")})
     out.append(_md(pd.DataFrame(rows), "{:.4f}"))
     nw = ch.loc[ch["rule_v2_ibn_hajar"] == "hasan_li_ghayrihi"]
     multi = r.loc[r["rule_v2_ibn_hajar"] == "hasan_li_ghayrihi", "n_witnesses_v2_ibn_hajar"]
@@ -243,7 +263,8 @@ def corrections_section(c, scale) -> str:
     if "code_v2_alt_unknown_none" in r:
         out.append(f"Effect: agreement {(r['code_v2_ibn_hajar'] == src).mean():.4f} with `unknown_repair: "
                    f"named_elsewhere`, {(r['code_v2_alt_unknown_none'] == src).mean():.4f} without "
-                   f"(`unknown_none`). Chains whose unnamed person is named elsewhere: "
+                   f"(`unknown_none`); under the source map {_ag(r, 'code_v2_ibn_hajar', 'source'):.4f} and "
+                   f"{_ag(r, 'code_v2_alt_unknown_none', 'source'):.4f}. Chains whose unnamed person is named elsewhere: "
                    f"{sum(1 for ns in ch['notes_v2_ibn_hajar'].dropna() if any(n.startswith('unnamed_named') for n in ns)):,}.\n")
     # ---------------------------------------------------------------- 11.9 - 11.12: PR 6
     from itibar import audit_pr6
@@ -254,17 +275,31 @@ def corrections_section(c, scale) -> str:
     out.append(audit_pr6.flips_section(c, keep_all, r, ch))
     # ---------------------------------------------------------------- 11.13
     out.append("### 11.13 The final grade\n")
-    rows = [("v1 (best single chain)", (r["derived_code"] == src).mean())]
-    for col in sorted(x for x in r.columns if x.startswith("code_v2_")):
-        rows.append((col.replace("code_v2_", "v2 ").replace("alt_", "variant "), (r[col] == src).mean()))
-    out.append(f"**Agreement with `meaning_groups.matn_no`** over the {len(r):,} groups with chains (variants run on "
-               "`ibn_hajar` with one switch changed, `derive.variants`):\n")
-    out.append(_md(pd.DataFrame(rows, columns=["grade", "agreement_with_matn_no"]), "{:.4f}"))
+    rows = [("v1 (best single chain)", _ag(r, "derived_code"), _ag(r, "derived_code", "source"))]
+    for col in sorted(x for x in r.columns if x.startswith("code_v2_") and not x.endswith(("_classical", "_source"))):
+        rows.append((col.replace("code_v2_", "v2 ").replace("alt_", "variant "), _ag(r, col), _ag(r, col, "source")))
+    if "code_source_template" in r:
+        rows.append(("source_template (the source's template as a v1 ruleset, §11.14)",
+                     (r["code_source_template"] == src).mean(), None))
+    out.append(f"**Agreement with `meaning_groups.matn_no`** over the {len(r):,} groups with chains, under both code "
+               "maps (`derive.codes`: *classical* = levels 5–9 → 2, the default; *source* = the source's template, "
+               "levels 4–6 → 1; PR 7). Variants run on `ibn_hajar` with one switch changed (`derive.variants`):\n")
+    out.append(_md(pd.DataFrame(rows, columns=["grade", "agreement (classical map)", "agreement (source map)"]),
+                   "{:.4f}"))
     for rs in ("ibn_hajar", "ibn_al_salah"):
-        out.append(f"\n**Disagreement table, `{rs}`**: our v2 code (rows) by the source's code (columns):\n")
-        out.append(_xt(r, f"code_v2_{rs}", hk, "v2 code"))
-    out.append("\n**For comparison, v1**:\n")
-    out.append(_xt(r, "derived_code", hk, "v1 code"))
+        for m in ("classical", "source"):
+            col = f"code_v2_{rs}_{m}"
+            if col in r:
+                out.append(f"\n**Disagreement table, `{rs}`, {m} map**: our v2 code (rows) by the source's code "
+                           "(columns):\n")
+                out.append(_xt(r, col, hk, "v2 code"))
+    for m in ("classical", "source"):
+        col = f"derived_code_{m}" if f"derived_code_{m}" in r else "derived_code"
+        out.append(f"\n**For comparison, v1, {m} map**:\n")
+        out.append(_xt(r, col, hk, "v1 code"))
+    if "code_source_template" in r:
+        out.append("\n**source_template** (the template code of the group's best chain on itibar's chains):\n")
+        out.append(_xt(r, "code_source_template", hk, "template code"))
     rules = r["rule_v2_ibn_hajar"].value_counts().rename_axis("rule").reset_index(name="groups")
     rules["share"] = rules["groups"] / len(r)
     out.append("\n**Rule that fired for the group's v2 chain (`ibn_hajar`)**:\n")
@@ -277,10 +312,17 @@ def corrections_section(c, scale) -> str:
         ch[["sanad_id", "weakest_positions", "chain_ordinal"]], left_on="best_sanad_v2_ibn_hajar", right_on="sanad_id",
         how="left")
     best["weakest_level"] = [13 - int(o) if 1 <= o <= 12 else "unknown" for o in best["chain_ordinal"]]
+    extra = [c2 for c2 in ("derived_code_source", "code_v2_ibn_hajar_source") if c2 in r]
+    best = best.merge(r[["group_id"] + extra], on="group_id", how="left") if extra else best
     bl = best.groupby("weakest_level").apply(lambda d: pd.Series({
         "groups": len(d), "agree_v1": (d["derived_code"] == d["matn_no_group"]).mean(),
-        "agree_v2_ibn_hajar": (d["code_v2_ibn_hajar"] == d["matn_no_group"]).mean()}), include_groups=False)
-    out.append("\n**By the weakest narrator's Taqrīb level** in the group's v2 chain (`ibn_hajar`):\n")
+        "agree_v2_ibn_hajar": (d["code_v2_ibn_hajar"] == d["matn_no_group"]).mean(),
+        **({"agree_v1 (source map)": (d["derived_code_source"] == d["matn_no_group"]).mean(),
+            "agree_v2_ibn_hajar (source map)": (d["code_v2_ibn_hajar_source"] == d["matn_no_group"]).mean()}
+           if extra else {})}), include_groups=False)
+    out.append("\n**By the weakest narrator's Taqrīb level** in the group's v2 chain (`ibn_hajar`), under both code "
+               "maps: the classical map's low agreement at levels 5–6 is the convention (the source codes them 1), "
+               "not substance:\n")
     out.append(_md(bl.reset_index()))
     names = dict(c.sql("SELECT id, nickname FROM rawis").fetchall())
     chains_rawis = dict(c.sql("SELECT sanad_id, list(rawi_id ORDER BY pos) FROM sanad_rawis GROUP BY 1").fetchall())
@@ -294,6 +336,7 @@ def corrections_section(c, scale) -> str:
     top = pd.DataFrame([{"narrator": f"{names.get(k)} (r{k})", "groups_disagreeing": v} for k, v in cnt.most_common(15)])
     out.append("\n**Narrators most often weakest in the disagreeing groups** (`ibn_hajar`):\n")
     out.append(_md(top))
+    out.append(_source_template_section(r))
     down = r[(r["derived_code"] == 0) & (r["code_v2_ibn_hajar"] > 0)]
     dch = ch[["sanad_id", "defects_v2_ibn_hajar"]].set_index("sanad_id")
     comp = Counter(",".join(dch.loc[int(s), "defects_v2_ibn_hajar"]) or "none" for s in down["best_sanad_v2_ibn_hajar"])
@@ -301,6 +344,29 @@ def corrections_section(c, scale) -> str:
                f"({int((down['matn_no_group'] == 0).sum()):,} of them recorded 0 by the source). The defects of their "
                "v2 chain: " + "; ".join(f"{k} {v:,}" for k, v in comp.most_common(12)) + ".\n")
     return "\n".join(out)
+
+
+def _source_template_section(r) -> str:
+    """§11.14 (PR 7): the source's grade template as a v1 ruleset on itibar's chains."""
+    if "code_source_template" not in r:
+        return ""
+    src = r["matn_no_group"]
+    st = r["code_source_template"]
+    best = r["matn_no_best_chain"]
+    rows = [("source_template (on itibar's chains) vs meaning_groups.matn_no", (st == src).mean()),
+            ("source_template vs the recorded best chain (min sanads.matn_no)", (st == best).mean()),
+            ("recorded best chain vs meaning_groups.matn_no", (best == src).mean()),
+            ("v1, source map, vs meaning_groups.matn_no", (r["derived_code_source"] == src).mean()),
+            ("v1, classical map, vs meaning_groups.matn_no", (r["derived_code_classical"] == src).mean())]
+    t = (_md(pd.DataFrame(rows, columns=["comparison", "agreement"]), "{:.4f}"))
+    gap = r[(st != r["derived_code_source"])]
+    return ("\n### 11.14 The source's template as a v1 ruleset (PR 7)\n\n"
+            "`source_template` (`config/structure.yaml: derive.source_template`, reports/source_grade.md) grades every "
+            "position including the compiler at pos 0, reads an undescribed narrator as level 7, does not grade the unnamed "
+            "person, raises one break to 2 and two to 3, and takes the group's lowest chain code. On itibar's chains:\n\n"
+            + t + f"\n\nv1 under the source map and the template differ in {len(gap):,} groups: the compiler at pos 0 "
+            "(itibar's v1 excludes him), the unnamed person (v1: unknown, ordinal 0), the break rule, and v1's preference "
+            "for a continuous chain. The residue's three layers (reports/residue.md) are built on these columns.\n")
 
 
 def _same_companion_share(cross: pd.DataFrame, con) -> float:

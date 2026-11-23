@@ -2,7 +2,8 @@
 
 Every choice the data forced that the bucket-1 definitions (and the PR 2 corrections,
 `docs/prompts/pr-2.md`, D30–D34, bucket 2, `docs/prompts/bucket-2.md`, D35–D55, and the PR 5
-corrections, `docs/prompts/pr-5.md`, D56–D68, and PR 6, `docs/prompts/pr-6.md`, D69–D79) did not settle, with
+corrections, `docs/prompts/pr-5.md`, D56–D68, PR 6, `docs/prompts/pr-6.md`, D69–D79, the site, `docs/prompts/site.md`,
+D80–D82, PR 7, `docs/prompts/pr-7.md`, D83–D96, and the reading layer, `docs/prompts/site-ux.md`, D97–D105) did not settle, with
 the alternatives.
 Numbers are from the full corpus (`reports/audit.md` has the evidence). Each entry names the config
 key that controls it, where there is one.
@@ -688,7 +689,9 @@ unless covered»; `muanan_covered_tasrih_tier_4` 4,832 chains in PR 5's audit). 
 `tadlis.tasrih_tiers: [3, 4, 5]` makes the rule explicit and `tasrih_tier_3_only` measures what tiers 4–5 contribute
 (audit §11.11). There is no stage of its own.
 
-**D74. The residue tags** (`src/itibar/residue.py`, `residue.precedence`). Computed in the pipeline for the default
+**D74. The residue tags** (*amended by D89, PR 7: the residue is decomposed into three layers; `chain_choice` and
+`source_severe` are retired, `tadlis_only` and `mursal_only` became `tadlis` and `mursal`*) (`src/itibar/residue.py`,
+`residue.precedence`). Computed in the pipeline for the default
 ruleset's v2 chain. Weakest positions: the defect positions, else the positions of the weakest level. `source_severe`
 reads the effective levels of the v2 chain (after rulings); `corroboration` is an upgrade the source does not follow
 (our code lower) or a ḍaʿīf/ḥasan chain with an uncovered target where the source is higher; `level_only` is a chain
@@ -780,6 +783,141 @@ queries covering opening, full text, name, and Arabic and English citations retu
 819–826 ms on a 390-pixel Chrome viewport with 4× CPU throttling, 100 ms latency, and 4 Mbit/s
 download. The alternative was a single browser search index that loads all text and titles
 up front.
+
+## PR 7 (`docs/prompts/pr-7.md`; derive version 5)
+
+The recorded grade is decoded (reports/source_grade.md) and the residue rebased on the decoding (reports/residue.md);
+the critics' own verdicts are extracted from the texts and the machinery is scored against them (reports/verdicts.md).
+Classical definitions were fetched from Shamela by one pass and checked byte for byte against the page text by a
+second (`lists/source/critics_definitions.jsonl`, 25 records).
+
+**D83. The source's chain grade is a template, decoded** (`src/itibar/source_template.py`). `sanads.hukum` (44,524
+distinct strings) parses into 1,083 skeletons in 978 families, 99.97% completely (the rest are a hand-written
+minority: «وجهالة الصحابي لا تضر», «على شرط الإمام البخاري», «سقط أكثر من راوي», «وفي الإسناد X متهم بالتدليس»). The
+verdict word after «وهو» is `rawis.rank` in 99.70% of named narrators in their chain (the source does not re-grade in the
+sentence; the mismatches are labels edited later). The code: the weakest `rank_no` over **every** position (the compiler
+at pos 0 included — without him 96.84% instead of 99.68% on single-chain hadith), an undescribed narrator read as
+«مجهول الحال» (level 7, as the sentences say), the unnamed person not graded; level → code 1–3 → 0, 4–6 → 1, 7–9 → 2,
+10 → 3, 11 → 4, 12 → 5; one break marker → code ≥ 2, two or more → ≥ 3, the unnamed person counting as one «موضع
+إرسال» only when an inqiṭāʿ or taʿlīq marker is in the chain (a chain with an irsal marker and an unnamed person reads
+one irsal: 373 of 433 such chains are 2; with an inqiṭāʿ or taʿlīq marker 3). Reproduction: 92.10% chain by chain, 99.68%
+in single-chain hadith, 99.62% as a multiset per hadith (D84); every miss has a named class (source_grade.md §3.1). The
+tadlīs rule is absent (the word «مدلس» is only a label); «روى له البخاري تعليقًا / مقرونًا» reads a field the dump does
+not carry. *Alternatives:* grade without pos 0 (itibar's v1 reading, 96.84%); the unnamed person always an irsal (codes
+every «عن رجل» chain ≥ 2: contradicted by 3,384 single-chain «إسناده متصل ، رجاله ثقات» over an unnamed person).
+
+**D84. In hadith with several chains the recorded chain codes are attached to the wrong chains.** Where a hadith's chains
+have different template codes, the recorded codes match them as a multiset but the pairing with `sanads` rows is close to
+chance (2 chains: 7,674 in sanad order, 6,737 swapped, 7,242 expected by chance; 3 chains: every one of the six pairings
+about equally often), and 23,366 sentences name a narrator found in another chain of the same hadith and not in their own.
+So a per-chain `sanads.matn_no` or `hukum` is a statement about *a* chain of the hadith; per hadith and per group
+(minima) nothing changes. Reproduction is reported chain by chain and per hadith; nothing is re-attached in the data
+(re-attaching by names works only for the sentences that name someone). *Alternative:* a bipartite re-attachment by named
+narrators and codes (not done; it would edit a recorded value).
+
+**D85. The group grade is the best recorded chain's, with editors' exceptions.** `hadiths.matn_no` = the lowest chain code
+of the hadith in 99.47% (never better; worse in 0.53%, a hadith coded 3–5 over a best chain of 2–4).
+`meaning_groups.matn_no` = the lowest recorded chain code of the group in 86.77% (within the chains' range 98.25%; the best
+hadith grade 87.09%; the modal chain code 64.97%); worse than the best chain in 2,503 groups (nearly all 3–5 over 2–4),
+better in 181. No field of the dump records why (`takhrij` is an id shared by parallel narrations, without text); no
+corroboration across chains: a group of ḍaʿīf chains is never ḥasan by count. *Alternatives considered and measured:* the
+modal chain, a book class's minimum, the largest takhrīj cluster's minimum (none explains the exceptions).
+
+**D86. The code-map switch** (`derive.codes: classical | source`, `grades.yaml: levels[].code_source`). Classical stays
+the default (D20). Both maps are always computed and stored (`derived_code_<map>`, `chain_code_<map>`,
+`code_v2_<ruleset>_<map>` for every ruleset and variant); the switch picks the main columns. In v2 only the codes that
+read a level change: a fatal chain keeps its v1 code and an unrepairable one max(v1, 2) under the map (identical in
+practice), and a ḍaʿīf chain whose uncovered defects are all level-5 or level-6 narrators is 1 under the source map —
+the code that map gives those levels; corroboration then matters only for levels 7–8, the mursal and tadlīs. *Alternative:*
+the source map as `hasan_max_level: 6` (rejected: it would let a level-6 chain reach ṣaḥīḥ li-ghayrihi, a ruleset question,
+not a code convention).
+
+**D87. `source_template` is a v1 ruleset of the pipeline** (`derive.source_template`). Every chain carries
+`code_source_template`, `level_source_template`, `breaks_source_template`; every group `code_source_template` (its lowest
+chain code, ties by lowest sanad id, no continuity preference — the source has none), `best_sanad_source_template`, and
+the recorded best chain `matn_no_best_chain`. On itibar's chains it agrees with the recorded group grade in 86.55% and
+with the recorded best chain in 99.13%. *Alternative:* keep the template outside the pipeline (rejected: the residue's
+layers need it per group).
+
+**D88. The critics' «وفي الباب» scopes.** `tarafs` holds one row per meaning group, so the brief's «anywhere under the same
+taraf» would be the group itself; it is read as the grandparent of the group's leaf topic rows (the sibling search one
+level up, D58's listed alternative). Names are resolved among the companions who end a chain within that widest scope.
+*Alternative:* the whole corpus (every companion who ends any chain: resolves more names, tests nothing about the
+chapter).
+
+**D89. The residue in three layers** (D74 amended; `src/itibar/residue.py`). recorded − v2 = (recorded − R) + (R − ST) +
+(ST − v2), R the recorded best chain, ST the template on itibar's chains. A disagreeing group is attributed to the first
+non-zero layer (aggregation, chain, substance), so the counts add up (gated); every non-zero layer is stored. PR 6's
+`chain_choice` read the per-chain recorded code, which D84 shows is attached to the wrong chain about as often as chance,
+and its groups are what the aggregation and substance layers now measure; `source_severe` is the aggregation layer
+measured directly. The substance tags name the defects or rules v2 applies to the compared chain (v2's chain when v2 is
+lower than the template, else the template's best chain as v2 grades it) that the template does not; `tadlis_only` and
+`mursal_only` became `tadlis` and `mursal` (a chain carrying both shows both, where PR 6 put it under `unexplained`).
+*Alternatives:* attribute a group to the layer with the largest absolute contribution (a tie rule needed; the precedence
+reads the order of grading: the editors last touched the grade); substance first.
+
+**D90. The critics' claims: where they are read and how names resolve** (`src/itibar/verdicts.py`). The books whose
+authors comment were found by the survey (n-grams after `matn_end`, `reports/verdicts_survey.csv`); formulas are matched on
+`lists.normalize` text from `matn_start` on (`matn_end` is approximate) and every span is mapped back to `hadiths.nass`
+offsets (gated: the span is the text at its offsets). One claim per span and type. A relayed claim is the original
+critic's: al-Khaṭīb's «قال سليمان لم يروه …» is al-Ṭabarānī's, *Kashf al-Astār*'s «قال البزار …» al-Bazzār's (so a claim
+can be read twice, in two books, and is scored twice). Names are resolved among the narrators of the hadith's own chains
+by `conditional.find_names` (D71's resolver), «رسول الله» / «النبي» as the PROPHET node; al-Bayhaqī's «رواه البخاري في
+الصحيح عن X» resolves X among the Ṣaḥīḥ chains' pos-1 narrators of the group. Unresolved slots keep the reason (not in the
+chain, ambiguous, several names). *Alternative:* resolve against the whole `rawis` table (more hits, many namesakes).
+
+**D91. The tafarrud test** (`src/itibar/critics.py`). «From X only Y» is tested as stated: in the group's bundle (on-path
+edges, threshold everyone) every route from X to a book passes through Y. Where the claim leaves X or Y implicit, they are
+read off the hadith's own chain: «تفرد به Y» — X is Y's teacher there; «لا يروى عن X إلا بهذا الإسناد» and «لا نعلمه يروى
+عن X إلا من هذا الوجه» — Y is X's student there (X absent = the Prophet, Y the companion); «لا نعرفه / لا نعلمه / لم نكتبه
+إلا من حديث Y» — from the Prophet, only through Y; «ولا عنه إلا Z» — from the previous Y, only Z. A narrator on no
+Prophet → book route is *not on path* and the claim untestable there. A failure is classed by its strongest breaking chain:
+in the critic's own works, in a book whose compiler died before him, only in later books, or only a spliced route; a
+breaking chain is a *misresolution candidate* when the narrator below X in it is a namesake of Y (same ism and father, or
+the same name cluster) or its link to X is continuity-incompatible. *Alternatives:* the test on the hadith's own chains
+only (trivially true); at the threshold the critic would accept (the claims are about narration, not soundness).
+
+**D92. al-Tirmidhī's gharīb, ḥasan and verdict classes.** Absolute gharīb = κ_all 1 (the number class); «غريب من هذا الوجه»
+relative to the chain's companion (one student below him), «غريب من حديث X» relative to X. The verdict classes are
+profiled, not tested: κ at each threshold, a «وفي الباب» companion found, v1/v2 under both rulesets and both maps, the
+weakest level of his chain. The «حسن غريب» question is reported with its classical answers (Ibn Hajar's *Nuzha*, Ibn
+Rajab's *Sharḥ ʿIlal al-Tirmidhī*) and not resolved. **Source correction:** the brief places the discussion in Ibn Hajar's
+*al-Nukat*; its commentary on the ḥasan (Shamela 8316, pp. 360–465) has no passage on «حسن غريب» as such (the nearest
+sentence says al-Tirmidhī left his definition unqualified, «فلم يقيده بغرابة»); the question and answer are in the *Nuzha*
+(1565/63) and Ibn Rajab (9552/549, 552). *Alternative:* «من هذا الوجه» as the whole chain unique (untestable on a pooled
+group).
+
+**D93. al-Ḥākim's shart.** The men judged are those of his chain up to the Ṣaḥīḥayn's generation: pos 0 (al-Ḥākim) and
+every narrator who died after 261, or undated after tabaka 11, are left out; companions are not judged. *men*: each a
+narrator of the named Ṣaḥīḥ by `rawis.is_bukhari` / `is_muslim` (lenient: `is_bukhari` includes narrators cited only
+muʿallaq); *pairings*: each teacher → student link among them in a chain of the named Ṣaḥīḥ anywhere in the corpus. The
+classical baseline, al-Dhahabī's Talkhīṣ, is not in the corpus text (no «قلت» or «الذهبي» in book 12): one example is
+quoted from Shamela's ʿIlmiyya edition (2266/2907) and is a gold entry. *Alternatives:* the men of the whole chain (al-Ḥākim's
+own teachers can never be the Ṣaḥīḥayn's men); pairings within the same group only.
+
+**D94. The Dice calibration.** The true pairs are (al-Tirmidhī's matn, a named companion's best matn among the sibling
+groups); the non-pairs (his matn, any other companion's best matn among the same siblings). At the 0.32 floor the
+idf-weighted Dice of PR 5 keeps 7.3% of the true pairs and 0.8% of the non-pairs (reports/verdicts.md §6): it ranks named
+companions higher but finds few of them, because the «وفي الباب» relation is a report *on the subject*, often in other
+words. The floor stays (D75: siblings are a variant); the set is kept for bucket 3 (`out/critics/pairs.parquet`).
+*Alternative:* every sibling matn of the named companion as a true pair (dilutes the set with his other reports: tried
+first, the two distributions then coincide).
+
+**D95. Gold.** Eight entries from the critics (52 in all, all pass), each quoting the claim from the corpus text with its
+book, page and hadith: al-Ṭabarānī's tafarrud from Nāfiʿ (only Ibn Isḥāq) and from Ibn Sūqa (only Ḥafṣ b. Sulaymān) hold;
+from Abū Jaʿfar al-Rāzī (only Muḥammad b. Sulaymān) is broken by al-Mustadrak's chain (al-Ḥākim d. 405, after the critic);
+al-Tirmidhī's «حسن غريب» (group 11435) and «حسن صحيح» (14519) with κ at every threshold; his «وفي الباب عن ابن مسعود وجابر
+وأنس» with Ibn Masʿūd and Anas found in the sibling groups 777 and 2652; al-Ḥākim's «على شرط الشيخين» that holds (13468)
+and his «على شرط مسلم» for «لا طلاق ولا عتاق في إغلاق» (437) that al-Dhahabī corrects: the check finds Muḥammad b. ʿUbayd
+al-Makkī outside Muslim, as al-Dhahabī says. The gold reader compares quotes as `lists.normalize` text (hand-copied Arabic
+orders shadda and vowel differently) and asserts the extracted span is the hadith text at its offsets. The fixture carries
+the sibling groups a gold «وفي الباب» entry names; the pairing check needs the corpus's Ṣaḥīḥ links and is asserted only on
+the full run.
+
+**D96. Versions, gates, engineering.** `derive.version: 5` (the code maps and `source_template`); `structure.version`
+stays 5. New gates: every claim's span is its hadith's text at its offsets; the residue's three layers sum to the
+disagreement count and their signed differences to recorded − v2. No agreement gate (D63). `make source-template` and
+`make verdicts` are new targets; `make ci` extracts the claims on the fixture.
 
 ## The reading layer (`docs/prompts/site-ux.md`; D97–D105)
 

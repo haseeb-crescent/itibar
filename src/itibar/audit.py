@@ -240,6 +240,7 @@ def build() -> str:
     w(md_table(sq))
     w("\nThe upstream audit table reads group 1 at 64 recomputed companions (the brief's \"63\" is group 2's "
       "figure). Upstream's exact-label rule misses female companions (`صحابية`) and `صحابي صغير`.\n")
+    w(recorded_code_by_level(c))
 
     # ------------------------------------------------------------------ 2
     w("## 2. `rawis.rank` vocabulary and the `rank_no` ordering\n")
@@ -691,8 +692,9 @@ def build() -> str:
     # ------------------------------------------------------------------ 10
     w("## 10. Indicative chain-level error rate from the gold set\n")
     w(misresolution_rate(c))
+    w(critics_misresolution())
     # ------------------------------------------------------------------ 11
-    w("## 11. Derived grade v2: corroboration, after the PR 5 and PR 6 changes\n")
+    w("## 11. Derived grade v2: corroboration, after the PR 5, PR 6 and PR 7 changes\n")
     if rec_exists:
         w(audit_pr5.corrections_section(c, scale))
     else:
@@ -716,6 +718,52 @@ def build() -> str:
     w(f"\n_Audit computed in {time.time() - t0:.1f}s._\n")
     return "\n".join(W)
 
+
+
+def recorded_code_by_level(c) -> str:
+    """§1.1 (PR 7): the recorded chain code (sanads.matn_no) against the chain's weakest Taqrib level over every
+    position, the unnamed person not graded and break markers left out (reports/source_grade.md decodes the rest)."""
+    t = c.sql("""WITH x AS (SELECT s.id, s.matn_no, max(CASE WHEN r.rank_no = 0 OR r.is_stub = 1 THEN 7 ELSE r.rank_no END)
+                                FILTER (WHERE sr.rawi_id NOT IN (1131, 30000, 30001, 30002)) AS lvl,
+                                sum((sr.rawi_id IN (30000, 30001, 30002))::INT) AS brk
+                         FROM sanads s JOIN sanad_rawis sr ON sr.sanad_id = s.id JOIN rawis r ON r.id = sr.rawi_id
+                         GROUP BY 1, 2)
+                 SELECT lvl AS weakest_level, count(*) AS chains, avg(matn_no) AS mean_code,
+                        sum((matn_no = 0)::INT) AS c0, sum((matn_no = 1)::INT) AS c1, sum((matn_no = 2)::INT) AS c2,
+                        sum((matn_no = 3)::INT) AS c3, sum((matn_no = 4)::INT) AS c4, sum((matn_no = 5)::INT) AS c5
+                 FROM x WHERE brk = 0 AND lvl IS NOT NULL GROUP BY 1 ORDER BY 1""").df()
+    t = t.rename(columns={f"c{i}": f"code {i}" for i in range(6)})
+    return ("### 1.1 The recorded chain code by the chain's weakest level (PR 7)\n\n"
+            "`sanads.matn_no` against the chain's weakest Taqrīb level over every position (the compiler at pos 0 "
+            "included, an undescribed narrator read as level 7, the unnamed person not graded), chains without a break "
+            "marker: levels 1–3 → 0, 4–6 → 1, 7–9 → 2, 10 → 3, 11 → 4, 12 → 5. itibar's classical map codes levels 5–6 "
+            "as 2 (D20); the source's template codes them 1 (`grades.yaml: code_source`, `derive.codes`). The "
+            "off-diagonal cells are chiefly sentences attached to another chain of the same hadith; "
+            "[reports/source_grade.md](source_grade.md) decodes the template and every chain it misses.\n\n"
+            + md_table(t, "{:,.2f}") + "\n")
+
+
+def critics_misresolution() -> str:
+    """§10 addendum (PR 7): misresolution candidates among the routes that break a critic's tafarrud claim."""
+    p = paths.OUT_DIR / "critics" / "tafarrud.parquet"
+    if not p.exists():
+        return ""
+    import json as _json
+    import pandas as _pd
+    t = _pd.read_parquet(p)
+    f = t[t["status"] == "fails"]
+    br = [b for x in f["breaking"].dropna() for b in _json.loads(x)]
+    if not br:
+        return ""
+    ns = sum(1 for b in br if b.get("namesake_of_y"))
+    inc = sum(1 for b in br if b.get("x_link_incompatible"))
+    allm = int(f["all_misresolution_candidates"].fillna(False).sum())
+    return (f"\n**From the critics' claims (PR 7, reports/verdicts.md §4).** Of {len(br):,} chains that break a "
+            f"tafarrud claim (up to 12 listed per failure, {len(f):,} failures), {ns:,} ({ns / len(br):.2%}) carry, "
+            f"right below the critic's X, a namesake of the narrator the critic names (same ism and father, or the same "
+            f"name cluster), and {inc:,} ({inc / len(br):.2%}) join X by a link the continuity rule marks incompatible: "
+            f"misresolution candidates in the sense of the table above. In {allm:,} failures every breaking chain is "
+            "one; these are where a homonym resolved wrongly may manufacture a second route.\n")
 
 def main() -> None:
     con = data.views()
