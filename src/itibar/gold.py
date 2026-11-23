@@ -182,10 +182,16 @@ def evaluate(entry: dict, con=None, corpus: load.Corpus | None = None) -> Result
             if w and (len(weak) != 1 or f"r{weak[0]}" != w["node"]
                       or int(corpus.narrators.rank_no[weak[0]]) != int(w["level"])):
                 F.append(f"chain_v2 weakest {chain_obs['weakest']} levels {chain_obs['weakest_level']}, expected {w}")
-            for rs in ruleset_names() + [k for k in cv if k.startswith("alt_")]:
+            for rs in ruleset_names():
                 for k, v in (cv.get(rs) or {}).items():
                     if b.get(f"{k}_v2_{rs}") != v:
                         F.append(f"chain_v2 {k}_v2_{rs} = {b.get(f'{k}_v2_{rs}')}, expected {v}")
+            # a variant is read on the path's best chain under that variant (its own lowest code)
+            for alt in [k for k in cv if k.startswith("alt_")]:
+                got = min(row[f"code_v2_{alt}"] for row in sel)
+                chain_obs[f"code_{alt}"] = got
+                if "code" in (cv.get(alt) or {}) and got != cv[alt]["code"]:
+                    F.append(f"chain_v2 best code_v2_{alt} over the path's chains = {got}, expected {cv[alt]['code']}")
     # one chain by sanad id: its v2 rule, defects, notes (defects_eq, notes_include, rule, code)
     cc = exp.get("chain_check")
     if cc:
@@ -207,6 +213,32 @@ def evaluate(entry: dict, con=None, corpus: load.Corpus | None = None) -> Result
                 miss = [x for x in want.get("notes_include") or [] if x not in list(row.get(f"notes_v2_{rs}") or [])]
                 if miss:
                     F.append(f"chain_check notes_v2_{rs} {row.get(f'notes_v2_{rs}')} lack {miss}")
+                # conditional rulings fired on the chain, by kind (PR 6)
+                kinds = [x.split(":")[1] for x in list(row.get(f"rulings_v2_{rs}") or [])]
+                miss = [x for x in want.get("rulings_include") or [] if x not in kinds]
+                if miss:
+                    F.append(f"chain_check rulings_v2_{rs} {row.get(f'rulings_v2_{rs}')} lack {miss}")
+                wn = list(row.get(f"weak_nodes_v2_{rs}") or [])
+                if any(x in wn for x in want.get("weak_nodes_exclude") or []):
+                    F.append(f"chain_check weak_nodes_v2_{rs} {wn} include one of {want['weak_nodes_exclude']}")
+                miss = [x for x in want.get("weak_nodes_include") or [] if x not in wn]
+                if miss:
+                    F.append(f"chain_check weak_nodes_v2_{rs} {wn} lack {miss}")
+                miss = [x for x in want.get("defects_include") or [] if x not in list(row.get(f"defects_v2_{rs}") or [])]
+                if miss:
+                    F.append(f"chain_check defects_v2_{rs} {row.get(f'defects_v2_{rs}')} lack {miss}")
+                if "rulings_eq" in want and sorted(kinds) != sorted(want["rulings_eq"]):
+                    F.append(f"chain_check rulings_v2_{rs} {row.get(f'rulings_v2_{rs}')}, expected kinds {want['rulings_eq']}")
+            for k, want in cc.items():
+                if k.startswith("alt_") and "code" in (want or {}) and row.get(f"code_v2_{k}") != want["code"]:
+                    F.append(f"chain_check code_v2_{k} = {row.get(f'code_v2_{k}')}, expected {want['code']}")
+            if "unnamed_companion" in cc and bool(row.get("unnamed_companion")) != bool(cc["unnamed_companion"]):
+                F.append(f"chain_check unnamed_companion = {row.get('unnamed_companion')}, expected {cc['unnamed_companion']}")
+            chain_obs.update({f"rulings_{rs}": row.get(f"rulings_v2_{rs}") for rs in ruleset_names()})
+            chain_obs["unnamed_companion"] = row.get("unnamed_companion")
+    for e in exp.get("edges_include") or []:          # e.g. [P, u6524]: a PROPHET edge to the unnamed companion
+        if not any(x["u"] == e[0] and x["v"] == e[1] for x in out["edges"]):
+            F.append(f"edge {e[0]} -> {e[1]} not in the bundle")
     lm = exp.get("list_match")
     if lm:
         import csv

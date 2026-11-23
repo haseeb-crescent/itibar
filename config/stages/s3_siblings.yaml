@@ -1,9 +1,11 @@
 # Stage 3: + shawahid from sibling groups (section 3).
 structure:
+  unnamed_companion: {enabled: false}
   bundle: {book_transmitters: false}
   structure: {compiler_terminal: node}
   number_class: {basis: width}
   derive:
     corroboration: {witness: attested, avoid: weakest, shahid_scope: siblings, unknown_repair: none}
-    tadlis: {tiers: true, tasrih_scope: group, sahihayn_muanan_accepted: true}
+    conditional: false
+    tadlis: {mudallis_set: source_flag, tiers: true, tasrih_scope: group, sahihayn_muanan_accepted: true}
     variants: null

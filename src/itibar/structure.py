@@ -17,7 +17,8 @@ from itibar.bundle import PROPHET, SINK, Bundle
 from itibar.flow import vertex_connectivity
 from itibar.load import Corpus
 
-NARRATOR_KINDS = ("narrator", "mubham")
+NARRATOR_KINDS = ("narrator", "mubham", "ucomp")
+COMPANION_ORDINAL = 12      # Taqrib level 1: an unnamed companion (u<group_id>) is a companion
 
 
 # ---------------------------------------------------------------- helpers
@@ -26,6 +27,8 @@ def ordinal_of(B: Bundle, corpus: Corpus, node: str) -> int:
     k = B.kind[node]
     if k == "mubham":
         return 0
+    if k == "ucomp":
+        return COMPANION_ORDINAL
     if k == "narrator":
         return int(corpus.narrators.ordinal[B.rawi[node]])
     return 99
@@ -277,6 +280,7 @@ class Structure:
     number_class_kappa: str | None = None     # the kappa reading, gharib split by the cut vertex
     gharib_cut_kind: str | None = None        # kappa = 1: companion | narrator | compiler (topmost cut vertex kind)
     narrator_role: set[str] = field(default_factory=set)   # on-path narrators with a narrator-role occurrence
+    kappa_unnamed_split: int | None = None    # kappa_all with the unnamed-companion node split per student
     bypass_nodes: set[str] = field(default_factory=set)
     edge_continuity: dict[tuple[str, str], str] = field(default_factory=dict)
     edge_basis: dict[tuple[str, str], str] = field(default_factory=dict)    # years | tabaka | unknown | n/a
@@ -338,6 +342,10 @@ def layers(B: Bundle, corpus: Corpus, on_path: set[str]) -> tuple[dict[str, int]
             if v in tab:
                 layer[v] = tab[v]
                 source.setdefault(v, "tabaka")
+                continue
+            if k == "ucomp":                      # an unnamed companion: the companions' layer
+                layer[v] = 1
+                source.setdefault(v, "unnamed_companion")
                 continue
             ts = [layer[u] for u in B.pred.get(v, ()) if u in layer]
             layer[v] = (max(ts) + 1) if ts else 1
@@ -452,7 +460,7 @@ def number_class_kappa(kappa_all: int | None, cut_vertices: list[str], B: Bundle
 
     def kind(v: str) -> str:
         k = B.kind.get(v)
-        if k == "narrator" and nar.is_companion[B.rawi[v]]:
+        if k == "ucomp" or (k == "narrator" and nar.is_companion[B.rawi[v]]):
             return "companion"
         return "narrator" if k in NARRATOR_KINDS else "compiler"
 
@@ -487,6 +495,29 @@ def bypass_nodes(sub: dict[str, set[str]], on: set[str], common_links: list[str]
     s2 = {u: {v for v in vs if v not in avoid} for u, vs in sub.items() if u not in avoid}
     both = reach(s2, PROPHET) & reach(reverse(s2), SINK)
     return {v for v in both if B.kind.get(v) in NARRATOR_KINDS}
+
+
+def unnamed_split_kappa(B: Bundle, succ: dict[str, set[str]], unc: set[str]) -> int | None:
+    """kappa on `succ` with each unnamed-companion node u<group_id> split back into one node
+    per student (the PR 1 context rule, D4): the count if every unnamed companion of the
+    group were a different man. None when the group has no unnamed companion."""
+    us = [v for v, k in B.kind.items() if k == "ucomp"]
+    if not us:
+        return None
+    s2: dict[str, set[str]] = {}
+    for u, vs in succ.items():
+        if u in us:
+            for v in vs:
+                s2[f"{u}|{v}"] = {v}
+            continue
+        out = set()
+        for v in vs:
+            if v in us:
+                out.update(f"{v}|{w}" for w in succ.get(v, ()))
+            else:
+                out.add(v)
+        s2[u] = out
+    return vertex_connectivity(s2, PROPHET, SINK, unc).value
 
 
 LOWER_HYPOTHESES = ("unmerged", "merged", "nocompat")
@@ -535,6 +566,7 @@ def analyse(B: Bundle, corpus: Corpus) -> Structure:
         lower_splice[name] = merged > unmerged
 
     on, sub = on_path_subgraph(succ_all)
+    kappa_split = unnamed_split_kappa(B, succ_all, unc)
     layer, lsource, backward = layers(B, corpus, on)
     pred_on = reverse(sub)
     per_edge = per_edge_roles()
@@ -644,7 +676,7 @@ def analyse(B: Bundle, corpus: Corpus) -> Structure:
         number_class=nc_kappa if nc_basis == "kappa" else nc_width, number_class_width=nc_width,
         number_class_kappa=nc_kappa, gharib_cut_kind=cut_kind, narrator_role=has_nr,
         bypass_nodes=bypass_nodes(sub, on, common_links, B),
-        edge_continuity=cont, edge_basis=basis, edge_muanan=mu,
+        edge_continuity=cont, edge_basis=basis, edge_muanan=mu, kappa_unnamed_split=kappa_split,
     )
 
 

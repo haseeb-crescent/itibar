@@ -35,19 +35,22 @@ below Yahya. The 14 chains in the data that break the pattern are each listed wi
 
 The gold set holds 22 structural cases like this from the classical literature: narrow reports that
 classical works trace through specific narrators, and *mutawatir* reports carried by ten or more
-companions; 13 more test the corroborated grade, the number class, the classical lists and the rules
-on tadlīs. The test suite asserts every one, the narrow cases down to the exact narrators.
+companions; 22 more test the corroborated grade, the number class, the classical lists, the rules
+on tadlīs, the unnamed companion and narrators whose standing depends on the link. The test suite asserts every one, the narrow cases down to the exact narrators.
 
 ### What it finds
 
 Of the 20,282 reports with chains, 55% pass through a single person somewhere on every route
-(κ = 1). 505 have ten or more fully independent routes; keeping only narrators rated *thiqa*
-(trustworthy), 102 still do. Full results are [below](#results-at-a-glance-full-corpus).
+(κ = 1). 511 have ten or more fully independent routes; keeping only narrators rated *thiqa*
+(trustworthy), 108 still do. Full results are [below](#results-at-a-glance-full-corpus).
 
 Corroboration, the classical number class and the corpus checks of the mutawātir lists and the common
 links are in; PR 5 made the corroborated grade follow the classical rules more exactly (attested
 witnesses, Ibn Hajar's tiers of tadlīs, shawāhid filed as other reports, every weak narrator
-covered). **Next:** aligning each report's text variants against its chains. The end products are
+covered); PR 6 reads an unnamed companion («a man of the Prophet's companions») as a companion, applies
+narrators' standing on the link where the books make it conditional (a teacher, a student, the time of
+hearing), and decomposes the remaining disagreement with the recorded grades by cause
+([reports/residue.md](reports/residue.md)). **Next:** aligning each report's text variants against its chains. The end products are
 an open dataset, a paper, and a queryable site.
 
 ## Technical summary
@@ -70,11 +73,13 @@ selectable rulesets and both are reported. Knowledge yield (certainty vs probabi
 computed: the qarāʾin are reported as flags and the conclusion is left to the reader.
 
 The build briefs are [docs/prompts/bucket-1.md](docs/prompts/bucket-1.md), its corrections in
-[docs/prompts/pr-2.md](docs/prompts/pr-2.md), [docs/prompts/bucket-2.md](docs/prompts/bucket-2.md) and its
-corrections in [docs/prompts/pr-5.md](docs/prompts/pr-5.md); records carry `structure_version` (now 4) and
-`derive_version` (now 3), both in `config/structure.yaml`. Every choice the data or the sources forced that the briefs did not settle
+[docs/prompts/pr-2.md](docs/prompts/pr-2.md), [docs/prompts/bucket-2.md](docs/prompts/bucket-2.md), its
+corrections in [docs/prompts/pr-5.md](docs/prompts/pr-5.md), and [docs/prompts/pr-6.md](docs/prompts/pr-6.md) (the
+unnamed companion, conditional narrators, the residue); records carry `structure_version` (now 5) and
+`derive_version` (now 4), both in `config/structure.yaml`. Every choice the data or the sources forced that the briefs did not settle
 is in [DECISIONS.md](DECISIONS.md); the source audit is [reports/audit.md](reports/audit.md);
-gold-set results are [reports/gold.md](reports/gold.md); the bucket-2 reports are
+gold-set results are [reports/gold.md](reports/gold.md); the disagreement with the recorded grades, tagged by
+mechanical cause, is [reports/residue.md](reports/residue.md); the bucket-2 reports are
 [reports/lists.md](reports/lists.md), [reports/common_links.md](reports/common_links.md),
 [reports/chapters.md](reports/chapters.md) and [reports/pools/](reports/pools/); the reading behind the
 shāhid overlap floor is [reports/shahid_inspection.md](reports/shahid_inspection.md).
@@ -87,12 +92,14 @@ Requires [uv](https://docs.astral.sh/uv/) (Python 3.12 is fetched by uv) and Gra
 make data      # download hadith-kg.db (pinned revision, sha256-checked) -> data/; Parquet + DuckDB -> data/parquet/
 make audit     # reports/audit.md; regenerates the label listing in config/grades.yaml
 make bundles   # out/words.parquet, out/matn_*.parquet, out/bundles/, out/records.parquet, out/chains.parquet (~2 min)
-make stages    # out/stages/: the PR 5 corrections applied cumulatively, for audit §11.1 (~8 min)
+make stages    # out/stages/: the PR 5 and PR 6 changes applied cumulatively, for audit §11.1 (~15 min)
 make narrators # out/narrators.parquet, reports/common_links.md, figures/fig4_cl_death_years.*
 make lists     # lists/*.yaml from lists/source/, lists/candidates.csv, lists/confirmed.csv, reports/lists.md, fig3
 make mudallisin  # lists/mudallisin.yaml, lists/mudallisin_candidates.csv, lists/mudallisin_confirmed.csv
+make conditional # lists/conditional.yaml, lists/conditional_candidates.csv, lists/conditional_confirmed.csv (PR 6)
 make chapters  # reports/chapters.md, figures/fig5_chapter_census.*
 make pools     # reports/pools/mahdi.*, reports/pools/dajjal.* (the two topic-subtree case studies)
+make residue   # reports/residue.md, figures/fig6_residue.* (PR 6)
 make gold      # reports/gold.md + gold tests
 make test      # unit tests, gold set, corpus gates
 make figures   # figures/fig1_kappa.*, figures/fig2_width_by_tabaka.* (+ CSV of every plotted number)
@@ -102,7 +109,7 @@ uv run itibar pool --topic 28661          # pooled bundle: --groups g1 g2 …, -
 ```
 
 `make ci` runs the whole pipeline and test suite on the committed fixture
-(`tests/fixture/parquet`, 344 groups with the topic nodes above them and the full corpus's matn idf, 7.1 MB; regenerate with
+(`tests/fixture/parquet`, 351 groups with the topic nodes above them and the full corpus's matn idf, 7.1 MB; regenerate with
 `make fixture`) — what GitHub Actions runs, with no download. `make lists-fetch` re-downloads the
 al-Kattānī text from Shamela's public read-only MCP server (`https://mcp.shamela.ws`); its output,
 `lists/source/kattani_7016.jsonl`, is committed so `make lists` needs no network; likewise `make
@@ -110,7 +117,7 @@ mudallisin-fetch` (Ibn Hajar's *Ṭabaqāt al-Mudallisīn*, `lists/source/mudall
 provenance-fetch` (the Taqrīb sample, `lists/source/taqrib_sample.jsonl`). `make book-compilers` recomputes the
 derived `book_compilers` table after a config change. `make shahid-inspection` regenerates
 `reports/shahid_inspection.md` from the committed labels. On the fixture's groups the records are identical to the full run, except where a v2 grade rests on a
-witness from a sibling group the fixture does not carry (13 of its 341 groups with chains; it carries the siblings of the gold entries that
+witness from a sibling group the fixture does not carry — since PR 6 only the `siblings` variants, on 12 of its 347 groups with chains (it carries the siblings of the gold entries that
 assert one, and the full corpus's idf for its matns; DECISIONS D58).
 Outputs are deterministic (identical across processes and hash seeds).
 
@@ -245,8 +252,8 @@ nocompat} names the first hypothesis attaining the minimum in that order. Removi
 raises κ, so `nocompat` there means removing incompatible links lowered κ below both other graphs.
 Merging is not monotone — it can splice a dead-end half-route of one person onto a half-route of
 another — which is why the unmerged graph is in the minimum; `kappa_lower_splice` names thresholds
-where merging raised κ (none in the current data). At *everyone*, κ_lower < κ in 2,436 groups
-(nocompat in 2,432 of them, merging in 1); 1,020 groups with κ ≥ 1 have κ_lower = 0.
+where merging raised κ (none in the current data). At *everyone*, κ_lower < κ in 2,447 groups
+(nocompat in 2,443 of them, merging in 1); 1,022 groups with κ ≥ 1 have κ_lower = 0.
 
 ### κ = 0 and `kappa_zero_reason`
 κ = 0 means **no unbroken companion-ending route in this data**, not no support. Every group with
@@ -255,8 +262,8 @@ where merging raised κ (none in the current data). At *everyone*, κ_lower < κ
 | `kappa_zero_reason` | meaning | groups |
 |---|---|---|
 | `no_chains` | the group has no chains | 463 |
-| `no_companion_end` | no chain ends in a companion (irsal marker, unnamed person, non-companion, stub) | 2,531 |
-| `broken_only` | companion-ending chains exist, every one containing a break marker | 427 |
+| `no_companion_end` | no chain ends in a companion (irsal marker, unnamed person not designated a companion, non-companion, stub) | 2,448 |
+| `broken_only` | companion-ending chains exist, every one containing a break marker | 426 |
 | `other` | a continuous chain exists yet no P → book route survived (gated at 0) | 0 |
 
 Per group: `n_chains_companion_end`, `n_chains_broken` (any break marker), `n_chains_connected`
@@ -375,7 +382,7 @@ itself, book 8609, begins after the introduction):
 `hasan_max_level` are not defects. *Nuzhat al-Naẓar* (ed. ʿItr, p. 105,
 [1565/101](https://shamela.ws/book/1565/101)):
 
-> ومتى تُوبعَ السَّيِّئُ الحِفْظِ بمُعْتَبَرٍ، كأَنْ يكونَ فوقَه أو مِثلَه لا دُونَه، وكذا المُخْتَلِطُ الذي لم يتميَّزْ والمستورُ والإسناد المُرسَلُ وكذا المُدَلَّس إذا لم يُعْرَفْ المحذوفُ منه: صار حديثُهم حَسَنًا لا لِذَاتِهِ، بَلْ وَصْفُه بذلك باعتبار المجموع من المَتابعِ والمتابَعِ
+> ومتى تُوبعَ السَّيِّئُ الحِفْظِ بمُعْتَبَرٍ، كأَنْ يكونَ فوقَه أو مِثلَه لا دُونَه، وكذا المُخْتَلِطُ الذي لم يتميَّزْ والمستورُ والإسناد المُرسَلُ وكذا المُدَلَّس إذا لم يُعْرَفْ المحذوفُ منه: صار حديثُهم حَسَنًا لا لِذَاتِهِ، بَلْ وَصْفُه بذلك باعتبار المجموع من المَتابعِ والمتابَعِ
 
 (the edition reads «باعتبار المجموع», not «بالمجموع» as the brief quotes). On the unknowns
 (p. 101–102, [1565/97](https://shamela.ws/book/1565/97), [1565/98](https://shamela.ws/book/1565/98)):
@@ -629,6 +636,134 @@ person below the companion slot is covered when another chain of the same report
 between the same teacher and student; the position then takes that narrator's level (the weakest if
 several) and is graded like him (D64).
 
+## Definitions added in PR 6
+
+Every change is a switch in `config/structure.yaml` whose PR 5 value is kept; `make stages` adds stages 8–11
+(`config/stages/`), applied cumulatively in the brief's order, and audit §11.9–§11.12 tabulates what each moved. The
+passages below were fetched from Shamela and checked byte for byte against the page text by a separate pass
+(footnote numbers dropped).
+
+### 1. The unnamed companion — `unnamed_companion` (structure version 5), `src/itibar/unnamed.py`
+A chain whose top narrator is the unnamed person (`rawis` 1131, «اسم مبهم») was read as mursal (D36). The
+tradition distinguishes a Successor's *ʿan rajul min aṣḥāb al-nabī* ("from a man of the Prophet's companions") from
+a bare *ʿan rajul* ("from a man"). Ibn al-Ṣalāḥ, at the end of
+the mursal (*Muqaddima* naw' 9, p. 56, [22870/53](https://shamela.ws/book/22870/53)):
+
+> لِأَنَّ ذَلِكَ فِي حُكْمِ الْمَوْصُولِ الْمُسْنَدِ، لِأَنَّ رِوَايَتَهُمْ عَنِ الصَّحَابَةِ، وَالْجَهَالَةَ بِالصَّحَابِيِّ غَيْرُ قَادِحَةٍ، لِأَنَّ الصَّحَابَةَ كُلَّهُمْ عُدُولٌ
+
+al-Khaṭīb, *al-Kifāya* (p. 415, [13055/1487](https://shamela.ws/book/13055/1487)–[1489](https://shamela.ws/book/13055/1489)), under
+«بَابٌ فِي قَوْلِ التَّابِعِيِّ: حَدَّثَنِي رَجُلٌ مِنْ أَصْحَابِ النَّبِيِّ صَلَّى اللهُ عَلَيْهِ وَسَلَّمَ، هَلْ يَكُونُ ذَلِكَ حُجَّةً؟», reports Aḥmad's answer
+«نَعَمْ» and Ibn ʿAmmār's «نَعَمْ , وَإِنْ لَمْ يُسَمِّهِ , فَإِنَّ جَمِيعَ أَصْحَابِ النَّبِيِّ صَلَّى اللهُ عَلَيْهِ وَسَلَّمَ كُلُّهُمْ حَجَّةٌ». Ibn Hajar,
+on Ḥumayd al-Ḥimyarī's «لَقِيتُ رَجُلًا صَحِبَ النَّبِيَّ ﷺ» (*Fatḥ al-Bārī* 1/300, [1673/786](https://shamela.ws/book/1673/786)):
+
+> رِجَالُهُ ثِقَاتٌ، وَلَمْ أَقِفْ لِمَنْ أَعَلَّهُ عَلَى حُجَّةٍ قَوِيَّةٍ، وَدَعْوَى الْبَيْهَقِيُّ أَنَّهُ فِي مَعْنَى الْمُرْسَلِ مَرْدُودَةٌ؛ لِأَنَّ إِبْهَامَ الصَّحَابِيِّ لَا يَضُرُّ، وَقَدْ صَرَّحَ التَّابِعِيُّ بِأَنَّهُ لَقِيَهُ
+
+and, in *al-Nukat* (2/562–563, [8316/536](https://shamela.ws/book/8316/536)–[537](https://shamela.ws/book/8316/537)), the condition: a
+Successor's «عن رجل» not described as a companion «فلا يكون ذلك متصلا لاحتمال أن يكون تابعيا آخر، بل هو مرسل على
+بابه»; described as one, his ʿan is hearing provided he is free of tadlīs: «قلت: سلامته من التدليس كافية في ذلك».
+(The brief expected a companion exception beside the *Nuzha*'s «ولا يُقْبَلُ حَديثُ المُبْهَم ما لم يُسَمَّ»
+(p. 101, [1565/97](https://shamela.ws/book/1565/97)); there is none: that sentence is unqualified. In *al-Nukat* Ibn Hajar
+does not reject al-Bayhaqī's reading as the brief has it; the rejection is in *Fatḥ al-Bārī*.) Who counts as a
+companion is Ibn Hajar's definition (*Nuzha* p. 111, [1565/107](https://shamela.ws/book/1565/107)): «وهو مَنْ لَقِيَ النبيَّ -صَلَّى اللهُ عَلَيْهِ وَسَلَّمَ- مُؤمِنًا به وماتَ على الإسلامِ».
+
+    designation   the mention text (hadith_rawis offsets; the chain aligned to the sanad-part mentions as in
+                  words.py) plus the words after it up to the next mention, a delimiter or a transmission
+                  word, at most 80 characters; unaligned: the hadith's last unnamed-person mention in the
+                  sanad part (sanad_fallback_mention), or nothing (sanad_fallback_text: class none_text)
+    class         the first of companion, ansar_muhajir, none whose phrase (unnamed_companion.phrases,
+                  whole words, lists.normalize) occurs; none matched: unclassified (read as none)
+    companion     «أصحاب النبي», «أصحاب رسول الله», «أصحاب محمد», «من الصحابة», «صحب النبي», «رأى النبي»,
+                  «سمع النبي», «صلى مع النبي», «من أهل بدر», «أزواج النبي», «أمهات المؤمنين», «خادم النبي»,
+                  «مصدق النبي», «من المبايعات», «رديف النبي» … (the Prophet's community; «أدرك النبي» is none)
+    ansar_muhajir «من الأنصار», «من المهاجرين», «الأنصاري»: read as companion (ansar_muhajir: companion;
+                  variant ansar_muhajir_mursal)
+    unnamed companion  a PROPHET edge, Taqrīb level 1 (v1 and v2), no defect in v2 except the tadlīs rule on
+                  the Successor's ʿan from him (al-Nukat); every unnamed companion of a group is one node
+                  u<group_id>, never identified with a named companion (D70); kappa_unnamed_split = κ_all
+                  with that node split per student; the census skips it; it is reported as a cut vertex
+                  where it is one, and it is a companion for the number class
+
+Records carry `kappa_unnamed_split`, `unnamed_companion_node`, `n_unnamed_companion_chains`,
+`unnamed_top_classes`; chains `top_unnamed`, `unnamed_companion`; `out/unnamed_tops.parquet` keeps each chain top's
+mention, designation, method, class and phrase. Variant `unnamed_top_mursal` reads every unnamed companion as PR 5 did.
+
+### 2. Conditional narrators — `derive.conditional`, `lists/conditional*`, `src/itibar/conditional.py`
+A narrator's standing can be conditional on the link: weak from one teacher, sound from the people of his own
+land, sound through some students, sound before his memory failed. The rulings are read from the books, one row
+per (narrator, kind, condition ids, effect, book, page, quoted sentence) in `lists/conditional_confirmed.csv`;
+`lists/conditional.yaml` holds those in force (auto and the reviewer's human rows).
+
+    seed          PR 5's residue table, every conditional label («إلا في», «روايته عن», «اختلط», «تغير», «بأخرة»,
+                  «أهل بلده» …), the source's has_ikhtilat flag, the brief's named cases, and every entry of
+                  al-Kawākib al-Nayyirāt (Shamela 309), al-ʿAlāʾī's al-Mukhtaliṭīn (25846), Sibṭ Ibn
+                  al-ʿAjamī's al-Ightibāṭ (130) and Ibn Rajab's «القسم الثاني» (9552) matched to rawis
+    entries       each seed's Taqrīb (8609) and Taḥrīr (127715) entry, accepted after an identity check
+                  (four name words in order, or three with a nisba or the label in the entry)
+    from_shaykh   «إلا في روايته عن X», «روايته عن X خاصة مضطربة», «في حديثه عن X ضعف», «ثقة في غير X»,
+                  «تكلموا في روايته عن X» -> defect:light from X;  «أثبت الناس في X» -> accepted
+    region        «صدوق في روايته عن أهل بلده» -> the verdict's level from teachers of his region (nisba in
+                  rawis.nasab or residence in rawis.iqama against conditional_rules.regions)
+    via_student   «ورواية X وY عنه أعدل» (Taqrīb) -> the verdict's level; «وحديثه صحيح إذا روى عنه» (Taḥrīr) -> 3
+    ikhtilat      stated in his own entry («اختلط», «خلط», «تغير»), not as minor («قليلا», «لم يفحش», «فلم
+                  يحدث» …), not disputed by Taḥrīr, not in al-ʿAlāʾī's first category, and at least one
+                  student documented as hearing before; students placed by explicit list phrases («وممن سمع
+                  منه قبل الاختلاط: …») in his entry, then in the ikhtilāṭ books (the entry wins; a student
+                  on both sides is left out); before -> the level of Taḥrīr's «بل:» verdict, else of the
+                  Taqrīb's without the qualifier; after -> defect:light; unknown: after; a link in a chain of
+                  the Ṣaḥīḥayn, or the same student -> narrator link standing in one in the report, is before
+    unobservable  from his book vs memory, the place of hearing, after his books burned, material put to
+                  him: recorded with observable: false, applied nowhere
+    names         teachers and students resolved among the narrators actually adjacent to him in the
+                  chains (sanad_rawis): ism + father, «ابن» + father, kunya, a nisba, a lone ism; a name
+                  several fit resolves by the nisba after it, or to the one with ≥ 95% of their links
+                  (conditional_rules.dominance)
+    auto          stated in the narrator's own Taqrīb or Taḥrīr entry, every id matched uniquely, nothing
+                  unmatched, not disputed by Taḥrīr; else needs_review. Human rows are the reviewer's.
+
+Applied in `corroborate.py` on the link, before the chain grade: the position's effective level is the ruling's
+where its condition holds (the narrator's otherwise); defect:light adds a light defect there; the receipt names
+the ruling, its source sentence and the ids that satisfied it. The chain grade stays weakest-link. **κ thresholds
+are node-level and are not changed by link rulings**, and v1 (the narrators' levels as recorded) is not either.
+
+Ibn al-Ṣalāḥ on the mukhtaliṭūn (*Muqaddima* naw' 62, p. 392, [22870/389](https://shamela.ws/book/22870/389)):
+
+> وَالْحُكْمُ فِيهِمْ أَنَّهُ يُقْبَلُ حَدِيثُ مَنْ أُخِذَ عَنْهُمْ قَبْلَ الِاخْتِلَاطِ، وَلَا يُقْبَلُ حَدِيثُ مَنْ أُخِذَ عَنْهُ بَعْدَ الِاخْتِلَاطِ، أَوْ أُشْكِلَ أَمْرُهُ فَلَمْ يُدْرَ هَلْ أُخِذَ عَنْهُ قَبْلَ الِاخْتِلَاطِ أَوْ بَعْدَهُ
+
+and on the Ṣaḥīḥayn (p. 397–398, [22870/394](https://shamela.ws/book/22870/394)–[395](https://shamela.ws/book/22870/395)):
+«وَاعْلَمْ أَنَّ مَنْ كَانَ مِنْ هَذَا الْقَبِيلِ مُحْتَجًّا بِرِوَايَتِهِ فِي الصَّحِيحَيْنِ أَوْ أَحَدِهِمَا فَإِنَّا نَعْرِفُ عَلَى الْجُمْلَةِ أَنَّ ذَلِكَ مِمَّا تَمَيَّزَ، وَكَانَ مَأْخُوذًا عَنْهُ قَبْلَ الِاخْتِلَاطِ».
+The defect is light: the *Nuzha*'s corroboration sentence (above) names «المُخْتَلِطُ الذي لم يتميَّزْ» with the
+poor-memory narrator; its ruling (p. 104–105, [1565/100](https://shamela.ws/book/1565/100)–[101](https://shamela.ws/book/1565/101)):
+«والحُكْمُ فيه أنَّ ما حَدَّثَ به قَبْلَ الاختلاطِ إذا تَمَيَّزَ قُبِلَ، وإذا لم يَتميزْ تُوُقِّفَ فيه، وكذا من اشْتَبَهَ الأمرُ فيه، وإنما يُعرَفُ ذلك باعتبارِ الآخِذينَ عنه».
+al-ʿAlāʾī's three categories (*al-Mukhtaliṭīn* p. 3, [25846/1](https://shamela.ws/book/25846/1)): «أحدها: من لم يوجب ذلك
+له ضعفا أصلا ولم يحط من مرتبته … والثاني: من كان متكلما فيه قبل الاختلاط … والثالث: من كان محتجا به ثم اختلط …
+فيتوقف الاحتجاج به على التمييز». The Taqrīb sentences the brief names (each in `lists/conditional_confirmed.csv`
+with its page): Ismāʿīl b. ʿAyyāsh «صدوق في روايته عن أهل بلده مخلط في غيرهم» (p. 109,
+[8609/35](https://shamela.ws/book/8609/35)); Simāk «صدوق وروايته عن عكرمة خاصة مضطربة وقد تغير بأخرة» (p. 255,
+[8609/181](https://shamela.ws/book/8609/181)); Ibn Lahīʿa «صدوق من السابعة خلط بعد احتراق كتبه ورواية ابن المبارك وابن وهب عنه أعدل من غيرهما»
+(p. 319, [8609/245](https://shamela.ws/book/8609/245)), which Taḥrīr revises to «ضعيفٌ يُعتَبر به، وحديثه صحيح إذا روى
+عنه العبادلة: ابن المبارك، وابن وهب، وابن يزيد المقرئ، وابن مسلمة القعنبي» (2/258,
+[127715/686](https://shamela.ws/book/127715/686)).
+
+### The hearing check on tier 4 — `tadlis.tasrih_tiers: [3, 4, 5]`
+Tier 4 is accepted «بما صرحوا فيه بالسماع» (*Ṭabaqāt al-Mudallisīn*, above). PR 5's code already lifted a tier-4
+(and tier-5) ʿan covered by a hearing word on the same link elsewhere in the report; the switch makes it explicit
+and the variant `tasrih_tier_3_only` measures it (D73).
+
+### 3. The residue — `src/itibar/residue.py`, `reports/residue.md`, `figures/fig6_residue.*`
+Every group whose v2 grade (`ibn_hajar`) differs from `meaning_groups.matn_no` is tagged by mechanical cause; the
+tags (`residue_tags`, not exclusive), the primary tag (`residue_primary`, by `residue.precedence`), the direction
+(`stricter`: our code higher; `lenient`: lower), the weakest narrators, the conditional status and the witness's
+divergence are stored per group. The definitions are in the module and the report, which states what the chain
+cannot see and issues no verdict on which grade is right.
+
+### 4. Two defaults
+- **Sibling shawāhid are a variant** (`shahid_scope: group`; `siblings`, `siblings_strict` the variants; D58
+  amended, D75): the idf-weighted Dice measures shared vocabulary, not shared meaning (an inspected pair whose
+  witness negates the chain scores 0.60), and shāhid detection by meaning is the text layer's work.
+- **The mudallis set is the Ṭabaqāt union** (`mudallis_set: union`; `mudallis_source_flag` the variant; D57
+  amended, D76): every narrator matched to Ibn Hajar's book at his tier, plus the source's flagged narrators at
+  `untiered_tadlis` where not matched, so the sentence cites a book.
+
 ## Outputs
 
 | file | content |
@@ -637,9 +772,12 @@ several) and is graded like him (D64).
 | `out/chains.parquet` | one row per chain: flags, chain grade, weakest link, max_rank comparison, v2 verdicts per ruleset |
 | `out/bundles/nodes`, `out/bundles/edges` | the bundle graphs, Hive-partitioned by `bucket` (nodes carry `in_bypass`) |
 | `out/words.parquet` | transmission word per aligned (sanad, teacher pos) |
+| `out/unnamed_tops.parquet` | every chain top that is the unnamed person: mention, designation, method, class, phrase (PR 6 §1) |
 | `out/narrators.parquet` | the narrator census (one row per narrator on any bundle) |
 | `out/matn_tokens.parquet`, `out/matn_vocab.parquet` | normalized matn tokens and idf for the shāhid overlap |
-| `out/stages/<stage>/` | records and chains of each cumulative PR 5 stage (`make stages`) |
+| `out/stages/<stage>/` | records and chains of each cumulative PR 5 and PR 6 stage (`make stages`) |
+| `lists/conditional.yaml`, `lists/conditional_candidates.csv`, `lists/conditional_confirmed.csv` | conditional narrator rulings in force; every proposal with its match evidence; the rows used (`auto` / `needs_review` / `human`) (PR 6 §2) |
+| `lists/source/conditional_taqrib.jsonl`, `kawakib_309.jsonl`, `alai_25846.jsonl`, `ightibat_130.jsonl`, `ibn_rajab_9552.jsonl`, `boundary_verdicts.jsonl` | the Taqrīb and Taḥrīr entries of the seed narrators, the three ikhtilāṭ books, Ibn Rajab's section, and the verdicts read for the ṣaḥīḥ/ḥasan line |
 | `lists/mudallisin.yaml`, `lists/mudallisin_candidates.csv`, `lists/mudallisin_confirmed.csv` | Ibn Hajar's *Ṭabaqāt al-Mudallisīn* digitized; top-5 narrator candidates per entry; the tier mapping used (`auto` / `human`) |
 | `lists/shahid_inspection.yaml`, `reports/shahid_inspection.md` | the 50 cross-group witness candidates read to set the overlap floor, with labels |
 | `lists/source/taqrib_sample.jsonl` | the 40-narrator sample against the Taqrīb and Taḥrīr al-Taqrīb (audit §11.7) |
@@ -647,11 +785,12 @@ several) and is graded like him (D64).
 | `lists/candidates.csv`, `lists/confirmed.csv` | top-5 group candidates per entry; the mapping used (`auto` / `human`) |
 | `reports/audit.md`, `reports/gold.md` | source audit (incl. §10 gold error rate, §11 v2 and every PR 5 correction's before/after, §12 number class and qarāʾin); gold-set results |
 | `reports/lists.md`, `reports/common_links.md`, `reports/chapters.md`, `reports/pools/` | bucket-2 reports |
-| `figures/` | fig1 (κ by threshold), fig2 (width by Taqrib layer 1–12), fig3 (list bins), fig4 (common-link death years), fig5 (chapter census), each with a CSV |
+| `reports/residue.md` | the disagreement with the recorded grades, tagged by mechanical cause, with a seeded sample of receipts (PR 6 §3) |
+| `figures/` | fig1 (κ by threshold), fig2 (width by Taqrib layer 1–12), fig3 (list bins), fig4 (common-link death years), fig5 (chapter census), fig6 (the residue by primary tag and direction), each with a CSV |
 
 ## Gates and gold set
 
-- **Gold set** (`tests/gold/gold.yaml`, 35 entries): 15 mutawatir topics from al-Kattani's *Nazm
+- **Gold set** (`tests/gold/gold.yaml`, 44 entries): 15 mutawatir topics from al-Kattani's *Nazm
   al-Mutanathir* (κ_everyone > 1 and ≥ 10 companions asserted; κ at every threshold recorded), and
   7 gharib / 'aziz / mashhur / mutaba'at cases from Ibn al-Salah, Ibn Hajar, Muslim and al-Tirmidhi,
   asserted down to the exact cut vertices (e.g. *innama al-a'mal* through 'Umar: cut vertices
@@ -667,7 +806,15 @@ several) and is graded like him (D64).
   muṭlaq), *lā yuʾminu* ('azīz), *man kadhaba* (mutawātir by count) and *al-muslim man salima*
   (mashhūr by width, mutawātir by κ since PR 5); qarāʾin; al-Kattānī's entry 2 auto-matched to group 1.
   PR 5 adds 2: al-Aʿmash's ʿan in Muslim (tier 2, no defect) and Qatāda's ʿan from Anas in the *Musnad*
-  covered by «حدثنا» in the Ṣaḥīḥayn's chains of the same report (tier 3).
+  covered by «حدثنا» in the Ṣaḥīḥayn's chains of the same report (tier 3). PR 6 adds 9: Ḥumayd al-Ḥimyarī's
+  «لقيت رجلا صحب النبي ﷺ» (an unnamed companion: a PROPHET edge to u6524, no defect at the top; Ibn Hajar in
+  *Fatḥ al-Bārī*); Ibn Lahīʿa through Ibn Wahb (the `via_student` level) and through another student (his own
+  level, light); Ismāʿīl b. ʿAyyāsh from the Syrian Shuraḥbīl b. Muslim (the `region_of_shaykh` level) and from
+  the Madinan Mūsā b. ʿUqba (level 5, light), as al-Tirmidhī reports al-Bukhārī; Saʿīd b. Abī ʿArūba through
+  Yazīd b. Zurayʿ (heard before) and through Wakīʿ (after); Simāk from ʿIkrima (the light defect); Ibn Isḥāq's
+  ʿan from Makḥūl in al-Tirmidhī, covered by «حدثني مكحول» in the report's other chains (tier 4; al-Bayhaqī:
+  «ذكر فيه سماع محمد بن إسحاق من مكحول»). The sandals entry asserts its repair under `siblings` and its
+  in-group result under the default.
 - **max_rank gate**: weakest link = `sanads.max_rank` for 100% of chains (577,020/577,020); with the
   book-role positions excluded as the derived grade does, every difference is a chain whose excluded
   compiler (or book transmitter and the compiler after him) is strictly its weakest narrator — the only
@@ -681,7 +828,9 @@ several) and is graded like him (D64).
   audit, never tested. In its place, rule consistency: fatal chains keep their v1 code, unrepairable
   ones max(v1, 2); every upgrade names an attested witness chain and a divergence class; a cross-group
   witness is a shāhid from another group; the number class follows κ — plus the synthetic tests of
-  every PR 5 rule (`tests/test_pr5.py`).
+  every PR 5 rule (`tests/test_pr5.py`) and every PR 6 rule (`tests/test_pr6.py`); the unnamed companion ends his
+  chain at a companion and splitting his node never lowers κ; every disagreeing group has a direction and its
+  primary tag among its tags.
 - Also asserted: one record per group; κ_lower = min of the three hypotheses, ≤ κ_nocompat ≤ κ,
   κ_nocompat ≤ κ_nocompat_years ≤ κ, and nested thresholds; cut vertices iff κ = 1; bypass = 0 iff the
   common link is a cut vertex; number class and qarāʾin follow their definitions; recorded values
@@ -691,44 +840,56 @@ several) and is graded like him (D64).
 
 ![κ across 20,282 meaning groups by narrator-grade threshold, and the share of groups by κ](figures/fig1_kappa.png)
 
-20,282 groups with chains. κ_everyone: 0 in 14.6% (no unbroken companion-ending route in this
-data: 2,531 groups with no companion-ending chain, 427 where every such chain is broken), 1 in
-55.1%, 2–4 in 22.1%, 5–9 in 5.7%, ≥ 10 in 2.5% (505 groups); at thiqa and above, ≥ 10 in 102 groups.
-κ_lower_everyone ≥ 10 in 451 groups (94 at thiqa and above); κ_lower < κ in 2,436 groups, almost all
-through removed incompatible links; removing only the years-incompatible links lowers κ in 732.
+20,282 groups with chains. κ_everyone: 0 in 14.2% (no unbroken companion-ending route in this
+data: 2,448 groups with no companion-ending chain, 426 where every such chain is broken), 1 in
+55.3%, 2–4 in 22.2%, 5–9 in 5.7%, ≥ 10 in 2.5% (511 groups); at thiqa and above, ≥ 10 in 108 groups.
+κ_lower_everyone ≥ 10 in 457 groups (98 at thiqa and above); κ_lower < κ in 2,447 groups, almost all
+through removed incompatible links; removing only the years-incompatible links lowers κ in 734. The
+unnamed companion (PR 6): 1,915 chain tops in 501 groups read as an unnamed companion; 82 groups that had
+no companion-ending chain now have κ_all ≥ 1; splitting the merged node per student would raise κ_all in 17
+groups (`kappa_unnamed_split`).
 
-**Derived grade** (after the PR 5 corrections; audit §11). Agreement with the recorded group grade is
-reported, never gated: v1 72.35%; v2 `ibn_hajar` 71.21%, v2 `ibn_al_salah` 72.11% (PR 4: 72.86% and
-72.37%). Each correction's effect, applied in order (stage table, audit §11.1): attested witnesses only
-72.86% → 73.41% (the block *ours 1 / source 3–5* 562 → 457 groups); tiered tadlīs with the hearing
-check and the Ṣaḥīḥayn convention → 74.15% (of PR 4's 271 ʿan-only downgrades, 137 return to code 0);
-shawāhid from sibling groups → 73.21%; every light defect covered → 71.09%; book roles and the κ
-number class change no group grade; the unnamed person named elsewhere → 71.21%. The class
-corroboration addresses (v1 code 2, recorded حسن) falls from 2,573 groups to 1,561. 2,877 groups are
-upgraded; their summary witness is a shāhid in 1,937 (659 from a sibling group), a mutābaʿa tāmma in
-561, qāṣira in 287, waṣl in 92. In 125 groups whose v2 chain stays ḍaʿīf the union graph had a route
-the attested chains do not.
+**Derived grade** (after the PR 5 and PR 6 changes; audit §11). Agreement with the recorded group grade is
+reported, never gated: v1 72.67%; v2 `ibn_hajar` 71.53%, v2 `ibn_al_salah` 72.75% (PR 5: 72.35%, 71.21%,
+72.11%; PR 4: 72.86% and 72.37%). PR 5's corrections, applied in order (stage table, audit §11.1): attested
+witnesses only 72.86% → 73.41% (the block *ours 1 / source 3–5* 562 → 457 groups); tiered tadlīs with the
+hearing check and the Ṣaḥīḥayn convention → 74.15%; shawāhid from sibling groups → 73.21%; every light defect
+covered → 71.09%; the unnamed person named elsewhere → 71.21%. PR 6's, in order: the unnamed companion →
+71.49% (72 groups change); conditional narrator rulings → 71.20% (157 groups; 35 rulings in force on 25
+narrators, 353 rows await the reviewer); sibling shawāhid made a variant → 71.82% (607 groups); the mudallis set
+the Ṭabaqāt union → 71.53% (159 groups). The hearing check on tier 4 was already in PR 5 (variant
+`tasrih_tier_3_only`: 71.55%, 28 groups differ). The class corroboration addresses (v1 code 2, recorded حسن)
+holds 1,733 groups (v1: 2,556). 2,312 groups are upgraded; their summary witness is a shāhid in 1,343, a
+mutābaʿa tāmma in 569, qāṣira in 297, waṣl in 103. In 154 groups whose v2 chain stays ḍaʿīf the union graph had
+a route the attested chains do not.
 
-**Number class** (on κ_all since PR 5): gharīb muṭlaq 51.4%, gharīb nisbī 3.7%, ʿazīz 13.2%, mashhūr
-14.6%, mutawātir by count (≥ 10) 505 groups (2.5%); no route 14.6%. The width reading (diagnostic) has
-gharīb 76.6% and 93 groups at ≥ 10; the two readings differ in 31.5% of groups, mostly gharīb by width
+**The residue** ([reports/residue.md](reports/residue.md), fig6). 5,774 of the 20,282 groups (28.5%) disagree
+with the recorded grade; 56.8% are lenient (our code lower than the source's). Another attested chain of the
+group yields exactly the source's code in 44.8% (the unit of grading); the primary causes after it:
+corroboration 24.2%, a narrator with a conditional ruling 6.3%, an uncovered tadlīs ʿan alone 5.9%, a source code
+3–5 over a chain of narrators no worse than level 9 5.1%, mixed defects 6.7%. The report lists what the chain
+cannot see and issues no verdict on which grade is right.
+
+**Number class** (on κ_all since PR 5): gharīb muṭlaq 51.5%, gharīb nisbī 3.8%, ʿazīz 13.3%, mashhūr
+14.7%, mutawātir by count (≥ 10) 511 groups (2.5%); no route 14.2%. The width reading (diagnostic) has
+gharīb 77.0% and 95 groups at ≥ 10; the two readings differ in 31.5% of groups, mostly gharīb by width
 with κ ≥ 2 (a lone narrator in a layer the other routes skip). **Qarāʾin**: in the Ṣaḥīḥayn 2,690;
-≥ 3 distinct ṣadūq+ routes 1,557; a ḥuffāẓ chain (not gharīb by κ) 1,185; all three 657.
+≥ 3 distinct ṣadūq+ routes 1,575; a ḥuffāẓ chain (not gharīb by κ) 1,195; all three 664.
 
 **Lists.** al-Kattānī: 308 entries; 92 auto-matched, of which 71 reach κ_all ≥ 10 in a single group
 and 21 do not; 216 await review (75 are topics). al-Suyūṭī (111, via al-Kattānī): 58 auto-matched, 46
-reach it. *man kadhaba* (group 1): κ_all 62, κ_thiqa+ 22, 66 companions.
+reach it. *man kadhaba* (group 1): κ_all 63 (an unnamed companion added), κ_thiqa+ 22, 66 named companions.
 
-**Common links** (compiler roles per edge since PR 5). 21,408 (group, common link) pairs; 51.1% sit at
+**Common links** (compiler roles per edge since PR 5). 21,447 (group, common link) pairs; 51.0% sit at
 the companion level. Median death year 88 AH (73 in Ṣaḥīḥayn groups); 30.3% died 100–199 AH (23.4% in
 Ṣaḥīḥayn groups). PR 4's second cluster of common links dying 200–300 AH (19% of Ṣaḥīḥayn pairs, 4.5%
 now) was an artefact of compilers being terminal nodes: their teachers became the uppermost partial
 common link. Below the companions al-Zuhrī now ranks 1st (PR 4: 6th), Qatāda 5th (18th), al-Aʿmash
-11th (26th), Shuʿba 17th (37th) and Mālik 40th (131st; his *Muwaṭṭaʾ* is one qualifying branch, D61).
+11th (26th), Shuʿba 17th (37th) and Mālik 41st (131st; his *Muwaṭṭaʾ* is one qualifying branch, D61).
 
 **Chapters.** Across the 13 top-level chapters, 43% (المعاملات) to 57% (الفضائل والمناقب) of groups have
 κ_all = 1, and 73% to 91% have at most one thiqa route. **Pools**: the Dajjāl subtree (39 groups) has
-κ_all 34 (thiqa+ 20) and 42 companions; the Mahdī subtree (18 groups) κ_all 11 (thiqa+ 3), 14
+κ_all 34 (thiqa+ 20) and 42 named companions; the Mahdī subtree (18 groups) κ_all 11 (thiqa+ 3), 14
 companions, mashhūr by width and mutawātir by κ.
 
 **Gold error rate.** In the four gold entries inspected chain by chain, 14 of 843 in-scope chains
@@ -736,12 +897,12 @@ companions, mashhūr by width and mutawātir by κ.
 
 ## Layout
 
-    config/          grades.yaml, structure.yaml, source.yaml; stages/ (the cumulative PR 5 stages)
-    src/itibar/      data, audit, audit_pr5, grades, load, words, matn, bundle, flow, structure, derive,
-                     corroborate, siblings, pipeline, stages, scope, gold, fixture, figures, cli, pool, lists,
-                     mudallisin, provenance, narrators, chapters
+    config/          grades.yaml, structure.yaml, source.yaml; stages/ (the cumulative PR 5 and PR 6 stages)
+    src/itibar/      data, audit, audit_pr5, audit_pr6, grades, load, words, unnamed, matn, bundle, flow, structure,
+                     derive, corroborate, conditional, residue, residue_report, siblings, pipeline, stages, scope,
+                     gold, fixture, figures, cli, pool, lists, mudallisin, provenance, narrators, chapters
     lists/           kattani.yaml, suyuti.yaml, candidates.csv, confirmed.csv, mudallisin*.{yaml,csv},
-                     shahid_inspection.yaml; source/ (fetched text)
-    tests/           unit (flow vs networkx, synthetic bundles, bucket 2, PR 5), gold, gates; fixture/ (committed sample)
-    reports/         audit.md, gold.md, lists.md, common_links.md, chapters.md, shahid_inspection.md, pools/
-    figures/         fig1 – fig5
+                     conditional*.{yaml,csv}, shahid_inspection.yaml; source/ (fetched text)
+    tests/           unit (flow vs networkx, synthetic bundles, bucket 2, PR 5, PR 6), gold, gates; fixture/ (committed sample)
+    reports/         audit.md, gold.md, lists.md, common_links.md, chapters.md, residue.md, shahid_inspection.md, pools/
+    figures/         fig1 – fig6

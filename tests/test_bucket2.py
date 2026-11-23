@@ -164,7 +164,7 @@ def test_group_v2_takes_the_best_chain_and_receipt_names_the_rule():
     out = run([a, b], base_people() | {W: level(6)}, books(A1, A2))
     rec = out["record"]
     assert rec["code_v2_ibn_hajar"] == 0 and rec["rule_v2_ibn_hajar"] == "sahih_li_dhatihi"
-    assert rec["derive_version"] == 3 and rec["structure_version"] == 4
+    assert rec["derive_version"] == 4 and rec["structure_version"] == 5
     rc = json.loads(rec["receipt_v2"])
     assert set(rc) == {"ibn_hajar", "ibn_al_salah"}
     assert rc["ibn_hajar"][-1]["rule"] == "sahih_li_dhatihi"

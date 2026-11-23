@@ -2,7 +2,8 @@
 
 Every choice the data forced that the bucket-1 definitions (and the PR 2 corrections,
 `docs/prompts/pr-2.md`, D30–D34, bucket 2, `docs/prompts/bucket-2.md`, D35–D55, and the PR 5
-corrections, `docs/prompts/pr-5.md`, D56–D68) did not settle, with the alternatives.
+corrections, `docs/prompts/pr-5.md`, D56–D68, and PR 6, `docs/prompts/pr-6.md`, D69–D79) did not settle, with
+the alternatives.
 Numbers are from the full corpus (`reports/audit.md` has the evidence). Each entry names the config
 key that controls it, where there is one.
 
@@ -275,7 +276,8 @@ mudallis's muʿanʿan link (`has_tadlis` and the word before the teacher in `con
 are light; inqiṭāʿ and taʿlīq markers are fatal, as the brief decides; an irsal marker anywhere but the
 top (9 chains) is treated as a break. An unnamed person in the companion slot (5,040 chain tops) is
 read as a mursal (`top_mubham: mursal`): he may be an unnamed companion, whose anonymity does not
-harm, or a Successor, which makes the chain mursal; below the companion slot an unnamed person or an
+harm, or a Successor, which makes the chain mursal (*amended by D69–D70, PR 6: a top unnamed person whose
+designation in the text is a companion's is an unnamed companion; `top_mubham` now governs only the rest*); below the companion slot an unnamed person or an
 undescribed narrator (stub) is unrepairable (`weakness.unknown`), as the mubham «لا يقبل … ما لم يسم».
 The mudallis's node is the avoided position (a node-disjoint route cannot see the link word).
 **Consequence:** 372 groups v1 grades 0 get a higher v2 code, 271 of them only because of a
@@ -477,14 +479,16 @@ a hearing word elsewhere in the report; 74 ḥasan li-ghayrihi, 57 ḍaʿīf (ti
 repairable (tier 4–5). **Source correction:** the brief has tier 5 "rejected unless explicit hearing is shown"; Ibn
 Hajar's tier 5 is «من ضعف بأمر آخر سوى التدليس فحديثهم مردود ولو صرحوا بالسماع» — rejected even with hearing, for the
 other weakness, which itibar already carries as the narrator's level; the ʿan rule applied to tier 5 is tier 4's.
-**Who is a mudallis** (`mudallis_set: source_flag`): the narrators the source flags; the book gives their tier. 34
+**Who is a mudallis** (`mudallis_set: source_flag`; *amended by D76, PR 6: the default is now `union`*): the
+narrators the source flags; the book gives their tier. 34
 narrators matched to the book are not flagged by the source (al-Zuhrī among them, tier 3): adding them
 (`mudallis_union`, variant) makes every uncovered ʿan of theirs outside the Ṣaḥīḥayn a defect (agreement 70.96%
 against 71.21%). The source's flag is its editors' verdict on the narrator (D1), and Ibn Hajar's placement of al-Zuhrī
 in tier 3 is itself disputed. *Alternatives:* `tasrih_scope: corpus` (72.37%), `tier_4_5: light`, `mudallis_set: union`,
 `tiers: false` (PR 4).
 
-**D58. Shawāhid from sibling groups, and the overlap floor** (`shahid_scope: siblings`, `shahid_min_overlap: 0.32`,
+**D58. Shawāhid from sibling groups, and the overlap floor** (*amended by D75, PR 6: `shahid_scope: group` is the
+default and `siblings` a variant; the floor below is unchanged*) (`shahid_scope: siblings`, `shahid_min_overlap: 0.32`,
 `src/itibar/siblings.py`, `src/itibar/matn.py`). A group's rows in `topics` are always leaves; the brief's "leaf
 topic node(s)" are read as their parents, the lowest topic nodes holding the report, and the siblings of g are the
 other groups under any of them. A sibling witness is classified exactly as in its own group (a first pipeline pass
@@ -602,3 +606,133 @@ entries, all pass.
 **D68. Version numbers.** `derive.version: 3`, `structure.version: 4` on every record; the old values are reproduced by
 `config/stages/s0_pr4.yaml` (records otherwise identical: the stage-0 run matches PR 4's codes, rules and structure
 group by group).
+
+
+## PR 6 (`docs/prompts/pr-6.md`; structure version 5, derive version 4)
+
+The changes are applied cumulatively in the brief's order as stages 8–11 (`config/stages/`; stage 7 is PR 5's
+defaults and reproduces PR 5's records exactly); audit §11.9–§11.12 tabulates what each moved. Classical passages
+were fetched from Shamela and checked byte for byte against the page text by a separate pass.
+
+**D69. The unnamed companion: reading the designation** (`unnamed_companion`, `src/itibar/unnamed.py`). The mention
+span in `hadith_rawis` is often the noun alone («رَجُلٍ»), the designation following it, so the designation is the
+mention plus the words after it up to the next mention, a delimiter (، : ؛ .) or a transmission word (قال، أن، عن …),
+at most 80 characters. Alignment as in `words.py`; unaligned chains take the hadith's last unnamed-person mention in
+the sanad part (`sanad_fallback_mention`). Where the hadith has no unnamed-person mention at all
+(`sanad_fallback_text`, 324 chain tops) the text before `matn_start` was read and found to be mostly the matn's own
+opening (`matn_start` is approximate: «قال: لدغت رجلا عقرب فجاء النبي …»), so nothing is read as a designation there
+(class `none_text`, treated as none). The phrase list was written after tabulating every designation (audit
+Appendix B), from meaning, not from agreement: the brief's companion phrases plus the others the table shows that
+designate someone who met the Prophet as a believer — his wives («أزواج النبي», «أمهات المؤمنين»), his servant and
+collector, one who heard him, prayed with him, rode behind him or pledged allegiance to him; «أدرك النبي» (lived in
+his time) is none. «رجل أتى النبي» is a narrative, not a designation, and is not listed. Classes by precedence
+companion, ansar_muhajir, none, so «رجل من الأنصار من أصحاب النبي» is a companion. A chain top counts as narrating from
+the Prophet (the ansar_muhajir condition) because it is the top of a chain of the report. *Alternatives:* the mention
+span alone (misses most designations); classify the text fallback too (reads the matn); a broader ansar list
+including Anṣārī clans («من بني سلمة»): tribal, left none as the brief says.
+
+**D70. One node per group, never identified with a named companion** (`u<group_id>`). Every unnamed companion of a
+group is one node, as the brief decides. I first also identified him with a named companion when his student
+narrates the report from exactly one named companion in another chain (Ibn Hajar's rule for naming a mubham from
+another route). Group 6524 shows why that is unsafe here: Ḥumayd al-Ḥimyarī's «لقيت رجلا صحب النبي ﷺ كما صحبه أبو
+هريرة» — the man is explicitly *not* Abū Hurayra — has two chains the source resolved to Abū Hurayra, and the rule
+named all thirteen unnamed companions Abū Hurayra. Dropped. The node is a companion (ordinal 12, layer 1, a PROPHET
+edge; `gharib_mutlaq` when it is the cut vertex), counts as level 1 in v1 and v2, is skipped by the census (kind
+`ucomp`) and by the `companions` / `companions_chain_end` counts (they stay comparable to the source's
+`sahaba_qty`); `kappa_unnamed_split` splits it per student. Ibn Hajar's condition in *al-Nukat* — the Successor
+free of tadlīs — is applied as the ordinary tadlīs rule on the link from the unnamed companion. *Alternatives:* the
+identification above; one node per (student) context as for other unnamed persons (D4; that is
+`kappa_unnamed_split`).
+
+**D71. Conditional rulings: what is read and from where** (`derive.conditional`, `src/itibar/conditional.py`,
+`lists/conditional*`). The ruling table is built from the books, never from the disagreement table: the seed (PR 5's
+residue narrators, the conditional labels, the source's `has_ikhtilat` flag — 161 narrators, not mentioned by the
+brief —, the brief's named cases, and every entry of al-Kawākib al-Nayyirāt, al-ʿAlāʾī's al-Mukhtaliṭīn,
+al-Ightibāṭ and Ibn Rajab's «القسم الثاني» matched to `rawis`) only says where to look. Each seed's Taqrīb and Taḥrīr
+entries are fetched by name; an entry is accepted after an identity check (four name words in order, or three
+with a nisba of his nickname or nasab in the entry, or three with the source's label inside the entry), because
+the prefix reader of PR 5 lands on namesakes (it read «إبراهيم بن محمد الفزاري» for Ibn Abī Yaḥyā); vowelling notes
+inside a name («سماك بكسر أوله وتخفيف الميم ابن حرب») are skipped. Conditions are read by fixed patterns on the whole
+entry (the condition often follows the tabaqa: «من السابعة خلط بعد احتراق كتبه»), effects as in the README. The
+books' matcher for entry heads is the mudallisin matcher with its rule (a), and, as its rule (b) used the source's
+`has_tadlis`, the source's `has_ikhtilat` flag as the independent second source (on the candidate and on no namesake,
+ism + father agreeing, margin ≥ 0.1, score ≥ 0.45: these heads give the name alone, without the nickname the
+*Ṭabaqāt* prints after it, so scores run lower; 46 of al-Kawākib's 70 entries, 37 of al-ʿAlāʾī's 46). Names in a condition are resolved
+among the narrators adjacent to him in the chains; a name several adjacent narrators fit resolves to one only when it
+carries ≥ 95% of their links with him (`conditional_rules.dominance`; the source splits some men in two, e.g.
+ʿAbdallāh b. Wahb r5147 / r5146). **Auto rule:** the condition is stated in the narrator's own Taqrīb or Taḥrīr entry,
+every id matched uniquely, no name left unmatched, and Taḥrīr does not dispute it. For the ikhtilāṭ the condition
+stated in his entry is the confusion itself; the students placed before and after come from his entry (Taḥrīr lists
+them for ʿAṭāʾ b. al-Sāʾib, Saʿīd b. Abī ʿArūba, Ibn Lahīʿa) and from the ikhtilāṭ books, read only from explicit list
+phrases («وممن سمع منه قبل الاختلاط: …»), the entry's lists first, a student placed on both sides left out. **Result:** 227 narrators looked up, 388 rows; 35 auto — 21 applied rulings on 14 narrators (9 from a teacher, Ismāʿīl b. ʿAyyāsh's region, Ibn Lahīʿa's students, five ikhtilāṭ narrators) and 14 unobservable — and 353 needs_review, most because no Taqrīb or Taḥrīr entry was identified (the source's has_ikhtilat flag covers many narrators after the Taqrīb's twelve layers) or no student is documented as hearing before. Effect alone (stage 9): 157 groups change, agreement 71.49% → 71.20%.
+*Alternatives:* the strict reading of the auto rule for the ikhtilāṭ (the students too must be named in the Taqrīb or
+Taḥrīr entry): three of the five ikhtilāṭ narrators (ʿAṭāʾ b. al-Sāʾib, Saʿīd b. Abī ʿArūba, Ibn Lahīʿa,
+whose Taḥrīr entries list the students; Simāk's and al-Jurayrī's early students come from al-Kawākib); a window around trigger words for the lists (tried first: it put al-Ṭaḥḥān, ʿAlī b. ʿĀṣim
+and Hushaym, whom al-ʿAlāʾī names as hearing ʿAṭāʾ late, among the early students; dropped).
+
+**D72. When the books disagree, the row waits.** The labels follow Taḥrīr (audit §11.7). (1) A ruling read from
+Taḥrīr's «بل:» revision supersedes Ibn Hajar's of the same kind (Ibn Lahīʿa: Taqrīb «ورواية ابن المبارك وابن وهب عنه
+أعدل», Taḥrīr «وحديثه صحيح إذا روى عنه العبادلة»). (2) Where Taḥrīr's comment disputes a Taqrīb condition («فيه نظر»,
+«ليس بجيد … فإنه لم يختلط», «لا معنى لذكره») the row is needs_review: Maʿmar's teachers, Jaʿfar b. Burqān in al-Zuhrī,
+Abū Isḥāq al-Sabīʿī's ikhtilāṭ. (3) A narrator al-ʿAlāʾī places in his first category («من لم يوجب ذلك له ضعفا أصلا»:
+Ibn ʿUyayna, Ibn Rāhawayh, Jarīr b. Ḥāzim, Abū Isḥāq …) gets no ikhtilāṭ ruling in force; a confusion the entry calls
+minor («قليلا», «لم يفحش», «فلم يحدث») likewise. (4) An ikhtilāṭ ruling needs at least one student documented as hearing
+before: with `unknown: after`, none would put every student after the change, which no source does for such a narrator
+(al-ʿAlāʾī closes ʿAbd al-Razzāq's entry «وبالجملة فهو حجة على الإطلاق», though Aḥmad's early hearing is stated only as
+«قبل المئتين», which no list phrase captures). *Alternative:* apply Ibn Hajar's wording throughout (the brief's
+"Taqrīb or Taḥrīr" allows either; mixing them would grade one link by two critics).
+
+**D73. The hearing check on tier 4 was already there.** The brief says PR 5 applied the hearing-elsewhere check to tier
+3 only; PR 5's code lifted any tier ≥ 3 ʿan covered by a hearing word on the same link in the report (D57 «a defect
+unless covered»; `muanan_covered_tasrih_tier_4` 4,832 chains in PR 5's audit). No default changes; the switch
+`tadlis.tasrih_tiers: [3, 4, 5]` makes the rule explicit and `tasrih_tier_3_only` measures what tiers 4–5 contribute
+(audit §11.11). There is no stage of its own.
+
+**D74. The residue tags** (`src/itibar/residue.py`, `residue.precedence`). Computed in the pipeline for the default
+ruleset's v2 chain. Weakest positions: the defect positions, else the positions of the weakest level. `source_severe`
+reads the effective levels of the v2 chain (after rulings); `corroboration` is an upgrade the source does not follow
+(our code lower) or a ḍaʿīf/ḥasan chain with an uncovered target where the source is higher; `level_only` is a chain
+whose only defects are levels, with no upgrade and no corroboration tag; `conditional_narrator` / `resolved` needs the
+`conditional_off` variant (a group agreeing now, disagreeing with the rulings off, with a ruling fired). The
+precedence puts the unit of grading first, then what the machinery names on the chain, then what lies outside it.
+`tahrir_vs_ibn_hajar` reads the head formula of the Taqrīb verdict and of Taḥrīr's «بل:» revision for the 100
+narrators most often weakest at the ṣaḥīḥ/ḥasan line (`lists/source/boundary_verdicts.jsonl`). *Alternatives:* a
+precedence led by `source_severe` (the strongest claim about the grader) — the order changes the primary tag only.
+
+**D75. Sibling shawāhid off by default** (D58 amended; `shahid_scope: group`, variants `siblings`, `siblings_strict`).
+The idf-weighted Dice measures shared vocabulary, not shared meaning — the inspection found a pair whose witness
+negates the chain («لا يصافح النساء») at 0.60 — and shāhid detection by meaning belongs to the text layer (bucket 3).
+The machinery, the floor and the inspection stay and are reported. Effect alone (stage 10): 607 groups change,
+agreement 71.20% → 71.82%; the `siblings` variant 70.98%, `siblings_strict` 71.28%. The sandals dowry is repaired
+under `siblings` only.
+
+**D76. The mudallis set is the Ṭabaqāt union** (D57 amended; `mudallis_set: union`, variant `mudallis_source_flag`).
+The paper's sentence must cite a book, not the dataset's editors: every narrator matched to Ibn Hajar's book at his
+tier, plus the source's flagged narrators at `untiered_tadlis` where not matched. al-Zuhrī's tier-3 placement is
+disputed and is discussed by name (audit §11.12, reports/residue.md). Effect alone (stage 11): 159 groups change,
+agreement 71.82% → 71.53%; `mudallis_source_flag` 71.82%. al-Zuhrī's uncovered ʿan is a v2 defect in 5,688 chains;
+191 groups' v2 chain is one of them, 127 of which disagree with the recorded grade.
+
+**D77. Gold.** Nine entries (44 in all, all pass), each with its classical source checked against the page: the unnamed
+companion of Ḥumayd al-Ḥimyarī (group 6524; *Fatḥ al-Bārī*: «إبهام الصحابي لا يضر»); Ibn Lahīʿa through Ibn al-Mubārak
+(3555) and through Yaḥyā b. Ḥassān (2); Ismāʿīl b. ʿAyyāsh from the Syrian Shuraḥbīl (458) and the Madinan Mūsā b.
+ʿUqba (1990), the two hadith after which al-Tirmidhī reports al-Bukhārī's verdict; Saʿīd b. Abī ʿArūba through
+Yazīd b. Zurayʿ and through Wakīʿ (13); Simāk from ʿIkrima (407); Ibn Isḥāq's ʿan from Makḥūl in al-Tirmidhī covered
+by «حدثني مكحول» (37). The Ibn Isḥāq entry asserts that his link is covered and that his node is not a position to
+cover; the chain keeps a light defect, Makḥūl's own uncovered ʿan (tier 3 under the union), so it does not assert a
+defect-free chain. The sandals entry asserts code 2 under the default and 1 under `siblings`; the gold reader now
+reads a variant on the path's best chain under that variant (with the default all 47 ʿĀṣim chains tie at code 2 and
+the first of them is not the one the sibling witness overlaps). Ibn Lahīʿa's Taḥrīr ruling (the four ʿAbādila, «صحيح»)
+waits for review because «ابن يزيد المقرئ» fits several of his students; the Taqrīb's (Ibn al-Mubārak and Ibn Wahb,
+«صدوق», level 4) is in force, and a student a via_student ruling vouches for is placed before the burning of his books.
+
+**D78. Engineering.** `out/unnamed_tops.parquet` is built by `make words` (and `make ci`) and read by the loader;
+`make conditional` rebuilds the ruling table from the committed `lists/source/` (no network); `make conditional-fetch`
+re-downloads the entries and the four books. Stage files are sorted by number (s10 after s9). Gold `chain_check` gains
+`rulings_include`, `rulings_eq`, `weak_nodes_include` / `_exclude`, `defects_include`, `unnamed_companion` and
+`alt_*` codes; entries gain `edges_include`. The fixture carries the narrators with rulings in force and the ids
+their conditions name.
+
+**D79. Versions.** `structure.version: 5`, `derive.version: 4`; stages 0–7 set the new switches off
+(`unnamed_companion.enabled: false`, `conditional: false`, `mudallis_set: source_flag`) and stage 7 reproduces PR 5's
+records group by group (κ, cut vertices, v2 codes and rules, receipts).

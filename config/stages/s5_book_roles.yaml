@@ -1,9 +1,11 @@
 # Stage 5: + compiler roles per edge and book transmitters (section 5).
 structure:
+  unnamed_companion: {enabled: false}
   bundle: {book_transmitters: true}
   structure: {compiler_terminal: edge}
   number_class: {basis: width}
   derive:
     corroboration: {witness: attested, avoid: each_defect, shahid_scope: siblings, unknown_repair: none}
-    tadlis: {tiers: true, tasrih_scope: group, sahihayn_muanan_accepted: true}
+    conditional: false
+    tadlis: {mudallis_set: source_flag, tiers: true, tasrih_scope: group, sahihayn_muanan_accepted: true}
     variants: null

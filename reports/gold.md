@@ -15,34 +15,43 @@ the column after it names the first hypothesis attaining it.
 | la-yuminu-ahadukum | 1581 | aziz | yes | 103 (103) | 7 | 6 | 4 | 2 | 7 | unmerged | 7 |  |
 | buniya-al-islam | 523 | mashhur | yes | 179 (179) | 1 | 1 | 1 | 1 | 1 | unmerged | 1 | عبد الله بن عمر العدوي |
 | mighfar-mutabaat | 376 | gharib-with-mutabaat | yes | 404 (404) | 1 | 1 | 1 | 1 | 1 | unmerged | 1 | أنس بن مالك الأنصاري |
-| man-kadhaba | 1 | mutawatir | yes | 1690 (1690) | 62 | 54 | 33 | 22 | 59 | nocompat | 66 |  |
-| mash-alal-khuffayn | 3 | mutawatir | yes | 1906 (1906) | 50 | 44 | 28 | 24 | 46 | nocompat | 61 |  |
-| raf-al-yadayn | 31 | mutawatir | yes | 801 (801) | 18 | 14 | 14 | 12 | 17 | nocompat | 23 |  |
-| al-hawd | 55 | mutawatir | yes | 877 (877) | 35 | 33 | 26 | 19 | 34 | nocompat | 39 |  |
+| man-kadhaba | 1 | mutawatir | yes | 1690 (1690) | 63 | 55 | 34 | 22 | 60 | nocompat | 66 |  |
+| mash-alal-khuffayn | 3 | mutawatir | yes | 1906 (1906) | 51 | 45 | 29 | 25 | 47 | nocompat | 61 |  |
+| raf-al-yadayn | 31 | mutawatir | yes | 801 (801) | 19 | 15 | 15 | 13 | 18 | nocompat | 23 |  |
+| al-hawd | 55 | mutawatir | yes | 877 (877) | 36 | 34 | 27 | 20 | 35 | nocompat | 39 |  |
 | al-shafaa | 145 | mutawatir | yes | 441 (441) | 14 | 12 | 9 | 8 | 14 | unmerged | 14 |  |
 | ruyat-allah | 771 | mutawatir | yes | 888 (888) | 13 | 12 | 8 | 6 | 13 | unmerged | 13 |  |
 | sabat-ahruf | 162 | mutawatir | yes | 470 (470) | 17 | 17 | 14 | 13 | 17 | unmerged | 19 |  |
 | man-bana-masjidan | 338 | mutawatir | yes | 246 (246) | 20 | 13 | 9 | 8 | 19 | nocompat | 21 |  |
 | nadara-allah | 206 | mutawatir | yes | 325 (325) | 16 | 15 | 8 | 5 | 16 | unmerged | 18 |  |
 | al-mar-maa-man-ahabba | 78 | mutawatir | yes | 538 (538) | 16 | 14 | 10 | 7 | 16 | unmerged | 20 |  |
-| al-dajjal | 28 | mutawatir | yes | 784 (784) | 27 | 25 | 21 | 18 | 27 | unmerged | 31 |  |
+| al-dajjal | 28 | mutawatir | yes | 784 (784) | 28 | 26 | 22 | 19 | 28 | unmerged | 31 |  |
 | adhab-al-qabr | 189 | mutawatir | yes | 422 (422) | 13 | 13 | 10 | 8 | 13 | unmerged | 13 |  |
 | al-walad-lil-firash | 185 | mutawatir | yes | 436 (436) | 18 | 15 | 11 | 7 | 18 | unmerged | 23 |  |
 | man-hamala-alayna-al-silah | 588 | mutawatir | yes | 162 (162) | 13 | 11 | 7 | 3 | 12 | nocompat | 16 |  |
 | bada-al-islam-gharib | 497 | mutawatir | yes | 196 (196) | 14 | 8 | 5 | 4 | 13 | nocompat | 16 |  |
-| siwak-muhammad-b-amr | 121 | hasan-raised-by-other-routes | yes | 533 (533) | 20 | 17 | 12 | 12 | 19 | nocompat | 24 |  |
+| siwak-muhammad-b-amr | 121 | hasan-raised-by-other-routes | yes | 533 (533) | 21 | 18 | 13 | 13 | 20 | nocompat | 24 |  |
 | sandals-asim-b-ubaydallah | 2031 | hasan-li-ghayrihi-witnesses-outside-the-group | yes | 51 (51) | 2 | 2 | 0 | 0 | 2 | unmerged | 2 |  |
 | maqbul-repaired | 3487 | maqbul-with-mutabaa | yes | 28 (28) | 3 | 1 | 1 | 0 | 2 | nocompat | 4 |  |
 | fatal-not-repaired | 7688 | fatal-weakness | yes | 7 (7) | 2 | 0 | 0 | 0 | 2 | unmerged | 2 |  |
 | innama-number-class | 319 | gharib | yes | 335 (321) | 1 | 1 | 1 | 1 | 1 | unmerged | 1 | عمر بن الخطاب العدوي, علقمة بن وقاص العتواري, محمد بن إبراهيم القرشي, يحيى بن سعيد الأنصاري |
 | la-yuminu-number-class | 1581 | aziz | yes | 72 (72) | 2 | 2 | 2 | 2 | 2 | unmerged | 2 |  |
-| man-kadhaba-number-class | 1 | mutawatir | yes | 1690 (1690) | 62 | 54 | 33 | 22 | 59 | nocompat | 66 |  |
+| man-kadhaba-number-class | 1 | mutawatir | yes | 1690 (1690) | 63 | 55 | 34 | 22 | 60 | nocompat | 66 |  |
 | mashhur-al-muslim | 218 | mashhur | yes | 414 (414) | 19 | 18 | 11 | 9 | 19 | unmerged | 20 |  |
 | innama-qarain | 319 | qarain | yes | 335 (321) | 1 | 1 | 1 | 1 | 1 | unmerged | 1 | عمر بن الخطاب العدوي, علقمة بن وقاص العتواري, محمد بن إبراهيم القرشي, يحيى بن سعيد الأنصاري |
 | gharib-not-in-sahihayn | 3487 | qarain | yes | 11 (11) | 1 | 1 | 1 | 0 | 1 | unmerged | 1 | أبو سعيد الخدري, الحسن البصري, سفيان الثوري |
-| muanan-tier-2-in-muslim | 3 | tadlis-tier-2 | yes | 1906 (1906) | 50 | 44 | 28 | 24 | 46 | nocompat | 61 |  |
+| muanan-tier-2-in-muslim | 3 | tadlis-tier-2 | yes | 1906 (1906) | 51 | 45 | 29 | 25 | 47 | nocompat | 61 |  |
 | muanan-tier-3-covered-by-tasrih | 7 | tadlis-tier-3-tasrih | yes | 1545 (1545) | 52 | 48 | 33 | 23 | 48 | nocompat | 56 |  |
-| kattani-man-kadhaba | 1 | list-match | yes | 1690 (1690) | 62 | 54 | 33 | 22 | 59 | nocompat | 66 |  |
+| unnamed-companion-humayd-himyari | 6524 | unnamed-companion | yes | 15 (15) | 1 | 1 | 1 | 1 | 1 | unmerged | 1 | حميد بن عبد الرحمن الحميري |
+| ibn-lahia-via-ibn-al-mubarak | 3555 | conditional-via-student | yes | 52 (52) | 3 | 2 | 2 | 1 | 2 | nocompat | 4 |  |
+| ibn-lahia-via-another-student | 2 | conditional-via-student | yes | 2159 (2159) | 57 | 54 | 41 | 36 | 54 | nocompat | 65 |  |
+| ismail-b-ayyash-from-a-hijazi | 1990 | conditional-region | yes | 159 (159) | 2 | 1 | 1 | 0 | 2 | unmerged | 2 |  |
+| ismail-b-ayyash-from-a-syrian | 458 | conditional-region | yes | 219 (219) | 10 | 9 | 5 | 4 | 10 | unmerged | 10 |  |
+| ikhtilat-said-b-abi-aruba | 13 | conditional-ikhtilat | yes | 1138 (1138) | 32 | 30 | 16 | 15 | 32 | unmerged | 39 |  |
+| ikhtilat-said-b-abi-aruba-before | 13 | conditional-ikhtilat | yes | 1138 (1138) | 32 | 30 | 16 | 15 | 32 | unmerged | 39 |  |
+| simak-from-ikrima | 407 | conditional-from-shaykh | yes | 258 (258) | 8 | 8 | 4 | 4 | 8 | unmerged | 10 |  |
+| muanan-tier-4-covered-ibn-ishaq | 37 | tadlis-tier-4-tasrih | yes | 763 (763) | 17 | 16 | 11 | 9 | 17 | unmerged | 17 |  |
+| kattani-man-kadhaba | 1 | list-match | yes | 1690 (1690) | 63 | 55 | 34 | 22 | 60 | nocompat | 66 |  |
 
 ## Bucket-2 mechanisms (scoped values)
 
@@ -74,7 +83,7 @@ both rulesets for the group's v2 chain; for chain-level entries, the selected ch
 | man-hamala-alayna-al-silah | mutawatir_count | aziz | [] | True | sahih_li_dhatihi → 0 | sahih_li_dhatihi → 0 |  |
 | bada-al-islam-gharib | mutawatir_count | mashhur | [] | True | sahih_li_dhatihi → 0 | sahih_li_dhatihi → 0 |  |
 | siwak-muhammad-b-amr | mutawatir_count | mutawatir_count | [] | True | sahih_li_dhatihi → 0 | sahih_li_dhatihi → 0 | sanad 22197: weakest ['r7225'] (level [5]); ibn_hajar hasan_li_ghayrihi → 1 (mutabaa_qasira); ibn_al_salah sahih_li_ghayrihi → 0 |
-| sandals-asim-b-ubaydallah | aziz | gharib_nisbi | [3, 4, 8] | False | hasan_li_ghayrihi → 1 | hasan_li_ghayrihi → 1 | sanad 67287: weakest ['r4069'] (level [8]); ibn_hajar hasan_li_ghayrihi → 1 (shahid); ibn_al_salah hasan_li_ghayrihi → 1 |
+| sandals-asim-b-ubaydallah | aziz | gharib_nisbi | [3, 4, 8] | False | daif → 2 | daif → 2 | sanad 23673: weakest ['r4069'] (level [8]); ibn_hajar daif → 2 (None); ibn_al_salah daif → 2 |
 | maqbul-repaired | mashhur | gharib_nisbi | [5] | False | hasan_li_ghayrihi → 1 | hasan_li_ghayrihi → 1 | sanad 23820: weakest ['r4755'] (level [6]); ibn_hajar hasan_li_ghayrihi → 1 (mutabaa_tamma); ibn_al_salah hasan_li_ghayrihi → 1 |
 | fatal-not-repaired | aziz | gharib_nisbi | [9, 12] | False | fatal → 5 | fatal → 5 |  |
 | innama-number-class | gharib_mutlaq | gharib_mutlaq | [1, 2, 5] | True | sahih_li_dhatihi → 0 | sahih_li_dhatihi → 0 |  |
@@ -85,6 +94,15 @@ both rulesets for the group's v2 chain; for chain-level entries, the selected ch
 | gharib-not-in-sahihayn | gharib_mutlaq | gharib_mutlaq | [1, 3, 8] | False | hasan_li_ghayrihi → 1 | hasan_li_ghayrihi → 1 |  |
 | muanan-tier-2-in-muslim | mutawatir_count | mutawatir_count | [] | True | sahih_li_dhatihi → 0 | sahih_li_dhatihi → 0 |  sanad 9756: ibn_hajar sahih_li_dhatihi, defects [], notes ['muanan_accepted_tier_2'] |
 | muanan-tier-3-covered-by-tasrih | mutawatir_count | mutawatir_count | [] | True | sahih_li_dhatihi → 0 | sahih_li_dhatihi → 0 |  sanad 74843: ibn_hajar sahih_li_dhatihi, defects [], notes ['muanan_covered_tasrih_tier_3'] |
+| unnamed-companion-humayd-himyari | gharib_nisbi | gharib_nisbi | [3, 5, 6, 11] | False | sahih_li_dhatihi → 0 | sahih_li_dhatihi → 0 |  sanad 27546: ibn_hajar sahih_li_dhatihi, defects [], notes ['unnamed_companion_companion'] |
+| ibn-lahia-via-ibn-al-mubarak | mashhur | gharib_nisbi | [5] | False | sahih_li_ghayrihi → 0 | sahih_li_ghayrihi → 0 |  sanad 24523: ibn_hajar sahih_li_ghayrihi, defects [], notes ['muanan_covered_tasrih_tier_5'] |
+| ibn-lahia-via-another-student | mutawatir_count | mutawatir_count | [] | True | sahih_li_dhatihi → 0 | sahih_li_dhatihi → 0 |  sanad 46242: ibn_hajar hasan_li_ghayrihi, defects ['level_8+conditional'], notes [] |
+| ismail-b-ayyash-from-a-hijazi | aziz | gharib_nisbi | [5] | False | hasan_li_dhatihi → 1 | sahih_li_ghayrihi → 0 |  sanad 22342: ibn_hajar hasan_li_ghayrihi, defects ['level_5'], notes ['muanan_covered_tasrih_tier_3'] |
+| ismail-b-ayyash-from-a-syrian | mutawatir_count | aziz | [] | False | sahih_li_dhatihi → 0 | sahih_li_dhatihi → 0 |  sanad 25090: ibn_hajar sahih_li_ghayrihi, defects [], notes [] |
+| ikhtilat-said-b-abi-aruba | mutawatir_count | mutawatir_count | [] | True | sahih_li_dhatihi → 0 | sahih_li_dhatihi → 0 |  sanad 211607: ibn_hajar hasan_li_ghayrihi, defects ['conditional'], notes ['muanan_covered_tasrih_tier_3'] |
+| ikhtilat-said-b-abi-aruba-before | mutawatir_count | mutawatir_count | [] | True | sahih_li_dhatihi → 0 | sahih_li_dhatihi → 0 |  sanad 160230: ibn_hajar sahih_li_dhatihi, defects [], notes ['muanan_covered_tasrih_tier_3'] |
+| simak-from-ikrima | mashhur | mashhur | [] | False | sahih_li_dhatihi → 0 | sahih_li_dhatihi → 0 |  sanad 22256: ibn_hajar hasan_li_ghayrihi, defects ['level_5+conditional'], notes [] |
+| muanan-tier-4-covered-ibn-ishaq | mutawatir_count | mashhur | [] | True | sahih_li_dhatihi → 0 | sahih_li_dhatihi → 0 |  sanad 22578: ibn_hajar hasan_li_ghayrihi, defects ['mudallis_muanan_tier_3'], notes ['muanan_covered_tasrih_tier_4'] |
 | kattani-man-kadhaba | mutawatir_count | mutawatir_count | [] | True | sahih_li_dhatihi → 0 | sahih_li_dhatihi → 0 |  |
 
 ## Whole-group records
@@ -96,31 +114,40 @@ both rulesets for the group's v2 chain; for chain-level entries, the selected ch
 - **la-yuminu-ahadukum** (group 1581, whole group): n_chains=103, kappa_all=7, kappa_above_matruk=6, kappa_saduq_up=4, kappa_thiqa_up=2, kappa_nocompat_all=7, kappa_lower_all=7, kappa_lower_source_all=unmerged, companions=7, sahaba_qty=8
 - **buniya-al-islam** (group 523, whole group): n_chains=211, kappa_all=4, kappa_above_matruk=4, kappa_saduq_up=3, kappa_thiqa_up=3, kappa_nocompat_all=4, kappa_lower_all=4, kappa_lower_source_all=unmerged, companions=4, sahaba_qty=7
 - **mighfar-mutabaat** (group 376, whole group): n_chains=483, kappa_all=6, kappa_above_matruk=5, kappa_saduq_up=2, kappa_thiqa_up=2, kappa_nocompat_all=3, kappa_lower_all=3, kappa_lower_source_all=nocompat, companions=6, sahaba_qty=9
-- **man-kadhaba** (group 1, whole group): n_chains=1690, kappa_all=62, kappa_above_matruk=54, kappa_saduq_up=33, kappa_thiqa_up=22, kappa_nocompat_all=59, kappa_lower_all=59, kappa_lower_source_all=nocompat, companions=66, sahaba_qty=68
-- **mash-alal-khuffayn** (group 3, whole group): n_chains=1906, kappa_all=50, kappa_above_matruk=44, kappa_saduq_up=28, kappa_thiqa_up=24, kappa_nocompat_all=46, kappa_lower_all=46, kappa_lower_source_all=nocompat, companions=61, sahaba_qty=67
-- **raf-al-yadayn** (group 31, whole group): n_chains=801, kappa_all=18, kappa_above_matruk=14, kappa_saduq_up=14, kappa_thiqa_up=12, kappa_nocompat_all=17, kappa_lower_all=17, kappa_lower_source_all=nocompat, companions=23, sahaba_qty=25
-- **al-hawd** (group 55, whole group): n_chains=877, kappa_all=35, kappa_above_matruk=33, kappa_saduq_up=26, kappa_thiqa_up=19, kappa_nocompat_all=34, kappa_lower_all=34, kappa_lower_source_all=nocompat, companions=39, sahaba_qty=42
+- **man-kadhaba** (group 1, whole group): n_chains=1690, kappa_all=63, kappa_above_matruk=55, kappa_saduq_up=34, kappa_thiqa_up=22, kappa_nocompat_all=60, kappa_lower_all=60, kappa_lower_source_all=nocompat, companions=66, sahaba_qty=68
+- **mash-alal-khuffayn** (group 3, whole group): n_chains=1906, kappa_all=51, kappa_above_matruk=45, kappa_saduq_up=29, kappa_thiqa_up=25, kappa_nocompat_all=47, kappa_lower_all=47, kappa_lower_source_all=nocompat, companions=61, sahaba_qty=67
+- **raf-al-yadayn** (group 31, whole group): n_chains=801, kappa_all=19, kappa_above_matruk=15, kappa_saduq_up=15, kappa_thiqa_up=13, kappa_nocompat_all=18, kappa_lower_all=18, kappa_lower_source_all=nocompat, companions=23, sahaba_qty=25
+- **al-hawd** (group 55, whole group): n_chains=877, kappa_all=36, kappa_above_matruk=34, kappa_saduq_up=27, kappa_thiqa_up=20, kappa_nocompat_all=35, kappa_lower_all=35, kappa_lower_source_all=nocompat, companions=39, sahaba_qty=42
 - **al-shafaa** (group 145, whole group): n_chains=441, kappa_all=14, kappa_above_matruk=12, kappa_saduq_up=9, kappa_thiqa_up=8, kappa_nocompat_all=14, kappa_lower_all=14, kappa_lower_source_all=unmerged, companions=14, sahaba_qty=20
 - **ruyat-allah** (group 771, whole group): n_chains=888, kappa_all=13, kappa_above_matruk=12, kappa_saduq_up=8, kappa_thiqa_up=6, kappa_nocompat_all=13, kappa_lower_all=13, kappa_lower_source_all=unmerged, companions=13, sahaba_qty=15
 - **sabat-ahruf** (group 162, whole group): n_chains=470, kappa_all=17, kappa_above_matruk=17, kappa_saduq_up=14, kappa_thiqa_up=13, kappa_nocompat_all=17, kappa_lower_all=17, kappa_lower_source_all=unmerged, companions=19, sahaba_qty=21
 - **man-bana-masjidan** (group 338, whole group): n_chains=246, kappa_all=20, kappa_above_matruk=13, kappa_saduq_up=9, kappa_thiqa_up=8, kappa_nocompat_all=19, kappa_lower_all=19, kappa_lower_source_all=nocompat, companions=21, sahaba_qty=23
 - **nadara-allah** (group 206, whole group): n_chains=325, kappa_all=16, kappa_above_matruk=15, kappa_saduq_up=8, kappa_thiqa_up=5, kappa_nocompat_all=16, kappa_lower_all=16, kappa_lower_source_all=unmerged, companions=18, sahaba_qty=22
 - **al-mar-maa-man-ahabba** (group 78, whole group): n_chains=538, kappa_all=16, kappa_above_matruk=14, kappa_saduq_up=10, kappa_thiqa_up=7, kappa_nocompat_all=16, kappa_lower_all=16, kappa_lower_source_all=unmerged, companions=20, sahaba_qty=23
-- **al-dajjal** (group 28, whole group): n_chains=784, kappa_all=27, kappa_above_matruk=25, kappa_saduq_up=21, kappa_thiqa_up=18, kappa_nocompat_all=27, kappa_lower_all=27, kappa_lower_source_all=unmerged, companions=31, sahaba_qty=36
+- **al-dajjal** (group 28, whole group): n_chains=784, kappa_all=28, kappa_above_matruk=26, kappa_saduq_up=22, kappa_thiqa_up=19, kappa_nocompat_all=28, kappa_lower_all=28, kappa_lower_source_all=unmerged, companions=31, sahaba_qty=36
 - **adhab-al-qabr** (group 189, whole group): n_chains=422, kappa_all=13, kappa_above_matruk=13, kappa_saduq_up=10, kappa_thiqa_up=8, kappa_nocompat_all=13, kappa_lower_all=13, kappa_lower_source_all=unmerged, companions=13, sahaba_qty=15
 - **al-walad-lil-firash** (group 185, whole group): n_chains=436, kappa_all=18, kappa_above_matruk=15, kappa_saduq_up=11, kappa_thiqa_up=7, kappa_nocompat_all=18, kappa_lower_all=18, kappa_lower_source_all=unmerged, companions=23, sahaba_qty=25
 - **man-hamala-alayna-al-silah** (group 588, whole group): n_chains=162, kappa_all=13, kappa_above_matruk=11, kappa_saduq_up=7, kappa_thiqa_up=3, kappa_nocompat_all=12, kappa_lower_all=12, kappa_lower_source_all=nocompat, companions=16, sahaba_qty=18
 - **bada-al-islam-gharib** (group 497, whole group): n_chains=196, kappa_all=14, kappa_above_matruk=8, kappa_saduq_up=5, kappa_thiqa_up=4, kappa_nocompat_all=13, kappa_lower_all=13, kappa_lower_source_all=nocompat, companions=16, sahaba_qty=17
-- **siwak-muhammad-b-amr** (group 121, whole group): n_chains=533, kappa_all=20, kappa_above_matruk=17, kappa_saduq_up=12, kappa_thiqa_up=12, kappa_nocompat_all=19, kappa_lower_all=19, kappa_lower_source_all=nocompat, companions=24, sahaba_qty=28
+- **siwak-muhammad-b-amr** (group 121, whole group): n_chains=533, kappa_all=21, kappa_above_matruk=18, kappa_saduq_up=13, kappa_thiqa_up=13, kappa_nocompat_all=20, kappa_lower_all=20, kappa_lower_source_all=nocompat, companions=24, sahaba_qty=28
 - **sandals-asim-b-ubaydallah** (group 2031, whole group): n_chains=51, kappa_all=2, kappa_above_matruk=2, kappa_saduq_up=0, kappa_thiqa_up=0, kappa_nocompat_all=2, kappa_lower_all=2, kappa_lower_source_all=unmerged, companions=2, sahaba_qty=4
 - **maqbul-repaired** (group 3487, whole group): n_chains=28, kappa_all=3, kappa_above_matruk=1, kappa_saduq_up=1, kappa_thiqa_up=0, kappa_nocompat_all=2, kappa_lower_all=2, kappa_lower_source_all=nocompat, companions=4, sahaba_qty=6
 - **fatal-not-repaired** (group 7688, whole group): n_chains=7, kappa_all=2, kappa_above_matruk=0, kappa_saduq_up=0, kappa_thiqa_up=0, kappa_nocompat_all=2, kappa_lower_all=2, kappa_lower_source_all=unmerged, companions=2, sahaba_qty=3
 - **innama-number-class** (group 319, whole group): n_chains=356, kappa_all=4, kappa_above_matruk=4, kappa_saduq_up=2, kappa_thiqa_up=2, kappa_nocompat_all=4, kappa_lower_all=4, kappa_lower_source_all=unmerged, companions=4, sahaba_qty=5
 - **la-yuminu-number-class** (group 1581, whole group): n_chains=103, kappa_all=7, kappa_above_matruk=6, kappa_saduq_up=4, kappa_thiqa_up=2, kappa_nocompat_all=7, kappa_lower_all=7, kappa_lower_source_all=unmerged, companions=7, sahaba_qty=8
-- **man-kadhaba-number-class** (group 1, whole group): n_chains=1690, kappa_all=62, kappa_above_matruk=54, kappa_saduq_up=33, kappa_thiqa_up=22, kappa_nocompat_all=59, kappa_lower_all=59, kappa_lower_source_all=nocompat, companions=66, sahaba_qty=68
+- **man-kadhaba-number-class** (group 1, whole group): n_chains=1690, kappa_all=63, kappa_above_matruk=55, kappa_saduq_up=34, kappa_thiqa_up=22, kappa_nocompat_all=60, kappa_lower_all=60, kappa_lower_source_all=nocompat, companions=66, sahaba_qty=68
 - **mashhur-al-muslim** (group 218, whole group): n_chains=414, kappa_all=19, kappa_above_matruk=18, kappa_saduq_up=11, kappa_thiqa_up=9, kappa_nocompat_all=19, kappa_lower_all=19, kappa_lower_source_all=unmerged, companions=20, sahaba_qty=23
 - **innama-qarain** (group 319, whole group): n_chains=356, kappa_all=4, kappa_above_matruk=4, kappa_saduq_up=2, kappa_thiqa_up=2, kappa_nocompat_all=4, kappa_lower_all=4, kappa_lower_source_all=unmerged, companions=4, sahaba_qty=5
 - **gharib-not-in-sahihayn** (group 3487, whole group): n_chains=28, kappa_all=3, kappa_above_matruk=1, kappa_saduq_up=1, kappa_thiqa_up=0, kappa_nocompat_all=2, kappa_lower_all=2, kappa_lower_source_all=nocompat, companions=4, sahaba_qty=6
-- **muanan-tier-2-in-muslim** (group 3, whole group): n_chains=1906, kappa_all=50, kappa_above_matruk=44, kappa_saduq_up=28, kappa_thiqa_up=24, kappa_nocompat_all=46, kappa_lower_all=46, kappa_lower_source_all=nocompat, companions=61, sahaba_qty=67
+- **muanan-tier-2-in-muslim** (group 3, whole group): n_chains=1906, kappa_all=51, kappa_above_matruk=45, kappa_saduq_up=29, kappa_thiqa_up=25, kappa_nocompat_all=47, kappa_lower_all=47, kappa_lower_source_all=nocompat, companions=61, sahaba_qty=67
 - **muanan-tier-3-covered-by-tasrih** (group 7, whole group): n_chains=1545, kappa_all=52, kappa_above_matruk=48, kappa_saduq_up=33, kappa_thiqa_up=23, kappa_nocompat_all=48, kappa_lower_all=48, kappa_lower_source_all=nocompat, companions=56, sahaba_qty=58
-- **kattani-man-kadhaba** (group 1, whole group): n_chains=1690, kappa_all=62, kappa_above_matruk=54, kappa_saduq_up=33, kappa_thiqa_up=22, kappa_nocompat_all=59, kappa_lower_all=59, kappa_lower_source_all=nocompat, companions=66, sahaba_qty=68
+- **unnamed-companion-humayd-himyari** (group 6524, whole group): n_chains=15, kappa_all=1, kappa_above_matruk=1, kappa_saduq_up=1, kappa_thiqa_up=1, kappa_nocompat_all=1, kappa_lower_all=1, kappa_lower_source_all=unmerged, companions=1, sahaba_qty=2
+- **ibn-lahia-via-ibn-al-mubarak** (group 3555, whole group): n_chains=52, kappa_all=3, kappa_above_matruk=2, kappa_saduq_up=2, kappa_thiqa_up=1, kappa_nocompat_all=2, kappa_lower_all=2, kappa_lower_source_all=nocompat, companions=4, sahaba_qty=6
+- **ibn-lahia-via-another-student** (group 2, whole group): n_chains=2159, kappa_all=57, kappa_above_matruk=54, kappa_saduq_up=41, kappa_thiqa_up=36, kappa_nocompat_all=54, kappa_lower_all=54, kappa_lower_source_all=nocompat, companions=65, sahaba_qty=68
+- **ismail-b-ayyash-from-a-hijazi** (group 1990, whole group): n_chains=159, kappa_all=2, kappa_above_matruk=1, kappa_saduq_up=1, kappa_thiqa_up=0, kappa_nocompat_all=2, kappa_lower_all=2, kappa_lower_source_all=unmerged, companions=2, sahaba_qty=3
+- **ismail-b-ayyash-from-a-syrian** (group 458, whole group): n_chains=219, kappa_all=10, kappa_above_matruk=9, kappa_saduq_up=5, kappa_thiqa_up=4, kappa_nocompat_all=10, kappa_lower_all=10, kappa_lower_source_all=unmerged, companions=10, sahaba_qty=15
+- **ikhtilat-said-b-abi-aruba** (group 13, whole group): n_chains=1138, kappa_all=32, kappa_above_matruk=30, kappa_saduq_up=16, kappa_thiqa_up=15, kappa_nocompat_all=32, kappa_lower_all=32, kappa_lower_source_all=unmerged, companions=39, sahaba_qty=42
+- **ikhtilat-said-b-abi-aruba-before** (group 13, whole group): n_chains=1138, kappa_all=32, kappa_above_matruk=30, kappa_saduq_up=16, kappa_thiqa_up=15, kappa_nocompat_all=32, kappa_lower_all=32, kappa_lower_source_all=unmerged, companions=39, sahaba_qty=42
+- **simak-from-ikrima** (group 407, whole group): n_chains=258, kappa_all=8, kappa_above_matruk=8, kappa_saduq_up=4, kappa_thiqa_up=4, kappa_nocompat_all=8, kappa_lower_all=8, kappa_lower_source_all=unmerged, companions=10, sahaba_qty=12
+- **muanan-tier-4-covered-ibn-ishaq** (group 37, whole group): n_chains=763, kappa_all=17, kappa_above_matruk=16, kappa_saduq_up=11, kappa_thiqa_up=9, kappa_nocompat_all=17, kappa_lower_all=17, kappa_lower_source_all=unmerged, companions=17, sahaba_qty=19
+- **kattani-man-kadhaba** (group 1, whole group): n_chains=1690, kappa_all=63, kappa_above_matruk=55, kappa_saduq_up=34, kappa_thiqa_up=22, kappa_nocompat_all=60, kappa_lower_all=60, kappa_lower_source_all=nocompat, companions=66, sahaba_qty=68

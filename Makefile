@@ -1,4 +1,4 @@
-# itibar — buckets 1 and 2, PR 5. Every target is reproducible from an empty checkout
+# itibar — buckets 1 and 2, PR 5, PR 6. Every target is reproducible from an empty checkout
 # (`make lists-fetch` re-downloads the classical list text from Shamela; its output is committed).
 # Paths can be redirected with ITIBAR_DATA_DIR / ITIBAR_PARQUET_DIR / ITIBAR_OUT_DIR
 # (see src/itibar/paths.py); `make ci` uses that to run on the committed fixture.
@@ -9,9 +9,9 @@ PYTEST  := $(UV) run pytest
 FIXTURE := tests/fixture/parquet
 CI_OUT  ?= .ci-out
 
-.PHONY: all setup data book-compilers audit words matn bundles stages narrators lists lists-fetch mudallisin mudallisin-fetch provenance-fetch shahid-inspection chapters pools gold gates test figures fixture ci render-gold clean
+.PHONY: all setup data book-compilers audit words matn bundles stages narrators lists lists-fetch mudallisin mudallisin-fetch provenance-fetch conditional conditional-fetch residue residue-fetch shahid-inspection chapters pools gold gates test figures fixture ci render-gold clean
 
-all: data bundles stages audit narrators lists chapters pools gold figures
+all: data conditional bundles stages audit narrators lists chapters pools residue gold figures
 
 setup:
 	$(UV) sync
@@ -30,6 +30,7 @@ audit:
 
 words:
 	$(PY) -m itibar.words
+	$(PY) -m itibar.unnamed
 
 ## make matn: normalized matn tokens and idf for the shahid overlap -> out/matn_tokens.parquet, out/matn_vocab.parquet
 matn:
@@ -65,6 +66,25 @@ mudallisin-fetch:
 provenance-fetch:
 	$(PY) -m itibar.provenance fetch
 
+## make conditional: conditional narrator rulings from lists/source/ -> lists/conditional*.{yaml,csv} (PR 6 §2)
+conditional:
+	$(PY) -m itibar.conditional build
+
+## make conditional-fetch: re-download the Taqrib/Tahrir entries of the seed and the ikhtilat books (Shamela)
+conditional-fetch:
+	$(PY) -m itibar.conditional fetch-kawakib
+	$(PY) -m itibar.conditional fetch-books
+	$(PY) -m itibar.conditional fetch-taqrib
+	$(PY) -m itibar.conditional refresh-tahrir
+
+## make residue: reports/residue.md + figures/fig6_residue.* from out/records.parquet (PR 6 §3)
+residue:
+	$(PY) -m itibar.residue report
+
+## make residue-fetch: Taqrib/Tahrir verdicts of the narrators most often weakest at the sahih/hasan line
+residue-fetch:
+	$(PY) -m itibar.residue fetch
+
 ## make shahid-inspection: reports/shahid_inspection.md from lists/shahid_inspection.yaml
 shahid-inspection:
 	$(PY) -m itibar.siblings inspect
@@ -99,6 +119,7 @@ fixture:
 ## make ci: the whole pipeline and test suite on the fixture (no 1.6 GB download)
 ci:
 	ITIBAR_PARQUET_DIR=$(CURDIR)/$(FIXTURE) ITIBAR_OUT_DIR=$(CURDIR)/$(CI_OUT) $(PY) -m itibar.words
+	ITIBAR_PARQUET_DIR=$(CURDIR)/$(FIXTURE) ITIBAR_OUT_DIR=$(CURDIR)/$(CI_OUT) $(PY) -m itibar.unnamed
 	ITIBAR_PARQUET_DIR=$(CURDIR)/$(FIXTURE) ITIBAR_OUT_DIR=$(CURDIR)/$(CI_OUT) $(PY) -m itibar.matn
 	ITIBAR_PARQUET_DIR=$(CURDIR)/$(FIXTURE) ITIBAR_OUT_DIR=$(CURDIR)/$(CI_OUT) $(PY) -m itibar.pipeline
 	ITIBAR_PARQUET_DIR=$(CURDIR)/$(FIXTURE) ITIBAR_OUT_DIR=$(CURDIR)/$(CI_OUT) $(PYTEST) -q

@@ -144,6 +144,10 @@ def show(gid: int, file=sys.stdout) -> None:
       f"unnamed narrator {rec['n_mubham_chains']}, undescribed narrator {rec['n_stub_chains']}, "
       f"companion-ending {rec['n_chains_companion_end']}, with a break marker {rec['n_chains_broken']}, "
       f"continuous {rec['n_chains_connected']}")
+    if rec.get("unnamed_top_classes"):
+        p(f" unnamed person at the top: {rec['unnamed_top_classes']}; read as an unnamed companion "
+          f"{rec.get('n_unnamed_companion_chains')} (one node u{gid}; κ_all with him split per student "
+          f"{rec.get('kappa_unnamed_split')})")
     p(f" links: compatible {rec['n_edges_compatible']}, incompatible {rec['n_edges_incompatible']} "
       f"(by years {rec['n_edges_incompatible_years']}, by tabaka {rec['n_edges_incompatible_tabaka']}), "
       f"unknown {rec['n_edges_unknown']}; mu'an'an by a mudallis {rec['n_edges_muanan_mudallis']} "
@@ -185,6 +189,14 @@ def show(gid: int, file=sys.stdout) -> None:
         for i, step in enumerate(json.loads(rec["receipt_v2"]).get("ibn_hajar", []), 1):
             p(f"  {i}. {step['check']}: {step['result']}")
             p(f"     rule: {step['rule']}")
+            if step["check"] == "conditional rulings":
+                for f_ in step["data"]["fired"]:
+                    p(f"       {f_['rule']} ({f_['effect']}), ids {f_['condition_ids']}: {f_['source']}")
+    if rec.get("residue_disagree"):
+        p("")
+        p(f" residue: {rec.get('residue_direction')}, primary {rec.get('residue_primary')}, tags "
+          f"{list(rec.get('residue_tags') or [])}" + (f", conditional {rec.get('residue_conditional')}"
+                                                       if rec.get("residue_conditional") else ""))
     sid = rec["derived_best_sanad_id"]
     txt = con.sql(f"SELECT h.nass FROM sanads s JOIN hadiths h ON h.id = s.hadith_id WHERE s.id = {int(sid)}").fetchall()
     if txt:

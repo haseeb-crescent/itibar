@@ -692,7 +692,7 @@ def build() -> str:
     w("## 10. Indicative chain-level error rate from the gold set\n")
     w(misresolution_rate(c))
     # ------------------------------------------------------------------ 11
-    w("## 11. Derived grade v2: corroboration, after the PR 5 corrections\n")
+    w("## 11. Derived grade v2: corroboration, after the PR 5 and PR 6 changes\n")
     if rec_exists:
         w(audit_pr5.corrections_section(c, scale))
     else:
@@ -710,6 +710,9 @@ def build() -> str:
     voc["ordinal"] = [None if (r == 12 and lab == "(NULL)") else scale.level_ordinal.get(int(r), 0)
                       for r, lab in zip(voc["rank_no"], voc["rank"])]
     w(md_table(voc))
+    w("\n## Appendix B. Designations of the unnamed person at a chain top\n")
+    from itibar import audit_pr6
+    w(audit_pr6.appendix_designations())
     w(f"\n_Audit computed in {time.time() - t0:.1f}s._\n")
     return "\n".join(W)
 

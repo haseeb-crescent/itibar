@@ -83,6 +83,12 @@ class Params:
     sahihayn_muanan_accepted: bool = False
     sahihayn_book_ids: frozenset[int] = frozenset()
     tier_4_5: str = "not_repairable"      # not_repairable | light
+    tasrih_tiers: frozenset[int] = frozenset({3, 4, 5})   # tiers whose 'an a hearing word elsewhere covers
+    conditional: bool = False             # apply conditional narrator rulings on the link (derive version 4)
+    ikhtilat_unknown: str = "after"       # after | before: a mukhtalit's student listed on neither side
+    sahihayn_ikhtilat_before: bool = True # a mukhtalit's link in a chain of the Sahihayn counts as before
+    unnamed_top: str = "companion"        # companion | mursal: an unnamed companion at the top (variant: PR 5's mursal)
+    ansar_muhajir: str = "companion"      # companion | mursal: «رجل من الأنصار / المهاجرين» at the top
 
     @property
     def light_or_better_max_level(self) -> int:
@@ -101,8 +107,10 @@ def _params(name: str, over: dict) -> Params:
     s = config.load("structure")
     d = s["derive"]
     c = d["corroboration"]
-    merged = _merge({**g, **c, "tadlis": d.get("tadlis") or {}}, over)
+    merged = _merge({**g, **c, "tadlis": d.get("tadlis") or {}, "conditional": d.get("conditional", False),
+                     "conditional_rules": d.get("conditional_rules") or {}}, over)
     t = merged["tadlis"]
+    cr = merged["conditional_rules"] or {}
     hasan_max = int(merged["hasan_max_level"])
     light = {int(x) for x in merged["light"]} - set(range(1, hasan_max + 1))
     unrep = {int(x) for x in merged["unrepairable"]}
@@ -129,6 +137,13 @@ def _params(name: str, over: dict) -> Params:
         sahihayn_muanan_accepted=bool(t.get("sahihayn_muanan_accepted", False)),
         sahihayn_book_ids=frozenset(int(x) for x in s["qarain"]["sahihayn_book_ids"]),
         tier_4_5=str(t.get("tier_4_5", "not_repairable")),
+        tasrih_tiers=frozenset(int(x) for x in (t.get("tasrih_tiers") or (3, 4, 5))),
+        conditional=bool(merged.get("conditional", False)),
+        ikhtilat_unknown=str(cr.get("ikhtilat_unknown", "after")),
+        sahihayn_ikhtilat_before=bool(cr.get("sahihayn_ikhtilat_before", True)),
+        unnamed_top=str(merged.get("unnamed_top", "companion")),
+        ansar_muhajir=str(merged.get("ansar_muhajir", (s.get("unnamed_companion") or {}).get("ansar_muhajir",
+                                                                                              "companion"))),
     )
 
 
@@ -169,7 +184,8 @@ def group_context(chains: list[Chain], infos: list[ChainInfo], corpus: Corpus, c
         in_sahih = ch.book_id in sahihayn
         for p in range(len(r) - 1):
             t, s = r[p + 1], r[p]
-            if nar.placeholder_role.get(t) or nar.placeholder_role.get(s):
+            ucomp_top = info.unnamed_companion and p + 1 == len(r) - 1
+            if (nar.placeholder_role.get(t) and not ucomp_top) or nar.placeholder_role.get(s):
                 continue
             w = ch.words.get(p + 1)
             if w and w[2] in classes:
@@ -201,6 +217,7 @@ class ChainClass:
     mursil_pos: int | None = None
     max_level: int | None = None          # weakest described level over graded positions
     level_at: dict[int, int] = field(default_factory=dict)              # level used per graded position
+    rulings: list[tuple[int, str, str, str]] = field(default_factory=list)   # (pos, rule id, kind, effect) fired
 
     def positions(self, cls: str) -> list[int]:
         return [p for p, c, _ in self.defects if c == cls]
@@ -243,6 +260,58 @@ def _level_class(lv: int, P: Params) -> str | None:
     return None
 
 
+def apply_rulings(rid: int, p: int, r: tuple, book_id: int, ctx: "GroupContext", P: Params, corpus: Corpus
+                  ) -> tuple[int | None, bool, list[tuple[str, str, str]]]:
+    """The conditional rulings on narrator `rid` at position p of chain r (student at p-1, teacher
+    at p+1). Returns (the level the link takes, or None for the narrator's own; whether a light
+    defect is added; [(rule id, kind, effect)] of the rulings whose condition holds)."""
+    rules = corpus.rulings.get(int(rid))
+    if not rules:
+        return None, False, []
+    nar = corpus.narrators
+    n = len(r)
+    teacher = r[p + 1] if p + 1 < n and not nar.placeholder_role.get(r[p + 1]) else None
+    student = r[p - 1] if p > 0 and not nar.placeholder_role.get(r[p - 1]) else None
+    before = None
+    if any(x.kind.startswith("ikhtilat") for x in rules):
+        # students the narrator's entry vouches for (via_student: Ibn Lahi'a's 'Abadila, who wrote from his
+        # originals) are placed before the change as well
+        before = any(x.kind in ("ikhtilat_before", "via_student") and x.observable and student is not None
+                     and student in x.ids for x in rules)
+        if not before and P.sahihayn_ikhtilat_before and (book_id in P.sahihayn_book_ids or (
+                student is not None and (int(rid), student) in ctx.sahih_links)):
+            before = True
+    fired = []
+    for x in rules:
+        if not x.observable or x.effect == "none" and x.kind != "ikhtilat_before":
+            continue
+        if x.kind == "from_shaykh":
+            holds = teacher is not None and teacher in x.ids
+        elif x.kind == "via_student":
+            holds = student is not None and student in x.ids
+        elif x.kind == "region_of_shaykh":
+            holds = teacher is not None and x.region is not None and bool(
+                set(x.region.split()) & set(corpus.regions.get(teacher, ())))
+        elif x.kind == "ikhtilat_before":
+            holds = bool(before)
+        elif x.kind == "ikhtilat_after":
+            holds = before is not True and ((student is not None and student in x.ids) or P.ikhtilat_unknown == "after")
+        else:
+            holds = False
+        if holds:
+            fired.append((x.rule_id, x.kind, x.effect))
+    levels, defect = [], False
+    base = int(nar.rank_no[rid])
+    for _, kind, eff in fired:
+        if eff.startswith("level:"):
+            levels.append(int(eff.split(":")[1]))
+        elif eff == "accepted":
+            levels.append(min(base, 4))
+        elif eff == "defect:light":
+            defect = True
+    return (max(levels) if levels else None), defect, fired
+
+
 def classify(i: int, ch: Chain, info: ChainInfo, g: ChainGrade, B: Bundle, corpus: Corpus, P: Params,
              ctx: GroupContext | None = None) -> ChainClass:
     nar = corpus.narrators
@@ -250,13 +319,23 @@ def classify(i: int, ch: Chain, info: ChainInfo, g: ChainGrade, B: Bundle, corpu
     r, nodes = ch.rawis, info.nodes
     n = len(r)
     top = n - 1
+    # an unnamed companion at the top, read as a mursal under a variant (PR 5's reading, D36)
+    u_mursal = info.unnamed_companion and (P.unnamed_top == "mursal" or (
+        info.top_unnamed == "ansar_muhajir" and P.ansar_muhajir == "mursal"))
     cc = ChainClass(idx=i, sanad_id=ch.sanad_id, nodes=nodes, ordinal=g.ordinal, v1_code=g.code,
-                    connected=info.connected, ends_companion=info.ends_companion)
+                    connected=info.connected and not u_mursal, ends_companion=info.ends_companion and not u_mursal)
     graded = set(g.graded_positions)
     levels = []
     for p in range(n):
         rid = r[p]
         kind = B.kind[nodes[p]]
+        if info.unnamed_companion and p == top:
+            if u_mursal or p not in graded:
+                continue                                  # mursal: handled below
+            levels.append(1)                              # an unnamed companion: a companion, no defect
+            cc.level_at[p] = 1
+            cc.notes.append((p, f"unnamed_companion_{info.top_unnamed}"))
+            continue
         if kind == "gap":
             pk = nar.placeholder_kind[rid]
             if pk == "irsal" and p == top:
@@ -287,26 +366,40 @@ def classify(i: int, ch: Chain, info: ChainInfo, g: ChainGrade, B: Bundle, corpu
                                "unnamed_narrator" if kind == "mubham" else "undescribed_narrator"))
             continue
         lv = int(nar.rank_no[rid])
+        add_light = False
+        if P.conditional and corpus.rulings:
+            rlv, add_light, fired = apply_rulings(rid, p, r, ch.book_id, ctx, P, corpus)
+            for rule_id, kind, eff in fired:
+                cc.rulings.append((p, rule_id, kind, eff))
+            if rlv is not None:
+                lv = rlv
         levels.append(lv)
         cc.level_at[p] = lv
         c = _level_class(lv, P)
         if c is not None:
             cc.defects.append((p, c, f"level_{lv}"))
+        elif add_light:
+            cc.defects.append((p, LIGHT, "conditional"))
         elif P.sahih_max_level < lv <= P.hasan_max_level:
             cc.hasan_pos.append(p)
+        if c == LIGHT and add_light:
+            cc.defects[-1] = (p, LIGHT, f"level_{lv}+conditional")
     cc.max_level = max(levels) if levels else None
     # mursal: no companion at the top
-    if not info.ends_companion:
-        if B.kind[nodes[top]] == "gap" or (B.kind[nodes[top]] == "mubham" and P.top_mubham == "mursal"):
+    if not cc.ends_companion:
+        if B.kind[nodes[top]] == "gap" or u_mursal or (B.kind[nodes[top]] == "mubham" and P.top_mubham == "mursal"):
             mp = top - 1
         else:
             mp = top
-        if mp >= 0 and B.kind[nodes[mp]] in ("narrator", "mubham"):
+        if mp >= 0 and B.kind[nodes[mp]] in ("narrator", "mubham", "ucomp"):
             cc.mursil_pos = mp
         cc.defects.append((cc.mursil_pos if cc.mursil_pos is not None else top, LIGHT, "mursal"))
     # a mudallis's mu'an'an link: student at p, teacher at p+1
     for p in range(n - 1):
-        if p not in graded or B.kind[nodes[p]] != "narrator" or B.kind[nodes[p + 1]] != "narrator":
+        # the teacher may be an unnamed companion: his Successor must be free of tadlis (al-Nukat)
+        if p not in graded or B.kind[nodes[p]] != "narrator" or B.kind[nodes[p + 1]] not in ("narrator", "ucomp"):
+            continue
+        if B.kind[nodes[p + 1]] == "ucomp" and (u_mursal or not info.unnamed_companion):
             continue
         s, t = r[p], r[p + 1]
         if not _is_mudallis(nar, s, P):
@@ -326,7 +419,9 @@ def classify(i: int, ch: Chain, info: ChainInfo, g: ChainGrade, B: Bundle, corpu
             continue
         link = (t, s)
         covered = False
-        if P.tasrih_scope == "group":
+        if tier not in P.tasrih_tiers:
+            pass
+        elif P.tasrih_scope == "group":
             covered = link in ctx.hearing or (P.sahihayn_muanan_accepted and link in ctx.sahih_links)
         elif P.tasrih_scope == "corpus":
             covered = link in corpus.hearing_pairs or link in ctx.hearing or (
@@ -399,6 +494,7 @@ class Verdict:
     route_exists: bool | None = None                      # every target had a union-graph route avoiding it
     cross_group: bool | None = None
     witness_group: int | None = None
+    rulings: list = field(default_factory=list)           # conditional rulings fired: (pos, rule id, kind, effect)
 
 
 class Engine:
@@ -737,6 +833,7 @@ def grade_group(B: Bundle, corpus: Corpus, chains: list[Chain], grades: list[Cha
         for cc, v in zip(cls, verdicts):
             v.defects = sorted({d[2] for d in cc.defects})
             v.notes = sorted({why for _, why in cc.notes})
+            v.rulings = list(cc.rulings)
         out[name] = verdicts
     return out
 
@@ -764,6 +861,7 @@ def receipt(name: str, P: Params, i: int | None, verdicts: list[Verdict], chains
                   "witness": P.witness, "witness_threshold": P.witness_threshold, "witness_min": P.witness_min,
                   "avoid": P.avoid, "shahid_scope": P.shahid_scope, "shahid_min_overlap": P.shahid_min_overlap,
                   "unknown_repair": P.unknown_repair, "tadlis_tiers": P.tadlis_tiers,
+                  "conditional": P.conditional, "mudallis_set": P.mudallis_set, "unnamed_top": P.unnamed_top,
                   "tasrih_scope": P.tasrih_scope, "sahihayn_muanan_accepted": P.sahihayn_muanan_accepted},
          "result": name},
         {"check": "chain selection", "rule": "lowest v2 code over all chains; ties: continuous, higher chain grade, lower sanad_id",
@@ -771,6 +869,17 @@ def receipt(name: str, P: Params, i: int | None, verdicts: list[Verdict], chains
                   "rules_fired": _count(v2.rule for v2 in verdicts)},
          "result": f"sanad {ch.sanad_id}"},
     ]
+    if v.rulings:
+        by_id = {x.rule_id: x for rs in corpus.rulings.values() for x in rs}
+        steps.append({"check": "conditional rulings",
+                      "rule": "on the link: the position takes the ruling's level where its condition holds, the "
+                              "narrator's otherwise; defect:light adds a light defect (lists/conditional.yaml)",
+                      "data": {"fired": [{"pos": p, "node": nodes[p], "rule": rid, "kind": kind, "effect": eff,
+                                          "condition_ids": sorted(by_id[rid].ids) if rid in by_id else None,
+                                          "source": by_id[rid].source if rid in by_id else None,
+                                          "quote": by_id[rid].quote[:300] if rid in by_id else None}
+                                         for p, rid, kind, eff in v.rulings]},
+                      "result": f"{len(v.rulings)} ruling(s)"})
     if v.notes:
         steps.append({"check": "not defects", "rule": "mudallis 'an of tiers 1-2, in the Sahihayn, or covered by a "
                                                       "hearing word; unnamed persons named elsewhere in the report",

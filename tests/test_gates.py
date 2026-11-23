@@ -72,8 +72,8 @@ def test_kappa_lower_is_the_minimum_over_three_hypotheses(records):
         assert set(r[f"kappa_lower_source_{th}"]) <= {"unmerged", "merged", "nocompat"}, th
         nc = r[r[f"kappa_lower_source_{th}"] == "nocompat"]
         assert (nc[f"kappa_lower_{th}"] == nc[f"kappa_nocompat_{th}"]).all(), th
-    assert (records["structure_version"] == 4).all()
-    assert (records["derive_version"] == 3).all()
+    assert (records["structure_version"] == 5).all()
+    assert (records["derive_version"] == 4).all()
     # dropping only the years-incompatible links removes a subset of what nocompat drops
     for th in ("all", "above_matruk", "saduq_up", "thiqa_up"):
         assert (r[f"kappa_nocompat_{th}"] <= r[f"kappa_nocompat_years_{th}"]).all(), th
@@ -192,3 +192,27 @@ def test_qarain_flags_follow_their_definitions(records):
     assert not r.loc[r["huffaz_chain"], "number_class"].isin(["gharib_mutlaq", "gharib_nisbi"]).any()
     assert (r.loc[r["huffaz_chain"], "n_huffaz_chains"] > 0).all()
     assert (r["in_sahihayn"] <= r["in_sahih_class"]).all()
+
+
+def test_pr6_unnamed_companion_and_residue_are_consistent(records, chains_table):
+    """PR 6: an unnamed companion ends his chain at a companion (the chain reaches PROPHET); splitting
+    the merged node never lowers kappa; every disagreeing group has a direction and a primary tag
+    among its tags, agreeing groups none; residue texts carry no verdict words."""
+    r = records[records["status"] == "ok"]
+    t = chains_table
+    u = t[t["unnamed_companion"].fillna(False).astype(bool)]
+    assert u["ends_companion"].all()
+    assert u["top_unnamed"].isin(["companion", "ansar_muhajir"]).all()
+    s = r[r["kappa_unnamed_split"].notna()]
+    assert (s["kappa_unnamed_split"] >= s["kappa_all"]).all()
+    assert (r["unnamed_companion_node"] == r["kappa_unnamed_split"].notna()).all()
+    src = r["matn_no_group"]
+    d = r[r["residue_disagree"] == True]  # noqa: E712
+    assert (d["code_v2_ibn_hajar"] != d["matn_no_group"]).all()
+    assert ((d["residue_direction"] == "stricter") == (d["code_v2_ibn_hajar"] > d["matn_no_group"])).all()
+    assert all(p in list(tags) for p, tags in zip(d["residue_primary"], d["residue_tags"]))
+    a = r[(r["residue_disagree"] == False) & src.between(0, 5)]  # noqa: E712
+    assert a["residue_primary"].isna().all() and (a["code_v2_ibn_hajar"] == a["matn_no_group"]).all()
+    for col in ("residue_primary", "residue_direction", "residue_conditional"):
+        vals = r[col].dropna().astype(str)
+        assert vals[vals.str.contains(VERDICT_WORDS)].empty, col

@@ -83,6 +83,7 @@
  "number_class_width": "mashhur",
  "companions": 14,
  "companions_chain_end": 14,
+ "unnamed_companion_node": false,
  "companion_ids": [
   1336,
   3260,

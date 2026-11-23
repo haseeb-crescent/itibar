@@ -1,0 +1,12 @@
+# Stage 9 (PR 6 §2): + conditional narrator rulings (lists/conditional.yaml), applied on the link.
+# The hearing check on tiers 4-5 (§2, last item) was already in PR 5's code: no stage of its own.
+structure:
+  unnamed_companion: {enabled: true}
+  bundle: {book_transmitters: true}
+  structure: {compiler_terminal: edge}
+  number_class: {basis: kappa}
+  derive:
+    corroboration: {witness: attested, avoid: each_defect, shahid_scope: siblings, unknown_repair: named_elsewhere}
+    conditional: true
+    tadlis: {mudallis_set: source_flag, tiers: true, tasrih_scope: group, sahihayn_muanan_accepted: true}
+    variants: null

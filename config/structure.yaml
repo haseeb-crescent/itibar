@@ -45,7 +45,9 @@ structure:
   # 4: compiler roles per edge in single-strand / partial-common-link / common-link
   #    detection, book transmitters, number_class on kappa (width reading kept as
   #    number_class_width).
-  version: 4
+  # 5: the unnamed companion (an unnamed person at the top designated a companion: PROPHET edge,
+  #    Taqrib level 1, one node u<group_id> per group; kappa_unnamed_split).
+  version: 5
   # edge: a narrator who compiled a book in the group is terminal only on his edges into
   #   that book (his compiler node, or the book's transmitter); his edges as a teacher
   #   count for single strands, partial common links and common links like anyone's.
@@ -55,6 +57,41 @@ structure:
   common_link_k: 2
   # Path counts can be astronomically large; saturate at int64 max and flag.
   path_count_cap: 9223372036854775807
+
+unnamed_companion:
+  # The unnamed person (rawis 1131) at the top of a chain (structure version 5, src/itibar/unnamed.py).
+  # His designation is the mention text in hadiths.nass plus the words after it (up to the next
+  # mention, a delimiter or a transmission word, at most tail_chars characters). A designation
+  # matching a `companion` phrase makes him an unnamed companion: a PROPHET edge, Taqrib level 1,
+  # no defect in v2; in kappa every unnamed companion of a group is one node u<group_id>
+  # (distinctness must be demonstrable: two «رجل من أصحاب النبي» may be one man); the unmerged
+  # count is stored as kappa_unnamed_split. `ansar_muhajir` phrases are read as companion when
+  # ansar_muhajir: companion (default; variant ansar_muhajir: mursal); `none` phrases (and
+  # anything unmatched, counted `unclassified` in the audit) leave the chain mursal (D36).
+  # enabled: false = PR 5 (every top unnamed person read as mursal).
+  enabled: true
+  ansar_muhajir: companion
+  tail_chars: 80
+  # Classes by precedence: companion, then ansar_muhajir, then none. Whole-word match on
+  # lists.normalize text. The companion phrases designate someone who met the Prophet as a
+  # believer (Ibn Hajar's definition of the companion, README): his companions, his wives,
+  # his servant and collector, one who saw or heard him, prayed with him or pledged allegiance
+  # to him, the people of Badr. «أدرك النبي» (lived in his time) does not.
+  phrases:
+    companion: ["من أصحاب النبي", "أصحاب النبي", "أصحاب رسول الله", "أصحاب محمد", "من الصحابة", "صحابي",
+                "صحابية", "له صحبة", "صحب النبي", "صحب رسول الله", "ممن صحب النبي", "رأى النبي",
+                "رأى رسول الله", "سمع النبي", "سمع رسول الله", "صلى مع النبي", "صلى مع رسول الله",
+                "من أهل بدر", "شهد بدرا", "أزواج النبي", "أزواج رسول الله", "أمهات المؤمنين",
+                "خادم النبي", "خادم رسول الله", "مصدق النبي", "مصدق رسول الله", "من المبايعات",
+                "رديف النبي", "ردف النبي", "نسوة رسول الله", "نساء النبي", "أم المؤمنين", "مولى للنبي",
+                "مولاة للنبي", "مولى رسول الله"]
+    ansar_muhajir: ["من الأنصار", "من المهاجرين", "بعض المهاجرين", "بعض الأنصار", "الأنصاري"]
+    none: ["رجل", "رجلا", "رجلان", "رجلين", "رجال", "الرجل", "شيخ", "شيخا", "شيوخ", "شيوخه", "أشياخ",
+           "أشياخه", "أشياخهم", "أشياخنا", "مشيخة", "امرأة", "امرأتان", "أعرابي", "الأعرابي", "البدوي",
+           "من بني", "من أهل", "من قومه", "من قومي", "أصحابنا", "بعض أصحابه", "صاحب لي", "أدرك النبي",
+           "أبيه", "أبي", "أباه", "آبائه", "آبائهم", "أهله", "عمه", "عم له", "عمومته", "عمومة له", "جده", "جدي",
+           "أجداده", "أجدادهم", "ابن عم", "ابن أخيه", "الثقة", "من لا أتهم", "بلغني", "بلغنا", "حدثت", "أخبرت",
+           "فلان", "فلانا", "غير واحد", "بعضهم", "غيره", "آخر"]
 
 continuity:
   # Teacher u -> student v. Years first, then tabaka window, else unknown.
@@ -123,7 +160,10 @@ derive:
   # 3: attested witnesses only, tiered tadlis with a hearing check, shawahid from sibling
   #    groups, every light defect covered, unnamed persons named elsewhere; book
   #    transmitters excluded from the chain grade like compilers.
-  version: 3
+  # 4: conditional narrator rulings on the link (lists/conditional.yaml), the unnamed companion
+  #    graded as a companion, sibling shawahid a variant, the mudallis set Tabaqat al-Mudallisin's
+  #    union, the residue tags.
+  version: 4
   exclude_compiler: true          # chain grade ignores the compiler at pos 0
   # Codes in the source matn_no scale (0 = best). A chain that does not reach
   # PROPHET through a companion (mursal), or that contains a break marker, cannot
@@ -168,16 +208,16 @@ derive:
     # witness avoiding the light-defect narrators of the lowest grade; with none, the
     # structural defects). all_light_defects: one witness avoiding every light defect.
     avoid: each_defect
-    # Shawahid. group: witnesses come from the report's own meaning group (PR 4).
-    # siblings: when no in-group witness covers a defect, attested chains of the other
-    # meaning groups under the same lowest topic node(s) are searched, provided their
-    # matn overlaps the chain's matn by at least shahid_min_overlap (idf-weighted Dice
-    # coefficient on lists.normalize tokens; src/itibar/matn.py). A cross-group witness
-    # is always classed shahid and flagged cross_group. The floor is the lowest band of
-    # the inspected pairs where at least four in five carry the chain's content in whole
-    # or in part (reports/shahid_inspection.md, DECISIONS D58); variant shahid_strict
-    # uses 0.38 (nine in ten).
-    shahid_scope: siblings
+    # Shawahid. group (PR 6 default): witnesses come from the report's own meaning group.
+    # siblings (PR 5 default, now a variant): when no in-group witness covers a defect, attested
+    # chains of the other meaning groups under the same lowest topic node(s) are searched, provided
+    # their matn overlaps the chain's matn by at least shahid_min_overlap (idf-weighted Dice on
+    # lists.normalize tokens; src/itibar/matn.py); a cross-group witness is always classed shahid.
+    # Off by default since PR 6 (D58 amended): the Dice score measures shared vocabulary, not shared
+    # meaning (an inspected pair whose witness negates the chain scores 0.60), and shahid detection
+    # by meaning is the text layer's work. The floor stays as set by inspection
+    # (reports/shahid_inspection.md): the lowest band where four in five carry the chain's content.
+    shahid_scope: group
     shahid_min_overlap: 0.32
     # An unnamed person below the companion slot. named_elsewhere (PR 5): covered when
     # another chain of the same report has a named narrator between the same teacher and
@@ -204,30 +244,79 @@ derive:
   # sahihayn_muanan_accepted: a mudallis's 'an in a chain of al-Bukhari or Muslim is carried
   # on established hearing (al-Nawawi, Ibn al-Salah): no defect there, and the link counts
   # as established within the hearing scope.
-  # mudallis_set source_flag: the mudallisun are the narrators the source flags
-  # (rawis.has_tadlis); Ibn Hajar's book gives their tier, untiered_tadlis for those not
-  # matched to it. union: also every narrator matched to the book.
+  # mudallis_set union (PR 6 default, D57 amended): every narrator matched to Ibn Hajar's Tabaqat
+  # al-Mudallisin at his tier, plus the narrators the source flags (rawis.has_tadlis) at
+  # untiered_tadlis where not matched: the set cites a book. source_flag (PR 5 default, now a
+  # variant): the source's flagged narrators only, the book giving their tier.
   # tiers: false = PR 4 (every flagged narrator's 'an is a light defect).
   tadlis:
     tiers: true
-    mudallis_set: source_flag
+    mudallis_set: union
     untiered_tadlis: 3
     tasrih_scope: group
     hearing_classes: [haddathana, akhbarana, anbaana, samitu]
+    # The tiers whose uncovered 'an the hearing check can lift. Tier 4 is accepted «بما صرحوا فيه
+    # بالسماع» (Tabaqat al-Mudallisin), tier 5's 'an is treated as tier 4's (D57); PR 5's code already
+    # covered 3-5 (the PR 6 brief took it for tier 3 only, D73). Variant tasrih_tier_3_only: [3].
+    tasrih_tiers: [3, 4, 5]
     sahihayn_muanan_accepted: true
     tier_4_5: not_repairable
+  # Conditional narrator rulings (PR 6, derive version 4; src/itibar/conditional.py,
+  # lists/conditional.yaml). A narrator's standing conditional on the link: the position's effective
+  # level is the ruling's where its condition holds on that link, the narrator's otherwise; a
+  # defect:light ruling adds a light defect there. kappa thresholds are node-level and never read
+  # these rulings. false = PR 5 (the narrator's level everywhere).
+  conditional: true
+  conditional_rules:
+    # ikhtilat: what was heard after the change, or cannot be placed, is not accepted (Ibn al-Salah):
+    # a student listed in neither list counts as after.
+    ikhtilat_unknown: after
+    # what al-Bukhari and Muslim took from a mukhtalit is carried as heard before (Ibn al-Salah):
+    # the link in a chain of the Sahihayn, and the same student -> narrator link in the report's other
+    # chains (the scope of the tadlis convention, D57).
+    sahihayn_ikhtilat_before: true
+    # a name in a condition resolves to one adjacent narrator, or to the one carrying at least this
+    # share of the links among the adjacent narrators it fits (the source splits some men in two).
+    dominance: 0.95
+    # region_of_shaykh: a teacher's region from his nisbas (rawis.nasab) and residences (rawis.iqama).
+    regions:
+      sham:
+        nisba: ["الشامي", "الحمصي", "الدمشقي", "الحلبي", "البيروتي", "الفلسطيني", "الرملي", "العسقلاني",
+                "البعلبكي", "الصوري", "الطبراني", "الأردني", "الداراني", "المقدسي", "الأنطاكي", "القنسريني",
+                "الصيداوي", "الطرسوسي", "المصيصي", "الحوراني", "الجولاني", "الغزي"]
+        places: ["الشام", "حمص", "دمشق", "حلب", "فلسطين", "بيت المقدس", "الرملة", "عسقلان", "بيروت", "صور",
+                 "طبرية", "الأردن", "بعلبك", "قنسرين", "أنطاكية", "داريا", "صيدا", "طرسوس", "المصيصة",
+                 "حوران", "غزة", "جبلة"]
   # Sensitivity runs on top of the default ruleset, stored as code_v2_alt_<name>.
   variants:
     weakest: {avoid: weakest}
     all_light_defects: {avoid: all_light_defects}
-    shahid_group: {shahid_scope: group}
-    shahid_strict: {shahid_min_overlap: 0.38}
+    siblings: {shahid_scope: siblings}
+    siblings_strict: {shahid_scope: siblings, shahid_min_overlap: 0.38}
     tasrih_corpus: {tadlis: {tasrih_scope: corpus}}
-    mudallis_union: {tadlis: {mudallis_set: union}}
+    mudallis_source_flag: {tadlis: {mudallis_set: source_flag}}
     unknown_none: {unknown_repair: none}
     mursal_shafii: {mursal_rule: shafii}
+    conditional_off: {conditional: false}
     no_level_8: {light_includes_level_8: false}
     witness_not_below: {witness_min: not_below}
+    tasrih_tier_3_only: {tadlis: {tasrih_tiers: [3]}}
+    unnamed_top_mursal: {unnamed_top: mursal}
+    ansar_muhajir_mursal: {ansar_muhajir: mursal}
+
+residue:
+  # PR 6 §3 (src/itibar/residue.py, reports/residue.md): every group whose v2 grade (`ruleset`)
+  # differs from meaning_groups.matn_no, tagged by mechanical cause (tags not exclusive, all stored in
+  # records.residue_tags); the primary tag is the first of these the group carries. Order: the unit of
+  # grading first, then the causes this machinery can name on the chain (a ruling, a single
+  # structural defect kind, corroboration), then what lies outside the chain (the source's verdict
+  # harsher than any label, the sahih/hasan line), then the plain level mismatch.
+  ruleset: ibn_hajar
+  precedence: [chain_choice, conditional_narrator, tadlis_only, mursal_only, unnamed_top, unnamed_mid,
+               corroboration, source_severe, boundary_0_1, level_only, unexplained]
+  sample_size: 50
+  sample_seed: 20261109
+  boundary_top_narrators: 100
 
 mudallisin:
   # Ibn Hajar's Tabaqat al-Mudallisin joined to rawis (src/itibar/mudallisin.py).

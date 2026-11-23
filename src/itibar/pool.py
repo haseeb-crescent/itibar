@@ -67,8 +67,9 @@ def analyse(group_ids: list[int], con=None, corpus: load.Corpus | None = None, l
     S = structure.analyse(B, corpus)
     nar = corpus.narrators
     on = S.on_path
-    comp_direct = sorted(v for v in B.succ.get(PROPHET, ()) if v in on)
-    comp_end = sorted({c.nodes[-1] for c in B.chains if c.ends_companion})
+    # named companions only; the pool's unnamed companions are one node u<pool id> (structure version 5)
+    comp_direct = sorted(v for v in B.succ.get(PROPHET, ()) if v in on and B.kind.get(v) == "narrator")
+    comp_end = sorted({c.nodes[-1] for c in B.chains if c.ends_companion and not c.unnamed_companion})
     out.update({
         "status": "ok",
         "n_books": len({c.book_id for c in chains}),
@@ -82,6 +83,7 @@ def analyse(group_ids: list[int], con=None, corpus: load.Corpus | None = None, l
         "number_class_width": S.number_class_width,
         "companions": len(comp_direct),
         "companions_chain_end": len(comp_end),
+        "unnamed_companion_node": any(k == "ucomp" for k in B.kind.values()),
         "companion_ids": [int(v[1:]) for v in comp_direct],
         "cut_vertices": S.cut_vertices,
         "common_links": S.common_links,

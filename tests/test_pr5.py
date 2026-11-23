@@ -132,8 +132,9 @@ def test_mudallis_set_source_flag_and_union():
     a = chain(3, A1, D, T, C1, words={2: MUANAN})
     ppl = people() | {D: {"rank_no": 3, "tabaka": 4, "tadlis": 0, "tier": 3}}   # in the book, not flagged
     out = run([a], ppl, books(A1))
-    assert row(out, a.sanad_id)["code_v2_ibn_hajar"] == 0
-    assert row(out, a.sanad_id)["code_v2_alt_mudallis_union"] == 2
+    # PR 6 made the union the default (D57 amended); the source's flag is the variant
+    assert row(out, a.sanad_id)["code_v2_ibn_hajar"] == 2
+    assert row(out, a.sanad_id)["code_v2_alt_mudallis_source_flag"] == 0
 
 
 # ---------------------------------------------------------------- 3. sibling shawahid
@@ -152,7 +153,24 @@ def _sibling_index(sib_chains, corpus, overlap):
     return siblings.SiblingIndex.build(rows, {1: (2,)}, list(params), FakeMatns(overlap))
 
 
+SIBLINGS = {"structure": {"derive": {"corroboration": {"shahid_scope": "siblings"}}}}
+
+
 def test_a_shahid_from_a_sibling_group_above_the_floor():
+    """PR 5's default, a variant since PR 6 (D58 amended): run with shahid_scope siblings."""
+    with override(SIBLINGS):
+        _shahid_above_the_floor()
+    # under the PR 6 default the sibling witness is reported as the variant only
+    a = chain(3, A1, W, T, C1)
+    w = chain(4, A2, S, T2, C2)
+    corpus = make_corpus(people() | {W: level(6)}, books(A1, A2))
+    floor = corroborate.rulesets()["alt_siblings"].shahid_min_overlap
+    idx = _sibling_index([w], corpus, {(a.hadith_id, w.hadith_id): floor + 0.01})
+    r = row(pipeline.analyse_group(1, [a], corpus, {"matn_no": 1}, idx), a.sanad_id)
+    assert r["code_v2_ibn_hajar"] == 2 and r["code_v2_alt_siblings"] == 1
+
+
+def _shahid_above_the_floor():
     a = chain(3, A1, W, T, C1)
     w = chain(4, A2, S, T2, C2)                       # another companion's report, in group 2
     ppl = people() | {W: level(6)}
@@ -164,7 +182,6 @@ def test_a_shahid_from_a_sibling_group_above_the_floor():
     assert (r["rule_v2_ibn_hajar"], r["divergence_v2_ibn_hajar"]) == ("hasan_li_ghayrihi", "shahid")
     assert r["witness_sanad_v2_ibn_hajar"] == w.sanad_id and r["witness_group_v2_ibn_hajar"] == 2
     assert out["record"]["witness_cross_group_v2_ibn_hajar"] is True
-    assert r["code_v2_alt_shahid_group"] == 2         # without siblings: no witness
     # below the floor: no witness
     idx = _sibling_index([w], corpus, {(a.hadith_id, w.hadith_id): floor - 0.01})
     out = pipeline.analyse_group(1, [a], corpus, {"matn_no": 1}, idx)

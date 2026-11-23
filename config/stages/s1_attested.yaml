@@ -1,9 +1,11 @@
 # Stage 1: + a witness is one attested chain (section 1 of the brief).
 structure:
+  unnamed_companion: {enabled: false}
   bundle: {book_transmitters: false}
   structure: {compiler_terminal: node}
   number_class: {basis: width}
   derive:
     corroboration: {witness: attested, avoid: weakest, shahid_scope: group, unknown_repair: none}
-    tadlis: {tiers: false, tasrih_scope: none, sahihayn_muanan_accepted: false}
+    conditional: false
+    tadlis: {mudallis_set: source_flag, tiers: false, tasrih_scope: none, sahihayn_muanan_accepted: false}
     variants: null

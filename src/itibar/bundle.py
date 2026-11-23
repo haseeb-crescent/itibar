@@ -6,6 +6,11 @@ Node ids (strings, stable across runs):
   m<student>|<teacher>  an unnamed person (placeholder 1131), one node per
                      (student, teacher) context: "a man" between the same two
                      people is taken to be the same man; across contexts never
+  u<group_id>        every unnamed companion of the group (an unnamed person at the
+                     top whose designation is a companion's, unnamed.py; structure
+                     version 5): one node per group, a companion (PROPHET edge,
+                     Taqrib level 1); distinctness of two unnamed companions cannot
+                     be shown, so they are one node
   g<sanad_id>.<pos>  a break marker (irsal / inqita' / ta'liq); one per chain
                      occurrence and never traversable, so it records the gap
                      without fusing unrelated routes
@@ -57,6 +62,8 @@ class ChainInfo:
     connected: bool                  # companion end, no break marker: one unbroken PROPHET->book route
     transmitter_at_pos0: bool = False   # pos 0 is the book's transmitter
     compiler_pos: int | None = None     # position of the book's compiler in the chain (0, 1 after a transmitter)
+    top_unnamed: str | None = None      # class of the unnamed person at the top (unnamed.py), None if none
+    unnamed_companion: bool = False     # the top is an unnamed companion (node u<group_id>)
 
     @property
     def role_positions(self) -> tuple[int, ...]:
@@ -112,8 +119,10 @@ class Bundle:
 
 
 def build(group_id: int, chains: list[Chain], corpus: Corpus) -> Bundle:
+    from itibar import unnamed
     nar, books = corpus.narrators, corpus.books
     drop_loops = config.load("structure")["bundle"]["drop_self_loops"]
+    ucls = unnamed.accepted_classes()
     B = Bundle(group_id)
     B.kind[PROPHET] = "prophet"
     for ch in chains:
@@ -122,6 +131,7 @@ def build(group_id: int, chains: list[Chain], corpus: Corpus) -> Bundle:
         nodes: list[str] = []
         gaps: dict[str, int] = {}
         has_mubham = has_stub = False
+        ucomp = False
         for p, rid in enumerate(r):
             if nar.is_gap(rid):
                 nid = f"g{ch.sanad_id}.{p}"
@@ -129,6 +139,13 @@ def build(group_id: int, chains: list[Chain], corpus: Corpus) -> Bundle:
                 B.rawi[nid] = rid
                 k = nar.placeholder_kind[rid]
                 gaps[k] = gaps.get(k, 0) + 1
+            elif nar.is_mubham(rid) and p == n - 1 and ch.top_unnamed in ucls:
+                # every unnamed companion of the group is one node; never identified with a named
+                # companion through the same student (D70)
+                nid = f"u{group_id}"
+                B.kind[nid] = "ucomp"
+                B.rawi[nid] = rid
+                has_mubham = ucomp = True
             elif nar.is_mubham(rid):
                 student = r[p - 1] if p > 0 else f"B{ch.book_id}"
                 teacher = r[p + 1] if p + 1 < n else "END"
@@ -193,8 +210,8 @@ def build(group_id: int, chains: list[Chain], corpus: Corpus) -> Bundle:
         B.add_edge(comp, bnode, (ch.sanad_id, ch.book_id, None, None, None))
         # top: PROPHET -> companion
         last = r[-1]
-        ends_comp = (B.kind[nodes[-1]] == "narrator" and last < len(nar.is_companion)
-                     and bool(nar.is_companion[last]))
+        ends_comp = ucomp or (B.kind[nodes[-1]] == "narrator" and last < len(nar.is_companion)
+                              and bool(nar.is_companion[last]))
         if ends_comp:
             B.add_edge(PROPHET, nodes[-1], (ch.sanad_id, ch.book_id, None, None, None))
             B.nr_in[nodes[-1]].add(PROPHET)
@@ -204,5 +221,6 @@ def build(group_id: int, chains: list[Chain], corpus: Corpus) -> Bundle:
             ends_companion=ends_comp, gaps=gaps, has_mubham=has_mubham, has_stub=has_stub,
             self_loops=loops, compiler_at_pos0=compiler_at_pos0,
             connected=ends_comp and not gaps, transmitter_at_pos0=transmitter_at_pos0, compiler_pos=compiler_pos,
+            top_unnamed=ch.top_unnamed, unnamed_companion=ucomp,
         ))
     return B
