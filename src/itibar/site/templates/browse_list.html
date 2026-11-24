@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% from 'components.html' import arab, report_card with context %}
+{% block head %}{% if pages %}<script type="module" src="{{ root }}assets/lists.js"></script>{% endif %}{% endblock %}
+{% block content %}
+<header class="hero">
+  <p class="crumb"><a href="{{ root }}browse/">Browse</a> <span aria-hidden="true">/</span> {% if kind == 'topic' %}<a href="{{ root }}browse/#topics">Topics</a>{% if parent %} / {{ parent.en or parent.name }}{% endif %}{% else %}<a href="{{ root }}browse/#collections">Collections</a>{% endif %}</p>
+  <h1>{{ heading or heading_ar }}</h1>
+  {% if heading %}<p class="opening" lang="ar" dir="rtl">{{ heading_ar }}</p>{% endif %}
+  {% if subtitle and subtitle != heading %}<p class="quiet">{{ subtitle }}</p>{% endif %}
+  <p class="quiet">{{ number(total) }} {{ 'report' if total == 1 else 'reports' }}{% if kind == 'topic' %}, the most widely narrated first{% else %}, in the order of the book{% endif %}.</p>
+</header>
+<ul class="results" data-list data-pages="{{ pages }}">{% for c in cards %}{{ report_card(c) }}{% endfor %}</ul>
+{% if pages %}<p><button type="button" data-more>Show more</button> <span class="quiet" role="status"></span></p>{% endif %}
+{% endblock %}

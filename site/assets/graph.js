@@ -17,6 +17,7 @@ export async function mountGraph(panel, dataPromise = readJson("graph.json.gz"))
   const count = panel.querySelector(".graph-count");
   const output = panel.querySelector(".kappa-display strong");
   const { nodes, edges, views, selection, off_route, thresholds } = await dataPromise;
+  if (!off_route) off.closest("label").hidden = true;
   const pointers = new Map();
   let view, screen, w, h, scale, fitX, fitY, dx, dy, lastGesture;
   let expanded = false;
