@@ -47,7 +47,7 @@ jobs:
       cancel-in-progress: false
     environment:
       name: github-pages
-      url: ${{steps.deployment.outputs.page_url}}
+      url: ${{ steps.deployment.outputs.page_url || steps.deployment_retry.outputs.page_url }}
     env:
       HF_HUB_DOWNLOAD_TIMEOUT: "60"
       HF_HUB_ETAG_TIMEOUT: "60"
@@ -82,3 +82,10 @@ jobs:
           path: site/dist
       - uses: actions/deploy-pages@v4
         id: deployment
+        continue-on-error: true
+      - name: Wait for the uploaded artifact to be listed (only after a failed deploy)
+        if: steps.deployment.outcome == 'failure'
+        run: sleep 60
+      - uses: actions/deploy-pages@v4
+        id: deployment_retry
+        if: steps.deployment.outcome == 'failure'
