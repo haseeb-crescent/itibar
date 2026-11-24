@@ -41,7 +41,7 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass, field
 
-from itibar import config, structure
+from itibar import config, grades, structure
 from itibar.bundle import PROPHET, SINK, Bundle, ChainInfo
 from itibar.derive import ChainGrade
 from itibar.flow import vertex_connectivity
@@ -495,6 +495,30 @@ class Verdict:
     cross_group: bool | None = None
     witness_group: int | None = None
     rulings: list = field(default_factory=list)           # conditional rulings fired: (pos, rule id, kind, effect)
+    codes: dict = field(default_factory=dict)             # {classical, source} -> code under that map (PR 7)
+
+
+SOURCE_MAP_LEVELS = ("level_5", "level_6")
+
+
+def code_under_map(v: Verdict, cc: ChainClass, g: ChainGrade, codes: str) -> int:
+    """The verdict's code under a level -> code map (derive.codes; PR 7). The classical map is the ladder as
+    stated (README). Under the source map (levels 4-6 -> 1, the source's template) the codes that read a level
+    change: a fatal chain keeps its v1 code and an unrepairable one max(v1 code, 2) under that map (identical in
+    practice: those chains are code >= 2 under both), and a ḍaʿīf chain whose uncovered defects are all level-5
+    or level-6 narrators (no structural defect, no ruling) is 1, the code the map gives those levels."""
+    v1 = (g.code_by_map or {}).get(codes, g.code)
+    if v.rule == "fatal":
+        return int(v1)
+    if v.rule == "not_repairable":
+        return max(int(v1), RULE_CODES["daif"])
+    if v.rule == "daif" and codes == "source":
+        unc = set(v.uncovered)
+        reasons = [why for p, _, why in cc.defects if p in unc]
+        if -1 not in unc and reasons and all(why in SOURCE_MAP_LEVELS for why in reasons):
+            return 1
+        return RULE_CODES["daif"]
+    return RULE_CODES.get(v.rule, int(v.code))
 
 
 class Engine:
@@ -695,14 +719,14 @@ def hasan_targets(cc: ChainClass, P: Params) -> list[Target]:
     return [Target((p,), frozenset([cc.nodes[p]])) for p in pos]
 
 
-def grade_group(B: Bundle, corpus: Corpus, chains: list[Chain], grades: list[ChainGrade],
+def grade_group(B: Bundle, corpus: Corpus, chains: list[Chain], grades_: list[ChainGrade],
                 params: dict[str, Params] | None = None, siblings=None,
                 classes: dict[str, list[ChainClass]] | None = None) -> dict[str, list[Verdict]]:
     """ruleset name -> one Verdict per chain (same order as `chains`)."""
     params = params or rulesets()
-    eng = Engine(B, corpus, chains, grades, siblings=siblings)
+    eng = Engine(B, corpus, chains, grades_, siblings=siblings)
     thresholds = corpus.scale.thresholds
-    classes = classes or classify_group(B, corpus, chains, grades, params)
+    classes = classes or classify_group(B, corpus, chains, grades_, params)
     out: dict[str, list[Verdict]] = {}
     for name, P in params.items():
         cls = classes[name]
@@ -830,20 +854,27 @@ def grade_group(B: Bundle, corpus: Corpus, chains: list[Chain], grades: list[Cha
             else:
                 verdicts.append(Verdict(code=fail_code, rule=fail_rule, weak_positions=wpos, weak_nodes=wnodes,
                                         witnesses=covered, uncovered=sorted(set(uncovered)), route_exists=routes_ok))
-        for cc, v in zip(cls, verdicts):
+        switch = grades.codes_switch()
+        for cc, v, g in zip(cls, verdicts, grades_):
             v.defects = sorted({d[2] for d in cc.defects})
             v.notes = sorted({why for _, why in cc.notes})
             v.rulings = list(cc.rulings)
+            v.codes = {m: code_under_map(v, cc, g, m) for m in grades.CODE_MAPS}
+            v.code = v.codes[switch]
         out[name] = verdicts
     return out
 
 
-def best(verdicts: list[Verdict], chains: list[Chain], grades: list[ChainGrade], infos: list[ChainInfo]) -> int | None:
-    """Index of the group's v2 chain: lowest code, then continuous, then highest
-    chain grade, then lowest sanad_id (v1's tie order)."""
+def best(verdicts: list[Verdict], chains: list[Chain], grades: list[ChainGrade], infos: list[ChainInfo],
+         codes: str | None = None) -> int | None:
+    """Index of the group's v2 chain: lowest code (under the code map `codes`; None = derive.codes), then
+    continuous, then highest chain grade, then lowest sanad_id (v1's tie order)."""
     if not verdicts:
         return None
-    return min(range(len(verdicts)), key=lambda i: (verdicts[i].code, not infos[i].connected,
+
+    def code(v: Verdict) -> int:
+        return v.code if codes is None else v.codes.get(codes, v.code)
+    return min(range(len(verdicts)), key=lambda i: (code(verdicts[i]), not infos[i].connected,
                                                      -grades[i].ordinal, chains[i].sanad_id))
 
 

@@ -33,6 +33,10 @@ def build(out_dir=None) -> dict:
     want = sorted({int(e["group_id"]) for e in gold.entries() if "classical_claim_holds_with_siblings" in e})
     sib = siblings.sibling_groups(con, want)
     sib_ids = sorted({s for g in want for s in sib.get(g, ())})
+    # PR 7: the sibling groups a gold critic entry asserts a «وفي الباب» companion in
+    for e in gold.entries():
+        for gs in ((e.get("expect") or {}).get("critic") or {}).get("found_in_siblings", {}).values():
+            sib_ids = sorted(set(sib_ids) | {int(g) for g in gs})
     top = [r[0] for r in con.sql("SELECT id FROM meaning_groups WHERE id > 0 ORDER BY repeat_qty DESC LIMIT 10").fetchall()]
     rnd = [r[0] for r in con.sql(
         f"""SELECT id FROM meaning_groups WHERE id IN (SELECT DISTINCT group_id FROM hadiths WHERE group_id IS NOT NULL)

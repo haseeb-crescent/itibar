@@ -25,6 +25,10 @@ class GradeScale:
     placeholders: dict[int, dict]
     thresholds: dict[str, int]          # name -> min ordinal (ordered)
     hukm_codes: dict[int, str]
+    # PR 7: the code maps. `classical` is levels[].code (D20), `source` levels[].code_source (the source's
+    # template: levels 4-6 -> 1); ordinal -> code per map, unknown included.
+    ordinal_code_by_map: dict[str, dict[int, int]] = None  # type: ignore[assignment]
+    level_code_by_map: dict[str, dict[int, int]] = None  # type: ignore[assignment]
 
     def ordinal(self, rank_no: int | None, is_stub: bool = False, rawi_id: int | None = None) -> int:
         if is_stub or rank_no is None or rank_no == 0:
@@ -43,8 +47,14 @@ class GradeScale:
             return False
         return lab not in self.companion_exclude_labels
 
-    def code_of_ordinal(self, ordinal: int) -> int:
-        return self.ordinal_code.get(ordinal, self.unknown_code)
+    def code_of_ordinal(self, ordinal: int, codes: str | None = None) -> int:
+        """The ordinal's code under a code map (`classical`, `source`); None = derive.codes."""
+        if codes is None:
+            return self.ordinal_code.get(ordinal, self.unknown_code)
+        return self.ordinal_code_by_map[codes].get(ordinal, self.unknown_code)
+
+    def code_of_level(self, level: int, codes: str = "classical") -> int:
+        return self.level_code_by_map[codes].get(int(level), self.unknown_code)
 
     def rank_no_of_ordinal(self, ordinal: int) -> int | None:
         for r, o in self.level_ordinal.items():
@@ -57,15 +67,30 @@ class GradeScale:
         return self.level_name.get(r, "unknown") if r is not None else "unknown"
 
 
+CODE_MAPS = ("classical", "source")
+
+
+def codes_switch() -> str:
+    """derive.codes: classical (default) | source — the code map of the main code columns."""
+    c = str((config.load("structure").get("derive") or {}).get("codes", "classical"))
+    if c not in CODE_MAPS:
+        raise ValueError(f"derive.codes must be one of {CODE_MAPS}, got {c!r}")
+    return c
+
+
 def load() -> GradeScale:
     g = config.load("grades")
     levels = {int(k): v for k, v in g["levels"].items()}
-    ordinal_code = {v["ordinal"]: v["code"] for v in levels.values()}
-    ordinal_code[UNKNOWN] = g["unknown"]["code"]
+    key = {"classical": "code", "source": "code_source"}
+    by_map = {m: {v["ordinal"]: v.get(key[m], v["code"]) for v in levels.values()} for m in CODE_MAPS}
+    for m in CODE_MAPS:
+        by_map[m][UNKNOWN] = g["unknown"].get(key[m], g["unknown"]["code"])
+    lvl_by_map = {m: {k: v.get(key[m], v["code"]) for k, v in levels.items()} for m in CODE_MAPS}
+    ordinal_code = dict(by_map[codes_switch()])
     thresholds = {name: int(t["min_ordinal"]) for name, t in g["thresholds"].items()}
     return GradeScale(
         level_ordinal={k: v["ordinal"] for k, v in levels.items()},
-        level_code={k: v["code"] for k, v in levels.items()},
+        level_code=dict(lvl_by_map[codes_switch()]),
         level_name={k: v["taqrib"] for k, v in levels.items()},
         ordinal_code=ordinal_code,
         unknown_code=g["unknown"]["code"],
@@ -75,6 +100,8 @@ def load() -> GradeScale:
         placeholders={int(k): v for k, v in g["placeholders"].items()},
         thresholds=thresholds,
         hukm_codes={int(k): v for k, v in g["hukm_codes"].items()},
+        ordinal_code_by_map=by_map,
+        level_code_by_map=lvl_by_map,
     )
 
 

@@ -17,7 +17,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from itibar import config
+from itibar import config, grades
 from itibar.bundle import Bundle, ChainInfo
 from itibar.load import Chain, Corpus
 
@@ -40,6 +40,7 @@ class ChainGrade:
     disagreement_class: str | None
     compiler_rank_no: int | None
     book_role_positions: tuple[int, ...] = ()
+    code_by_map: dict = None   # type: ignore[assignment]   # {classical, source} -> capped code (PR 7)
 
 
 def grade_chain(ch: Chain, info: ChainInfo, corpus: Corpus) -> ChainGrade:
@@ -59,6 +60,10 @@ def grade_chain(ch: Chain, info: ChainInfo, corpus: Corpus) -> ChainGrade:
     code, capped = code_raw, False
     if cap is not None and not continuous and code_raw < cap:
         code, capped = int(cap), True
+    code_by_map = {}
+    for m in grades.CODE_MAPS:
+        cm = scale.code_of_ordinal(ordinal, m)
+        code_by_map[m] = int(cap) if (cap is not None and not continuous and cm < cap) else cm
     rn = [int(nar.rank_no[x]) for x in r]
     full = max(rn)
     der_pos = [p for p in range(len(r)) if p not in excl]
@@ -86,6 +91,7 @@ def grade_chain(ch: Chain, info: ChainInfo, corpus: Corpus) -> ChainGrade:
         compiler_rank_no=(rn[info.compiler_pos] if info.compiler_pos is not None and info.compiler_pos in excl
                           else (rn[0] if 0 in excl else None)),
         book_role_positions=tuple(sorted(excl)),
+        code_by_map=code_by_map,
     )
 
 

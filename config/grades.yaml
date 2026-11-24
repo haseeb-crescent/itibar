@@ -14,19 +14,23 @@
 # (itibar.grades.write_labels) and lists every observed rank label with its
 # rank_no, count and resulting ordinal. Do not edit it by hand.
 
+# code: the classical map (derive.codes: classical, the default; DECISIONS D20): ḥasan li-dhātihi is the
+#   khafīf al-ḍabṭ level 4; levels 5-6 are light weaknesses that corroboration can lift («مقبول حيث يتابع،
+#   وإلا فليّن الحديث»). code_source: the map the source's own grade template reads (PR 7, reports/source_grade.md:
+#   levels 4-6 -> 1, 7-9 -> 2), selected by derive.codes: source; every code is reported under both maps.
 levels:            # rank_no -> ordinal, Taqrib level name, code in the source's matn_no scale
-  1:  {ordinal: 12, taqrib: "الصحابة",                    code: 0}
-  2:  {ordinal: 11, taqrib: "أوثق الناس / ثقة ثقة / ثقة حافظ", code: 0}
-  3:  {ordinal: 10, taqrib: "ثقة / متقن / ثبت / عدل",        code: 0}
-  4:  {ordinal: 9,  taqrib: "صدوق / لا بأس به",             code: 1}
-  5:  {ordinal: 8,  taqrib: "صدوق سيء الحفظ / يهم / له أوهام / تغير بأخرة", code: 2}
-  6:  {ordinal: 7,  taqrib: "مقبول",                       code: 2}
-  7:  {ordinal: 6,  taqrib: "مستور / مجهول الحال",           code: 2}
-  8:  {ordinal: 5,  taqrib: "ضعيف",                        code: 2}
-  9:  {ordinal: 4,  taqrib: "مجهول",                       code: 2}
-  10: {ordinal: 3,  taqrib: "متروك / متروك الحديث / ساقط",   code: 3}
-  11: {ordinal: 2,  taqrib: "متهم بالكذب",                  code: 4}
-  12: {ordinal: 1,  taqrib: "كذاب / وضاع",                  code: 5}
+  1:  {ordinal: 12, taqrib: "الصحابة",                    code: 0, code_source: 0}
+  2:  {ordinal: 11, taqrib: "أوثق الناس / ثقة ثقة / ثقة حافظ", code: 0, code_source: 0}
+  3:  {ordinal: 10, taqrib: "ثقة / متقن / ثبت / عدل",        code: 0, code_source: 0}
+  4:  {ordinal: 9,  taqrib: "صدوق / لا بأس به",             code: 1, code_source: 1}
+  5:  {ordinal: 8,  taqrib: "صدوق سيء الحفظ / يهم / له أوهام / تغير بأخرة", code: 2, code_source: 1}
+  6:  {ordinal: 7,  taqrib: "مقبول",                       code: 2, code_source: 1}
+  7:  {ordinal: 6,  taqrib: "مستور / مجهول الحال",           code: 2, code_source: 2}
+  8:  {ordinal: 5,  taqrib: "ضعيف",                        code: 2, code_source: 2}
+  9:  {ordinal: 4,  taqrib: "مجهول",                       code: 2, code_source: 2}
+  10: {ordinal: 3,  taqrib: "متروك / متروك الحديث / ساقط",   code: 3, code_source: 3}
+  11: {ordinal: 2,  taqrib: "متهم بالكذب",                  code: 4, code_source: 4}
+  12: {ordinal: 1,  taqrib: "كذاب / وضاع",                  code: 5, code_source: 5}
 
 unknown:
   ordinal: 0
@@ -34,6 +38,7 @@ unknown:
   # code 2 by the classical rule on jahala (an unidentified narrator leaves the
   # chain unestablished). Used by the v1 derivation only; see DECISIONS.md.
   code: 2
+  code_source: 2
 
 companion:
   rank_no: [1]

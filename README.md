@@ -36,7 +36,9 @@ below Yahya. The 14 chains in the data that break the pattern are each listed wi
 The gold set holds 22 structural cases like this from the classical literature: narrow reports that
 classical works trace through specific narrators, and *mutawatir* reports carried by ten or more
 companions; 22 more test the corroborated grade, the number class, the classical lists, the rules
-on tadlīs, the unnamed companion and narrators whose standing depends on the link. The test suite asserts every one, the narrow cases down to the exact narrators.
+on tadlīs, the unnamed companion and narrators whose standing depends on the link; 8 more are the critics' own claims
+quoted from the texts (al-Ṭabarānī's tafarrud, al-Tirmidhī's ḥasan gharīb, ḥasan ṣaḥīḥ and «وفي الباب», al-Ḥākim's
+«على شرط» and al-Dhahabī's correction of it). The test suite asserts every one, the narrow cases down to the exact narrators.
 
 ### What it finds
 
@@ -50,8 +52,12 @@ witnesses, Ibn Hajar's tiers of tadlīs, shawāhid filed as other reports, every
 covered); PR 6 reads an unnamed companion («a man of the Prophet's companions») as a companion, applies
 narrators' standing on the link where the books make it conditional (a teacher, a student, the time of
 hearing), and decomposes the remaining disagreement with the recorded grades by cause
-([reports/residue.md](reports/residue.md)). **Next:** aligning each report's text variants against its chains. The end products are
-an open dataset, a paper, and a queryable site.
+([reports/residue.md](reports/residue.md)). PR 7 decodes the recorded grades — a template read off the narrator table,
+chain by chain, with the group taking its best chain ([reports/source_grade.md](reports/source_grade.md)) — and tests the
+machinery against the classical critics' own claims in the texts: al-Ṭabarānī's «no one narrated it from X but Y», al-Bazzār's
+«we know it only by this route», al-Tirmidhī's ḥasan, gharīb and «وفي الباب» lists, al-Ḥākim's «on the condition of the two
+Shaykhs» ([reports/verdicts.md](reports/verdicts.md)). **Next:** aligning each report's text variants against its chains. The
+end products are an open dataset, a paper, and a queryable site.
 
 ## Technical summary
 
@@ -74,12 +80,15 @@ computed: the qarāʾin are reported as flags and the conclusion is left to the 
 
 The build briefs are [docs/prompts/bucket-1.md](docs/prompts/bucket-1.md), its corrections in
 [docs/prompts/pr-2.md](docs/prompts/pr-2.md), [docs/prompts/bucket-2.md](docs/prompts/bucket-2.md), its
-corrections in [docs/prompts/pr-5.md](docs/prompts/pr-5.md), and [docs/prompts/pr-6.md](docs/prompts/pr-6.md) (the
-unnamed companion, conditional narrators, the residue); records carry `structure_version` (now 5) and
-`derive_version` (now 4), both in `config/structure.yaml`. Every choice the data or the sources forced that the briefs did not settle
+corrections in [docs/prompts/pr-5.md](docs/prompts/pr-5.md), [docs/prompts/pr-6.md](docs/prompts/pr-6.md) (the
+unnamed companion, conditional narrators, the residue) and [docs/prompts/pr-7.md](docs/prompts/pr-7.md) (the recorded
+grade decoded, the critics' own verdicts); records carry `structure_version` (now 5) and
+`derive_version` (now 5), both in `config/structure.yaml`. Every choice the data or the sources forced that the briefs did not settle
 is in [DECISIONS.md](DECISIONS.md); the source audit is [reports/audit.md](reports/audit.md);
 gold-set results are [reports/gold.md](reports/gold.md); the disagreement with the recorded grades, tagged by
-mechanical cause, is [reports/residue.md](reports/residue.md); the bucket-2 reports are
+mechanical cause in three layers, is [reports/residue.md](reports/residue.md); what the recorded grade is, decoded, is
+[reports/source_grade.md](reports/source_grade.md); the critics' claims and the scores against them are
+[reports/verdicts.md](reports/verdicts.md); the bucket-2 reports are
 [reports/lists.md](reports/lists.md), [reports/common_links.md](reports/common_links.md),
 [reports/chapters.md](reports/chapters.md) and [reports/pools/](reports/pools/); the reading behind the
 shāhid overlap floor is [reports/shahid_inspection.md](reports/shahid_inspection.md).
@@ -103,7 +112,8 @@ DECISIONS D97–D105).
   where many, with the independent lines drawn in colour and a filter in words (Everyone · Excluding abandoned
   narrators · Truthful and above · Trustworthy only) that says what changes; *Why this grade* — the best chain
   with each narrator's rating, the rule in one sentence, the weak point and the second chain that covers it;
-  the books, every chain, the classical notes, and *For specialists*: κ and κ_lower at each step, the cut
+  the books, every chain, the classical notes (with the critics' own remarks on the report, quoted from the
+  corpus text, from PR 7's `out/verdicts.parquet`), and *For specialists*: κ and κ_lower at each step, the cut
   vertices, common links, number class and dates, every receipt, the full graph and the record as JSON.
 * **A narrator page** says who he was (English and Arabic names, generation, dates in AH and CE, where he lived),
   his rating on Ibn Ḥajar's twelve-step scale with its meaning, tadlīs and conditional rulings, his place in
@@ -150,7 +160,9 @@ make mudallisin  # lists/mudallisin.yaml, lists/mudallisin_candidates.csv, lists
 make conditional # lists/conditional.yaml, lists/conditional_candidates.csv, lists/conditional_confirmed.csv (PR 6)
 make chapters  # reports/chapters.md, figures/fig5_chapter_census.*
 make pools     # reports/pools/mahdi.*, reports/pools/dajjal.* (the two topic-subtree case studies)
-make residue   # reports/residue.md, figures/fig6_residue.* (PR 6)
+make source-template  # out/source_template.parquet, reports/source_grade.md, reports/source_templates.csv (PR 7)
+make verdicts  # out/verdicts.parquet, out/critics/, reports/verdicts.md, reports/verdicts_survey.csv, fig7 (PR 7)
+make residue   # reports/residue.md, figures/fig6_residue.* (PR 6, three layers since PR 7)
 make gold      # reports/gold.md + gold tests
 make test      # unit tests, gold set, corpus gates
 make figures   # figures/fig1_kappa.*, figures/fig2_width_by_tabaka.* (+ CSV of every plotted number)
@@ -160,7 +172,7 @@ uv run itibar pool --topic 28661          # pooled bundle: --groups g1 g2 …, -
 ```
 
 `make ci` runs the whole pipeline and test suite on the committed fixture
-(`tests/fixture/parquet`, 351 groups with the topic nodes above them and the full corpus's matn idf, 7.1 MB; regenerate with
+(`tests/fixture/parquet`, 361 groups with the topic nodes above them and the full corpus's matn idf, 7.3 MB; regenerate with
 `make fixture`) — what GitHub Actions runs, with no download. `make lists-fetch` re-downloads the
 al-Kattānī text from Shamela's public read-only MCP server (`https://mcp.shamela.ws`); its output,
 `lists/source/kattani_7016.jsonl`, is committed so `make lists` needs no network; likewise `make
@@ -221,7 +233,9 @@ audit): 1 companions, 2 `ثقة ثقة`/`حافظ`, 3 `ثقة`, 4 `صدوق`, 5 
 Break markers are not narrators and have no ordinal. Every observed label (499) is listed with
 its count and ordinal under `labels:`. Each level also carries a **code** on the source's own
 grade scale (0 صحيح, 1 حسن, 2 ضعيف, 3 شديد الضعف, 4 متهم بالوضع, 5 موضوع): levels 1–3 → 0, 4 → 1,
-5–9 → 2, 10 → 3, 11 → 4, 12 → 5; unknown → 2.
+5–9 → 2, 10 → 3, 11 → 4, 12 → 5; unknown → 2 (the classical map, `derive.codes: classical`). The source's own template
+codes levels 4–6 alike as 1 (`code_source`, `derive.codes: source`; PR 7, *Definitions added in PR 7*); every code is
+stored under both maps.
 
 **Companion** = rank_no 1, minus the labels that deny companionship (`لم تثبت له صحبة`, `له إدراك`, `لها إدراك`),
 plus any narrator carrying a label in `companion.label_overrides` (`صحابي صغير`, `صحابية صغيرة`) whatever
@@ -801,6 +815,7 @@ Tier 4 is accepted «بما صرحوا فيه بالسماع» (*Ṭabaqāt al-M
 and the variant `tasrih_tier_3_only` measures it (D73).
 
 ### 3. The residue — `src/itibar/residue.py`, `reports/residue.md`, `figures/fig6_residue.*`
+(Rebased in PR 7 on the decoded recorded grade, in three layers: *Definitions added in PR 7*, §4.)
 Every group whose v2 grade (`ibn_hajar`) differs from `meaning_groups.matn_no` is tagged by mechanical cause; the
 tags (`residue_tags`, not exclusive), the primary tag (`residue_primary`, by `residue.precedence`), the direction
 (`stricter`: our code higher; `lenient`: lower), the weakest narrators, the conditional status and the witness's
@@ -815,6 +830,122 @@ cannot see and issues no verdict on which grade is right.
   amended, D76): every narrator matched to Ibn Hajar's book at his tier, plus the source's flagged narrators at
   `untiered_tadlis` where not matched, so the sentence cites a book.
 
+## Definitions added in PR 7
+
+Every change is a switch or a new column; the PR 6 values are kept (`derive.codes: classical`). The classical passages
+below were fetched from Shamela and checked byte for byte against the page text by a separate pass
+(`lists/source/critics_definitions.jsonl`, with the edition, page and URL of each; the page's line breaks are rendered as
+spaces).
+
+### 1. What the recorded grade is — `src/itibar/source_template.py`, [reports/source_grade.md](reports/source_grade.md)
+The source's grade of a chain (`sanads.matn_no`, with its sentence `sanads.hukum`) is a template filled from the
+narrator table. Its sentences («إسناده متصل ، رجاله ثقات», «إسناده حسن رجاله ثقات عدا X وهو L», «إسناد ضعيف فيه X وهو L»,
+«إسناد ضعيف لأن به موضع إرسال …») name the weakest narrators with their `rawis.rank` label as the verdict word (99.70%), and
+the code is the weakest level over every position — the compiler at pos 0 included — on a map that codes Ibn Hajar's
+levels 4–6 alike as ḥasan; break markers raise it. The template reproduces the recorded chain code for 99.68% of the
+chains of single-chain hadith and for 99.62% of all chains read per hadith; chain by chain only 92.10%, because in hadith
+with several chains the recorded codes sit on the wrong chains about as often as chance. The hadith grade is its best
+chain's (99.47%) and the group grade its best chain's (86.77%), with 2,503 groups placed below every chain they have and
+181 above, by the editors, for reasons no field of the dump records. So the recorded grade does not corroborate across
+chains: the agreement of v1 and v2 with it measures, first, the code map and the editors' exceptions.
+
+    template level   max rawis.rank_no over every position; an undescribed narrator (rank_no 0) reads «مجهول الحال»
+                     (level 7); the unnamed person is not graded
+    template code    grades.yaml code_source: 1-3 -> 0, 4-6 -> 1, 7-9 -> 2, 10 -> 3, 11 -> 4, 12 -> 5
+    breaks           n = inqita' + ta'liq markers + 1 if (an irsal marker, or an unnamed person with an inqita' or
+                     ta'liq marker in the chain); n = 1 -> code >= 2; n >= 2 -> code >= 3
+    group            the lowest chain code of the group (no corroboration; the editors' exceptions aside)
+
+`out/source_template.parquet` keeps, per chain, the parsed sentence (opening, the narrators named and the verdict word for
+each, the breaks, the «رجاله رجال الشيخين / البخاري / مسلم» clause and its exceptions), the template code and, where it
+differs from the record, the residual class. Every skeleton (names → {N}, verdict words → {L}) is in
+`reports/source_templates.csv` with its code distribution.
+
+### 2. The code maps — `derive.codes: classical | source`, `grades.yaml: levels[].code_source`
+`classical` (the default, D20) codes levels 5–9 as 2; `source` codes levels 4–6 as 1, as the source's template does.
+Every code is stored under both maps (`derived_code_<map>`, `chain_code_<map>`, `code_v2_<ruleset>_<map>` for every
+ruleset and variant); the switch picks the main columns. In v2 only the codes that read a level change: a ḍaʿīf chain
+whose uncovered defects are all level-5 or level-6 narrators is 1 under the source map (D86). Every agreement table of
+audit §11 is printed under both maps.
+
+### 3. `source_template` — the template as a v1 ruleset, `derive.source_template`
+Chains carry `code_source_template`, `level_source_template`, `breaks_source_template`; records `code_source_template`
+(the lowest chain code, ties by lowest sanad id), `best_sanad_source_template`, and the recorded best chain
+`matn_no_best_chain` / `best_sanad_recorded` (D87).
+
+### 4. The residue in three layers — `src/itibar/residue.py`, [reports/residue.md](reports/residue.md)
+With R the recorded best chain code and ST the template code on itibar's chains:
+
+    recorded − v2  =  (recorded − R)   aggregation: what the editors did beyond the template
+                   +  (R − ST)         chain: what differs in reading the narrator table
+                   +  (ST − v2)        substance: what the classical ladder changes
+
+A disagreeing group is attributed to the first non-zero layer, so the three counts add up to the disagreement (gated);
+`residue_layers`, `residue_d_<layer>` keep every layer. Tags within the layers: `group_below_best_chain`,
+`group_above_best_chain`; `template_vs_record`; `code_map`, `book_role`, `break_rule`, `conditional_narrator`,
+`unnamed_top`, `unnamed_mid`, `undescribed`, `tadlis`, `mursal`, `corroboration`, `boundary_0_1`, `level_only`. PR 6's
+`chain_choice` and `source_severe` are retired (D89).
+
+### 5. The critics' verdicts — `src/itibar/verdicts.py`, `src/itibar/critics.py`, [reports/verdicts.md](reports/verdicts.md)
+The texts of 27 books whose authors comment (al-Tirmidhī; al-Ṭabarānī's three Muʿjams and others, and al-Khaṭīb relaying
+him; al-Bazzār and *Kashf al-Astār* relaying him; al-Dāraquṭnī; al-Bayhaqī; Abū Nuʿaym; al-Khaṭīb; al-Ḥākim; Abū Dāwūd;
+al-Nasāʾī; Ibn Khuzayma; Ibn Ḥibbān) are surveyed (n-grams after `matn_end`, `reports/verdicts_survey.csv`) and parsed
+into 31 formula families: one row per claim in `out/verdicts.parquet` with the quoted span (a substring of
+`hadiths.nass` at its offsets, gated), the claim type, its slots and the names resolved among the narrators of the
+hadith's own chain(s) (D71's resolver; unresolved slots keep the reason). Each claim type is scored as stated, relative
+claims as relative (D91–D94); a failed claim is reported with what breaks it, never as the critic being wrong.
+`out/verdicts.parquet` also carries `quote`, `citation` and `result` (one line on what the scoring found, filled by
+`make verdicts`). The site's *Classical notes* quote each report's remarks with their citation and an English
+summary of the claim; `result` travels with the file in the site's Downloads.
+
+**Tafarrud** («لم يرو هذا الحديث عن X إلا Y», «تفرد به Y», «لا نعلم رواه عن X إلا Y»): every route from X to a book passes
+through Y in the group's bundle. Ibn al-Ṣalāḥ's division of the afrād (ص ٨٨, [22870/85](https://shamela.ws/book/22870/85)):
+
+> الْأَفْرَادُ مُنْقَسِمَةٌ إِلَى مَا هُوَ فَرْدٌ مُطْلَقًا، وَإِلَى مَا هُوَ فَرْدٌ بِالنِّسْبَةِ إِلَى جِهَةٍ خَاصَّةٍ. أَمَّا الْأَوَّلُ: فَهُوَ مَا يَنْفَرِدُ بِهِ وَاحِدٌ عَنْ كُلِّ أَحَدٍ، وَقَدْ سَبَقَتْ أَقْسَامُهُ وَأَحْكَامُهُ قَرِيبًا. وَأَمَّا الثَّانِي: وَهُوَ مَا هُوَ فَرْدٌ بِالنِّسْبَةِ، فَمِثْلَمَا يَنْفَرِدُ بِهِ ثِقَةٌ عَنْ كُلِّ ثِقَةٍ، وَحُكْمُهُ قَرِيبٌ مِنْ حُكْمِ الْقِسْمِ الْأَوَّلِ.
+
+with the relative form spelled out (ص ٨٩, [22870/86](https://shamela.ws/book/22870/86)): «" هَذَا حَدِيثٌ تَفَرَّدَ بِهِ أَهْلُ مَكَّةَ، أَوْ: تَفَرَّدَ بِهِ أَهْلُ الشَّامِ، أَوْ: أَهْلُ الْكُوفَةِ، أَوْ: أَهْلُ خُرَاسَانَ، عَنْ غَيْرِهِمْ. أَوْ: لَمْ يَرْوِهِ عَنْ فُلَانٍ غَيْرُ فُلَانٍ، وَإِنْ كَانَ مَرْوِيًّا مِنْ وُجُوهٍ عَنْ غَيْرِ فُلَانٍ، أَوْ: تَفَرَّدَ بِهِ الْبَصْرِيُّونَ عَنِ الْمَدَنِيِّينَ، أَوْ: الْخُرَاسَانِيُّونَ عَنِ الْمَكِّيِّينَ "، وَمَا أَشْبَهَ ذَلِكَ، وَلَسْنَا نُطَوِّلُ بِأَمْثِلَةِ ذَلِكَ فَإِنَّهُ مَفْهُومٌ دُونَهَا.»; and the chain of
+exclusivities the claims state link by link (ص ٨٤, [22870/81](https://shamela.ws/book/22870/81)):
+
+> فَإِنْ لَمْ يُرْوَ أَيْضًا بِمَعْنَاهُ حَدِيثٌ آخَرُ فَقَدْ تَحَقَّقَ فِيهِ التَّفَرُّدُ الْمُطْلَقُ حِينَئِذٍ، وَيَنْقَسِمُ عِنْدَ ذَلِكَ إِلَى مَرْدُودٍ مُنْكَرٍ وَغَيْرِ مَرْدُودٍ، كَمَا سَبَقَ. وَإِذَا قَالُوا فِي مِثْلِ هَذَا: " تَفَرَّدَ بِهِ أَبُو هُرَيْرَةَ، وَتَفَرَّدَ بِهِ عَنْ أَبِي هُرَيْرَةَ ابْنُ سِيرِينَ، وَتَفَرَّدَ بِهِ عَنِ ابْنِ سِيرِينَ أَيُّوبُ، وَتَفَرَّدَ بِهِ عَنْ أَيُّوبَ حَمَّادُ بْنُ سَلَمَةَ "، كَانَ فِي ذَلِكَ إِشْعَارٌ بِانْتِفَاءِ وُجُوهِ الْمُتَابَعَاتِ فِيهِ.
+
+Ibn Hajar on the relative fard (*Nuzha*, ص ٥٧, [1565/53](https://shamela.ws/book/1565/53)): «سُمِّيَ بذلك لكونِ التفرُّدِ فيه حَصَلَ بالنسبة إلى شخصٍ مُعيَّنٍ، وإنْ كان الحديثُ في نَفْسه مشهورًا، ويَقِلُّ إطلاقُ الفردِيَّةِ عليه، لأنَّ الغريبَ والفَرْدَ مترادِفانِ لغةً واصطلاحًا، إلّا أنَّ أهلَ الاصطلاح غايروا بينهما من حيثُ كَثْرَةُ الاستعمالِ وقِلَّتُه، فالفردُ أكثرُ ما يُطلِقونه على الفرد المُطْلَقِ، والغريبُ أكثرُ ما يُطلِقونه على الفرد النِّسْبِيّ، وهذا من حيثُ إطلاقُ الاسمِ عليهما، وأمّا مِن حيثُ استعمالُهم الفعلَ المشتقَّ فلا يُفَرِّقُونَ، فيقولون في المُطْلَقِ والنِّسبِيّ: تفرَّدَ به فلانٌ، أو أغربَ به فلانٌ.»
+
+**Gharīb** (al-Tirmidhī's «غريب», «لا نعرفه إلا من هذا الوجه»): absolute against the κ number class; «من هذا الوجه» relative to
+the chain's companion, «من حديث X» to X. His own explanation (*al-ʿIlal* at the end of the Jāmiʿ, ص ٢٥١,
+[642/75](https://shamela.ws/book/642/75)): «وَمَا ذَكَرْنَا فِي هَذَا الْكِتَابِ حَدِيثٌ غَرِيبٌ فَإِنَّ أَهْلَ الْحَدِيثِ يَسْتَغْرِبُونَ الْحَدِيثَ لِمَعَانٍ: رُبَّ حَدِيثٍ يَكُونُ غَرِيبًا لَا يُرْوَى إِلَّا مِنْ وَجْهٍ وَاحِدٍ،» … «وَرُبَّ حَدِيثٍ يُرْوَى مِنْ أَوْجُهٍ كَثِيرَةٍ، وَإِنَّمَا يُسْتَغْرَبُ لِحَالِ الْإِسْنَادِ.» Ibn al-Ṣalāḥ
+(ص ٢٧١, [22870/268](https://shamela.ws/book/22870/268)):
+
+> وَيَنْقَسِمُ الْغَرِيبُ أَيْضًا مِنْ وَجْهٍ آخَرَ: فَمِنْهُ مَا هُوَ (غَرِيبٌ مَتْنًا وَإِسْنَادًا) وَهُوَ الْحَدِيثُ الَّذِي تَفَرَّدَ بِرِوَايَةِ مَتْنِهِ رَاوٍ وَاحِدٌ. وَمِنْهُ مَا هُوَ (غَرِيبٌ إِسْنَادًا لَا مَتْنًا) كَالْحَدِيثِ الَّذِي مَتْنُهُ مَعْرُوفٌ مَرْوِيٌّ عَنْ جَمَاعَةٍ مِنَ الصَّحَابَةِ، إِذَا تَفَرَّدَ بَعْضُهُمْ بِرِوَايَتِهِ عَنْ صَحَابِيٍّ آخَرَ كَانَ غَرِيبًا مِنْ ذَلِكَ الْوَجْهِ مَعَ أَنَّ مَتْنَهُ غَيْرُ غَرِيبٍ. وَمِنْ ذَلِكَ غَرَائِبُ الشُّيُوخِ فِي أَسَانِيدِ الْمُتُونِ الصَّحِيحَةِ، وَهَذَا الَّذِي يَقُولُ فِيهِ التِّرْمِذِيُّ: " غَرِيبٌ مِنْ هَذَا الْوَجْهِ ".
+
+**Ḥasan** (al-Tirmidhī's verdict classes, profiled against κ, the «وفي الباب» routes, v1/v2 and the levels). His definition
+(ص ٢٥١, [642/74](https://shamela.ws/book/642/74)):
+
+> وَمَا ذَكَرْنَا فِي هَذَا الْكِتَابِ حَدِيثٌ حَسَنٌ فَإِنَّمَا أَرَدْنَا بِهِ حُسْنَ إِسْنَادِهِ عِنْدَنَا. كُلُّ حَدِيثٍ يُرْوَى لَا يَكُونُ فِي إِسْنَادِهِ مَنْ يُتَّهَمُ بِالْكَذِبِ، وَلَا يَكُونُ الْحَدِيثُ شَاذًّا، وَيُرْوَى مِنْ غَيْرِ وَجْهٍ نَحْوَ ذَلِكَ- فَهُوَ عِنْدَنَا حَدِيثٌ حَسَنٌ.
+
+«حسن صحيح»: Ibn al-Ṣalāḥ (ص ٣٩, [22870/36](https://shamela.ws/book/22870/36)): «الثَّامِنُ: فِي قَوْلِ التِّرْمِذِيِّ وَغَيْرِهِ: " هَذَا حَدِيثٌ حَسَنٌ صَحِيحٌ " إِشْكَالٌ، لِأَنَّ الْحَسَنَ قَاصِرٌ عَنِ الصَّحِيحِ، كَمَا سَبَقَ إِيضَاحُهُ، فَفِي الْجَمْعِ بَيْنَهُمَا فِي حَدِيثٍ وَاحِدٍ جَمْعٌ بَيْنَ نَفْيِ ذَلِكَ الْقُصُورِ وَإِثْبَاتِهِ. وَجَوَابُهُ: أَنَّ ذَلِكَ رَاجِعٌ إِلَى الْإِسْنَادِ، فَإِذَا رُوِيَ الْحَدِيثُ الْوَاحِدُ بِإِسْنَادَيْنِ: أَحَدُهُمَا إِسْنَادٌ حَسَنٌ، وَالْآخَرُ إِسْنَادٌ صَحِيحٌ اسْتَقَامَ أَنْ يُقَالَ فِيهِ: إِنَّهُ حَدِيثٌ حَسَنٌ صَحِيحٌ، أَيْ إِنَّهُ حَسَنٌ بِالنِّسْبَةِ إِلَى إِسْنَادٍ، صَحِيحٍ بِالنِّسْبَةِ إِلَى إِسْنَادٍ آخَرَ.»; Ibn Hajar (*Nuzha*,
+ص ٦٦–ص ٦٧, [1565/62](https://shamela.ws/book/1565/62), [1565/63](https://shamela.ws/book/1565/63)): «فإن جُمِعا أيْ الصحيحُ والحَسَنُ في وصفٍ واحدٍ كقَوْل الترمذي وغيرِه "حديثٌ حَسَنٌ صحيح" فَلِلترَدُّدِ الحاصِلِ من المجتهد في الناقِل، هل اجتمعَتْ فيه شروطُ الصحة أو قَصرَ عنها، وهذا حيثُ يحصلُ منه التفرُّدُ بتلك الرواية.» «وإلا إذا لم يحصلِ التفردُ فإطلاقُ الوصفين معًا على الحديث يكونُ باعتبار إسنادَين أحدُهما صحيحٌ والآخرُ حَسَن، وعلى هذا فما قيل فيه: حَسَنٌ صحيح فَوْقَ ما قيل فيه صحيحٌ فقط إذا كان فردًا، لأنّ كثرةَ الطُّرقِ تُقَوِّي.»
+
+«حسن غريب», reported and not resolved: Ibn Hajar (*Nuzha*, ص ٦٧, [1565/63](https://shamela.ws/book/1565/63)): «فإنْ قيلَ: قد صَرَّحَ الترمذيُّ بأنَّ شَرْطَ الحَسَنِ أنْ يُرْوَى من غير وَجْهٍ. فكيفَ يقولُ في بعض الأحاديثِ: "حَسَنٌ غريبٌ لا نَعْرِفُه إلّا من هذا الوجه"؟ .. فالجوابُ: أنّ الترمذيَّ لمْ يُعَرِّفِ الحَسَنَ مطلقًا، وإنما عَرَّف نوعًا خاصًّا منه وقع في كتابه، وهو ما يقول فيه: "حَسَنٌ" من غير صفةٍ أخرى»; Ibn Rajab
+(*Sharḥ ʿIlal al-Tirmidhī* ٢/ ٦٠٧, [9552/549](https://shamela.ws/book/9552/549)): «وعلى هذا فلا يشكل قوله: "حديث حسن غريب"، ولا قوله: صحيح حسن غريب لا نعرفه إلا من هذا الوجه، لأن مراده أن هذا اللفظ لا يعرف إلا من هذا الوجه، لكن لمعناه شواهد من غير هذا الوجه، وإن كانت شواهد بغير لفظه.» (The brief places the discussion in
+*al-Nukat*; its commentary on the ḥasan has no passage on «حسن غريب» as such, only «ولهذا أطلق الحسن لما عرف به فلم يقيده بغرابة ولا غيرها ونسبه إلى نفسه ومن يرى رأيه فقال: "عندنا كل حديث" إلى آخر كلامه الذي ساقه شيخنا» (١/ ٣٩٩,
+[8316/374](https://shamela.ws/book/8316/374)); D92.)
+
+**«وفي الباب عن …»**: each companion named, looked for in the same group, a sibling group and under the grandparent topic
+node; the Dice of the true pairs against non-pairs is the calibration set for bucket 3. What al-Tirmidhī means by it,
+al-ʿIrāqī (*al-Taqyīd wa-l-Īḍāḥ*, ص ١٠٢, [7581/102](https://shamela.ws/book/7581/102), in the footnote field of that edition):
+
+> وهكذا يفعل الترمذي في الجامع حيث يقول وفي الباب عن فلان وفلان فانه لا يريد ذلك الحديث المعين وإنما يريد أحاديث أخر يصح أن تكتب في ذلك الباب وان كان حديثا آخر غير الذى يرويه في أول الباب وهو عمل صحيح إلا أن كثيرا من الناس يفهمون من ذلك أن من سمى من الصحابة يروون ذلك الحديث بعينه الذى رواه في أول الباب بعينه وليس إلامر على ما فهموه بل قد يكون كذلك وقد يكون حديثا آخر يصح إيراده في ذلك الباب
+
+**al-Ḥākim's «على شرط الشيخين / مسلم / البخاري»**: the men of his chain up to the Ṣaḥīḥayn's generation are narrators of the
+named Ṣaḥīḥ and their links pairings it uses. His own statement (*al-Mustadrak*, ١/ ٢٠٨, [1424/201](https://shamela.ws/book/1424/201)): «وأنا أستعينُ الله على إخراج أحاديثَ رواتُها ثقاتٌ قد احتجَّ بمثلها الشيخان ﵄ أو أحدهما، وهذا شرط الصحيح عند كافَّة فقهاء أهل الإسلام: أنَّ الزيادة في الأسانيد والمتون من الثِّقات مقبولة»;
+Ibn al-Ṣalāḥ (ص ٢٢, [22870/19](https://shamela.ws/book/22870/19)): «وَهُوَ وَاسِعُ الْخَطْوِ فِي شَرْطِ الصَّحِيحِ، مُتَسَاهِلٌ فِي الْقَضَاءِ بِهِ. فَالْأَوْلَى أَنْ نَتَوَسَّطَ فِي أَمْرِهِ فَنَقُولَ: مَا حَكَمَ بِصِحَّتِهِ، وَلَمْ نَجِدْ ذَلِكَ فِيهِ لِغَيْرِهِ مِنَ الْأَئِمَّةِ، إِنْ لَمْ يَكُنْ مِنْ قَبِيلِ الصَّحِيحِ فَهُوَ مِنْ قَبِيلِ الْحَسَنِ، يُحْتَجُّ بِهِ وَيُعْمَلُ بِهِ، إِلَّا أَنْ تَظْهَرَ فِيهِ عِلَّةٌ تُوجِبُ ضَعْفَهُ.» The classical baseline is
+al-Dhahabī's correction, not in the corpus text; one example (*Talkhīṣ*, no. 2802, ٢/ ٢١٦, [2266/2907](https://shamela.ws/book/2266/2907)):
+«من تلخيص الذهبي]٢٨٠٢ - على شرط مسلم كذا قال يعني الحاكم قلت ومحمد بن عبيد لم يحتج به مسلم وقال أبو حاتم ضعيف».
+
+**Grade words** (ṣaḥīḥ, ḥasan, «صحيح الإسناد», «إسناد صحيح», «مرسل», «منكر», «ليس بالقوي», «إن صح الخبر» …), critic by critic,
+against v1 and v2 under both rulesets and both code maps. **al-Bayhaqī's attributions** «رواه البخاري / مسلم في الصحيح عن X»
+(a family the survey found): a chain of that Ṣaḥīḥ in the same group through X.
+
 ## Outputs
 
 | file | content |
@@ -828,6 +959,9 @@ cannot see and issues no verdict on which grade is right.
 | `out/narrator_links.parquet` | teacher → student pairs over every bundle's on-route links, counted in reports and chains (the site's teachers and students) |
 | `translations/<kind>.parquet` | the English layer for the site — books, topics, places, critics, narrators, report openings and texts — one row per item with its Arabic source, source hash, producer, model and prompt hash (D102); `translations/checks.parquet` the second-pass check; `translations/hadeethenc.parquet` and `translations/source/hadeethenc_en.jsonl` HadeethEnc's human translations and their join (D101). Nothing computed reads them |
 | `config/glossary.yaml` | the site's glossary, written by hand: terms, the twelve Taqrīb levels, the twelve generations, the tiers of tadlīs (D100) |
+| `out/source_template.parquet` | one row per chain: the recorded sentence parsed (family, slots), the template code, the residual class where it differs from the record (PR 7 §1) |
+| `out/verdicts.parquet` | one row per critic's claim: book, hadith, quoted span and offsets, claim type, formula family, slots, names resolved (PR 7 §4) |
+| `out/critics/` | the claims scored: `tafarrud`, `gharib`, `words`, `shart`, `attribution`, `wafi`, `pairs` (the «وفي الباب» Dice calibration set) (PR 7 §5) |
 | `out/matn_tokens.parquet`, `out/matn_vocab.parquet` | normalized matn tokens and idf for the shāhid overlap |
 | `out/stages/<stage>/` | records and chains of each cumulative PR 5 and PR 6 stage (`make stages`) |
 | `lists/conditional.yaml`, `lists/conditional_candidates.csv`, `lists/conditional_confirmed.csv` | conditional narrator rulings in force; every proposal with its match evidence; the rows used (`auto` / `needs_review` / `human`) (PR 6 §2) |
@@ -839,12 +973,15 @@ cannot see and issues no verdict on which grade is right.
 | `lists/candidates.csv`, `lists/confirmed.csv` | top-5 group candidates per entry; the mapping used (`auto` / `human`) |
 | `reports/audit.md`, `reports/gold.md` | source audit (incl. §10 gold error rate, §11 v2 and every PR 5 correction's before/after, §12 number class and qarāʾin); gold-set results |
 | `reports/lists.md`, `reports/common_links.md`, `reports/chapters.md`, `reports/pools/` | bucket-2 reports |
-| `reports/residue.md` | the disagreement with the recorded grades, tagged by mechanical cause, with a seeded sample of receipts (PR 6 §3) |
-| `figures/` | fig1 (κ by threshold), fig2 (width by Taqrib layer 1–12), fig3 (list bins), fig4 (common-link death years), fig5 (chapter census), fig6 (the residue by primary tag and direction), each with a CSV |
+| `reports/residue.md` | the disagreement with the recorded grades in three layers (aggregation, chain, substance), tagged by mechanical cause, with a seeded sample of receipts (PR 6 §3, PR 7 §3) |
+| `reports/source_grade.md`, `reports/source_templates.csv` | the recorded grade decoded: template families, what the template reads, its reproduction and every residual class, the hadith and group rules (PR 7 §1–2) |
+| `reports/verdicts.md`, `reports/verdicts_survey.csv` | the critics' claims: the survey, samples, resolution, and the machinery scored against each claim type (PR 7 §4–5) |
+| `lists/source/critics_definitions.jsonl` | the classical definitions the claims are scored against, from Shamela with page and URL, checked byte for byte |
+| `figures/` | fig1 (κ by threshold), fig2 (width by Taqrib layer 1–12), fig3 (list bins), fig4 (common-link death years), fig5 (chapter census), fig6 (the residue by layer, primary tag and direction), fig7 (the critics: tafarrud holds/fails per critic by the breaking route's book date; al-Tirmidhī's verdict classes by κ), each with a CSV |
 
 ## Gates and gold set
 
-- **Gold set** (`tests/gold/gold.yaml`, 44 entries): 15 mutawatir topics from al-Kattani's *Nazm
+- **Gold set** (`tests/gold/gold.yaml`, 52 entries): 15 mutawatir topics from al-Kattani's *Nazm
   al-Mutanathir* (κ_everyone > 1 and ≥ 10 companions asserted; κ at every threshold recorded), and
   7 gharib / 'aziz / mashhur / mutaba'at cases from Ibn al-Salah, Ibn Hajar, Muslim and al-Tirmidhi,
   asserted down to the exact cut vertices (e.g. *innama al-a'mal* through 'Umar: cut vertices
@@ -868,7 +1005,13 @@ cannot see and issues no verdict on which grade is right.
   Yazīd b. Zurayʿ (heard before) and through Wakīʿ (after); Simāk from ʿIkrima (the light defect); Ibn Isḥāq's
   ʿan from Makḥūl in al-Tirmidhī, covered by «حدثني مكحول» in the report's other chains (tier 4; al-Bayhaqī:
   «ذكر فيه سماع محمد بن إسحاق من مكحول»). The sandals entry asserts its repair under `siblings` and its
-  in-group result under the default.
+  in-group result under the default. PR 7 adds 8 from the critics' own claims, each quoted from the corpus text with its
+  book, page and hadith: al-Ṭabarānī's «لم يرو هذا الحديث عن نافع إلا محمد بن إسحاق» and «… عن محمد بن سوقة إلا حفص بن
+  سليمان» hold (the named narrator a cut vertex of the routes through his teacher); «… عن أبي جعفر الرازي إلا محمد بن
+  سليمان بن أبي داود» is broken by a chain of al-Mustadrak (al-Ḥākim d. 405, after the critic's 360), asserted; al-Tirmidhī's
+  «حسن غريب» (κ 1, 1, 0, 0) and «حسن صحيح» (κ 1 at every threshold); his «وفي الباب عن ابن مسعود وجابر وأنس» with Ibn
+  Masʿūd and Anas found in the sibling groups 777 and 2652; al-Ḥākim's «على شرط الشيخين» that holds, and his «على شرط مسلم»
+  for «لا طلاق ولا عتاق في إغلاق» that al-Dhahabī corrects: the check finds Muḥammad b. ʿUbayd outside Muslim, as he says.
 - **max_rank gate**: weakest link = `sanads.max_rank` for 100% of chains (577,020/577,020); with the
   book-role positions excluded as the derived grade does, every difference is a chain whose excluded
   compiler (or book transmitter and the compiler after him) is strictly its weakest narrator — the only
@@ -884,7 +1027,8 @@ cannot see and issues no verdict on which grade is right.
   witness is a shāhid from another group; the number class follows κ — plus the synthetic tests of
   every PR 5 rule (`tests/test_pr5.py`) and every PR 6 rule (`tests/test_pr6.py`); the unnamed companion ends his
   chain at a companion and splitting his node never lowers κ; every disagreeing group has a direction and its
-  primary tag among its tags.
+  primary tag among its tags; the residue's three layers sum to the disagreement count and their signed differences to
+  recorded − v2 (PR 7); every critic's claim quotes its hadith text at its offsets (PR 7).
 - Also asserted: one record per group; κ_lower = min of the three hypotheses, ≤ κ_nocompat ≤ κ,
   κ_nocompat ≤ κ_nocompat_years ≤ κ, and nested thresholds; cut vertices iff κ = 1; bypass = 0 iff the
   common link is a cut vertex; number class and qarāʾin follow their definitions; recorded values
@@ -903,26 +1047,45 @@ unnamed companion (PR 6): 1,915 chain tops in 501 groups read as an unnamed comp
 no companion-ending chain now have κ_all ≥ 1; splitting the merged node per student would raise κ_all in 17
 groups (`kappa_unnamed_split`).
 
-**Derived grade** (after the PR 5 and PR 6 changes; audit §11). Agreement with the recorded group grade is
-reported, never gated: v1 72.67%; v2 `ibn_hajar` 71.53%, v2 `ibn_al_salah` 72.75% (PR 5: 72.35%, 71.21%,
-72.11%; PR 4: 72.86% and 72.37%). PR 5's corrections, applied in order (stage table, audit §11.1): attested
-witnesses only 72.86% → 73.41% (the block *ours 1 / source 3–5* 562 → 457 groups); tiered tadlīs with the
-hearing check and the Ṣaḥīḥayn convention → 74.15%; shawāhid from sibling groups → 73.21%; every light defect
-covered → 71.09%; the unnamed person named elsewhere → 71.21%. PR 6's, in order: the unnamed companion →
-71.49% (72 groups change); conditional narrator rulings → 71.20% (157 groups; 35 rulings in force on 25
-narrators, 353 rows await the reviewer); sibling shawāhid made a variant → 71.82% (607 groups); the mudallis set
-the Ṭabaqāt union → 71.53% (159 groups). The hearing check on tier 4 was already in PR 5 (variant
-`tasrih_tier_3_only`: 71.55%, 28 groups differ). The class corroboration addresses (v1 code 2, recorded حسن)
-holds 1,733 groups (v1: 2,556). 2,312 groups are upgraded; their summary witness is a shāhid in 1,343, a
-mutābaʿa tāmma in 569, qāṣira in 297, waṣl in 103. In 154 groups whose v2 chain stays ḍaʿīf the union graph had
-a route the attested chains do not.
+**What the recorded grade is** (PR 7, [reports/source_grade.md](reports/source_grade.md)). The source's chain grade is a
+template: the weakest level over every position on a map that codes levels 4–6 alike as ḥasan, breaks raising it. It
+reproduces 99.68% of the recorded codes in single-chain hadith and 99.62% of all chains read per hadith; chain by chain
+92.10%, because in multi-chain hadith the recorded codes are attached to the wrong chains about as often as chance. The
+hadith grade is its best chain's (99.47%), the group grade its best chain's (86.77%) except where the editors placed it
+below every chain (2,503 groups) or above (181).
 
-**The residue** ([reports/residue.md](reports/residue.md), fig6). 5,774 of the 20,282 groups (28.5%) disagree
-with the recorded grade; 56.8% are lenient (our code lower than the source's). Another attested chain of the
-group yields exactly the source's code in 44.8% (the unit of grading); the primary causes after it:
-corroboration 24.2%, a narrator with a conditional ruling 6.3%, an uncovered tadlīs ʿan alone 5.9%, a source code
-3–5 over a chain of narrators no worse than level 9 5.1%, mixed defects 6.7%. The report lists what the chain
-cannot see and issues no verdict on which grade is right.
+**Derived grade** (after the PR 5, PR 6 and PR 7 changes; audit §11). Agreement with the recorded group grade is
+reported, never gated, under both code maps (classical / source): v1 72.67% / 83.87%; v2 `ibn_hajar` 71.53% / 76.55%,
+v2 `ibn_al_salah` 72.75% / 75.73%; the source's template on itibar's chains (`source_template`) 86.55%, the recorded best
+chain itself 86.77%. So most of the distance from v1's 72.7% to full agreement is the code map (levels 5–6: 11.2 points)
+and the editors' exceptions (13.2 points), not substance. PR 5's corrections, applied in order (stage table, audit
+§11.1): attested witnesses only 72.86% → 73.41% (the block *ours 1 / source 3–5* 562 → 457 groups); tiered tadlīs with
+the hearing check and the Ṣaḥīḥayn convention → 74.15%; shawāhid from sibling groups → 73.21%; every light defect
+covered → 71.09%; the unnamed person named elsewhere → 71.21%. PR 6's, in order: the unnamed companion → 71.49% (72
+groups change); conditional narrator rulings → 71.20% (157 groups; 35 rulings in force on 25 narrators, 353 rows await
+the reviewer); sibling shawāhid made a variant → 71.82% (607 groups); the mudallis set the Ṭabaqāt union → 71.53% (159
+groups). The class corroboration addresses (v1 code 2, recorded حسن) holds 1,733 groups (v1: 2,556). 2,312 groups are
+upgraded; their summary witness is a shāhid in 1,343, a mutābaʿa tāmma in 569, qāṣira in 297, waṣl in 103.
+
+**The residue** (PR 7, [reports/residue.md](reports/residue.md), fig6). 5,774 of the 20,282 groups (28.5%) disagree with
+the recorded grade, in three layers that add up: **aggregation** 2,612 (the recorded group grade is not its best recorded
+chain's — the editors), **chain** 88 (the best recorded chain is not the template's on itibar's chains), **substance**
+3,074 (the template against the classical ladder). In the substance layer the classical code map's 2 for an uncovered
+level-5–6 narrator is the whole difference in 1,043 groups; the rest is the ladder: tadlīs 616 (primary), the unnamed
+person 506, corroboration 310 (on 2,061 as a tag), conditional rulings 221, the compiler at pos 0 160, the mursal 123, the
+two-break rule 68. PR 6's `chain_choice` (44.8%) and `source_severe` are retired: the first read per-chain recorded codes
+that sit on the wrong chains, and both were the editors' layer.
+
+**The critics' verdicts** (PR 7, [reports/verdicts.md](reports/verdicts.md), fig7). 38,569 claims in 27 books, every span a
+substring of its hadith text. Tafarrud, tested as relative claims on the bundle: al-Ṭabarānī's hold in 65.3% of 10,114
+testable (the named narrator a cut vertex of the routes through his teacher), al-Bazzār's 52.1%, Abū Nuʿaym's 50.8%; of
+al-Ṭabarānī's 3,514 failures 1,110 are broken by a chain in his own works, 1,556 by a book compiled before he died, 824 only
+by later books; in 239 failures (4.4%) every breaking chain is a misresolution candidate. al-Tirmidhī's «غريب» is gharīb by
+κ in 24.4% (the meaning group pools later books and other companions); his «وفي الباب» companions are found in the same
+group for 57.9% of names, with the sibling groups 71.0%, under the grandparent topic 79.2%, and PR 5's Dice floor keeps
+7.3% of those true pairs against 0.8% of non-pairs. al-Ḥākim's «على شرط الشيخين»: every man of his chain a narrator of
+both in 24.8% (of «على شرط مسلم» 44.8%), the pairings as well in 14.1%. al-Bayhaqī's «رواه البخاري / مسلم في الصحيح عن X»:
+the Ṣaḥīḥ's chain through X is in the same group for 54.2%.
 
 **Number class** (on κ_all since PR 5): gharīb muṭlaq 51.5%, gharīb nisbī 3.8%, ʿazīz 13.3%, mashhūr
 14.7%, mutawātir by count (≥ 10) 511 groups (2.5%); no route 14.2%. The width reading (diagnostic) has
@@ -954,9 +1117,11 @@ companions, mashhūr by width and mutawātir by κ.
     config/          grades.yaml, structure.yaml, source.yaml; stages/ (the cumulative PR 5 and PR 6 stages)
     src/itibar/      data, audit, audit_pr5, audit_pr6, grades, load, words, unnamed, matn, bundle, flow, structure,
                      derive, corroborate, conditional, residue, residue_report, siblings, pipeline, stages, scope,
-                     gold, fixture, figures, cli, pool, lists, mudallisin, provenance, narrators, chapters
+                     gold, fixture, figures, cli, pool, lists, mudallisin, provenance, narrators, chapters,
+                     source_template, verdicts, critics, critics_report
     lists/           kattani.yaml, suyuti.yaml, candidates.csv, confirmed.csv, mudallisin*.{yaml,csv},
                      conditional*.{yaml,csv}, shahid_inspection.yaml; source/ (fetched text)
-    tests/           unit (flow vs networkx, synthetic bundles, bucket 2, PR 5, PR 6), gold, gates; fixture/ (committed sample)
-    reports/         audit.md, gold.md, lists.md, common_links.md, chapters.md, residue.md, shahid_inspection.md, pools/
-    figures/         fig1 – fig6
+    tests/           unit (flow vs networkx, synthetic bundles, bucket 2, PR 5, PR 6, PR 7), gold, gates; fixture/ (committed sample)
+    reports/         audit.md, gold.md, lists.md, common_links.md, chapters.md, residue.md, source_grade.md, verdicts.md,
+                     shahid_inspection.md, pools/
+    figures/         fig1 – fig7

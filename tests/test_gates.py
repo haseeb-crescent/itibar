@@ -73,7 +73,7 @@ def test_kappa_lower_is_the_minimum_over_three_hypotheses(records):
         nc = r[r[f"kappa_lower_source_{th}"] == "nocompat"]
         assert (nc[f"kappa_lower_{th}"] == nc[f"kappa_nocompat_{th}"]).all(), th
     assert (records["structure_version"] == 5).all()
-    assert (records["derive_version"] == 4).all()
+    assert (records["derive_version"] == 5).all()
     # dropping only the years-incompatible links removes a subset of what nocompat drops
     for th in ("all", "above_matruk", "saduq_up", "thiqa_up"):
         assert (r[f"kappa_nocompat_{th}"] <= r[f"kappa_nocompat_years_{th}"]).all(), th
@@ -216,3 +216,33 @@ def test_pr6_unnamed_companion_and_residue_are_consistent(records, chains_table)
     for col in ("residue_primary", "residue_direction", "residue_conditional"):
         vals = r[col].dropna().astype(str)
         assert vals[vals.str.contains(VERDICT_WORDS)].empty, col
+
+
+def test_pr7_residue_layers_add_up(records):
+    """PR 7: the residue's three layers sum to the disagreement count, and in every disagreeing group the layers'
+    signed differences add up to recorded - v2 (aggregation + chain + substance)."""
+    r = records[(records["status"] == "ok") & records["matn_no_group"].between(0, 5)]
+    d = r[r["residue_disagree"] == True]  # noqa: E712
+    assert d["residue_layer"].isin(["aggregation", "chain", "substance"]).all()
+    assert d["residue_layer"].value_counts().sum() == len(d)
+    tot = d["residue_d_aggregation"] + d["residue_d_chain"] + d["residue_d_substance"]
+    assert (tot == d["matn_no_group"] - d["code_v2_ibn_hajar"]).all()
+    assert (d["residue_d_aggregation"] == d["matn_no_group"] - d["matn_no_best_chain"]).all()
+    assert (d["residue_d_substance"] == d["code_source_template"] - d["code_v2_ibn_hajar"]).all()
+
+
+def test_pr7_every_claim_span_is_in_its_hadith_text(con):
+    """PR 7: every parsed claim's quoted span is a substring of its hadith text, at its offsets."""
+    from itibar import paths, verdicts
+    import pandas as pd
+    p = verdicts.out_path()
+    if not p.exists():
+        pytest.skip(f"no {p} (run `make verdicts`)")
+    v = pd.read_parquet(p, columns=["hadith_id", "span", "span_start", "span_end"])
+    if not len(v):
+        return
+    con.execute("CREATE OR REPLACE TEMP TABLE _vh AS SELECT unnest(?::BIGINT[]) AS hid", [sorted(set(v["hadith_id"]))])
+    nass = dict(con.sql("SELECT id, nass FROM hadiths WHERE id IN (SELECT hid FROM _vh)").fetchall())
+    bad = [(h, s) for h, s, a, b in zip(v["hadith_id"], v["span"], v["span_start"], v["span_end"])
+           if s not in (nass.get(h) or "") or (nass.get(h) or "")[int(a):int(b)] != s]
+    assert not bad, bad[:5]

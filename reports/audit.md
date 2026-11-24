@@ -1,6 +1,6 @@
 # itibar — source audit
 
-Generated 2026-11-09 22:01 by `make audit` (`itibar.audit`) from the Parquet copy of `hadith-kg.db` (Hugging Face `emadjumaah/hadith-kg` @ `8ae7e3d5be28`, sha256 `d528084321e71500…`). Upstream comparison values are from `DATA_REPORT.md` at `emadjumaah/hadith@b5a0cf2`.
+Generated 2026-11-23 18:41 by `make audit` (`itibar.audit`) from the Parquet copy of `hadith-kg.db` (Hugging Face `emadjumaah/hadith-kg` @ `8ae7e3d5be28`, sha256 `d528084321e71500…`). Upstream comparison values are from `DATA_REPORT.md` at `emadjumaah/hadith@b5a0cf2`.
 
 Every number below is recomputed. Where itibar's definition differs from upstream's, both are shown.
 
@@ -51,6 +51,25 @@ All upstream facts this project depends on reproduce exactly. Note: `meaning_gro
 | 21 | 20 | 16 | 17 | 16 | المزابنة بيع الثمر بالتمر كيلا بيع الزبيب بالكرم ك |
 
 The upstream audit table reads group 1 at 64 recomputed companions (the brief's "63" is group 2's figure). Upstream's exact-label rule misses female companions (`صحابية`) and `صحابي صغير`.
+
+### 1.1 The recorded chain code by the chain's weakest level (PR 7)
+
+`sanads.matn_no` against the chain's weakest Taqrīb level over every position (the compiler at pos 0 included, an undescribed narrator read as level 7, the unnamed person not graded), chains without a break marker: levels 1–3 → 0, 4–6 → 1, 7–9 → 2, 10 → 3, 11 → 4, 12 → 5. itibar's classical map codes levels 5–6 as 2 (D20); the source's template codes them 1 (`grades.yaml: code_source`, `derive.codes`). The off-diagonal cells are chiefly sentences attached to another chain of the same hadith; [reports/source_grade.md](source_grade.md) decodes the template and every chain it misses.
+
+| weakest_level | chains | mean_code | code 0 | code 1 | code 2 | code 3 | code 4 | code 5 |
+|---|---|---|---|---|---|---|---|---|
+| 1 | 14 | 0.43 | 11 | 0 | 3 | 0 | 0 | 0 |
+| 2 | 15,685 | 0.06 | 15,012 | 411 | 237 | 17 | 7 | 1 |
+| 3 | 135,353 | 0.11 | 124,356 | 7,397 | 3,206 | 258 | 105 | 31 |
+| 4 | 100,311 | 1.00 | 5,483 | 90,186 | 3,990 | 363 | 195 | 94 |
+| 5 | 40,021 | 1.02 | 1,091 | 37,361 | 1,338 | 148 | 57 | 26 |
+| 6 | 46,464 | 1.05 | 1,163 | 42,488 | 2,457 | 197 | 97 | 62 |
+| 7 | 45,489 | 1.87 | 1,428 | 3,734 | 39,911 | 221 | 132 | 63 |
+| 8 | 71,313 | 1.95 | 1,054 | 2,632 | 66,980 | 368 | 197 | 82 |
+| 9 | 10,096 | 1.99 | 74 | 137 | 9,798 | 48 | 30 | 9 |
+| 10 | 36,301 | 2.93 | 243 | 621 | 729 | 34,514 | 125 | 69 |
+| 11 | 17,003 | 3.86 | 110 | 355 | 417 | 123 | 15,958 | 40 |
+| 12 | 7,171 | 4.78 | 33 | 180 | 181 | 69 | 40 | 6,668 |
 
 ## 2. `rawis.rank` vocabulary and the `rank_no` ordering
 
@@ -269,7 +288,7 @@ Words are recovered for 3,249,626 of 3,786,705 narrator links (85.8%); chains of
 | عبد الرحمن بن عبد الله السلمي | 2 | 2 | 140 |
 | شهاب بن عباد العبدي | 2 | 2 | 106 |
 | محمد بن سعد الأنصاري | 3 | 3 | 97 |
-| مسلم بن سالم الجهني | 2 | 2 | 95 |
+| سعيد بن عثمان التنوخي | 2 | 2 | 95 |
 
 A cluster can only change kappa inside a group where two of its members both occur: that happens 63 times (group × cluster). `kappa_lower` merges every cluster into one node. Misresolution across *different* full names is not caught by these clusters: e.g. `يحيى بن سعيد` resolved to al-Qattan (r8271, nickname `يحيى بن سعيد القطان`) where the student of al-Taymi is al-Ansari (r8272, `يحيى بن سعيد الأنصاري`) in six chains of *innama al-a'mal* (tests/gold/gold.yaml). Same-name clusters by `nickname` alone would be 2,545.
 
@@ -277,31 +296,31 @@ A cluster can only change kappa inside a group where two of its members both occ
 
 | id | name | chain_links | min_pos | max_pos |
 |---|---|---|---|---|
-| 47,654 | كُرَيْبٍ السَّحُولِيِّ | 6 | 6 | 10 |
 | 40,137 | عَبْدُ اللَّهِ بْنُ عُبَيْدَةَ | 6 | 1 | 6 |
+| 47,654 | كُرَيْبٍ السَّحُولِيِّ | 6 | 6 | 10 |
 | 44,306 | مُحَمَّدِ بْنِ عَبْدِ الصَّمَدِ | 5 | 4 | 9 |
 | 51,756 | بِنْتِ كُرْزٍ | 5 | 5 | 7 |
-| 50,119 | أَبِي | 4 | 8 | 10 |
 | 44,304 | عَبْدُ الْمُؤْمِنِ | 4 | 2 | 7 |
-| 44,305 | أَبَاهُ | 2 | 4 | 4 |
+| 50,119 | أَبِي | 4 | 8 | 10 |
+| 40,741 | وَأَبُو مُسْلِمٍ | 2 | 2 | 2 |
+| 9,481 | غير معرف | 2 | 7 | 7 |
 | 40,740 | وَمُحَمَّدُ بْنُ الْحُسَيْنِ | 2 | 2 | 2 |
 | 47,655 | عَبْدِ اللَّهِ بْنِ حُذَيْمٍ | 2 | 5 | 5 |
 | 40,138 | مُحَمَّدُ بْنُ عَمْرٍو | 2 | 1 | 3 |
+| 50,437 | السُّمَيْطِ الْبَجَلِيِّ | 2 | 6 | 6 |
 | 50,436 | أَبِيهِ | 2 | 6 | 7 |
 | 26,043 | عِيسَى بْنُ الأَشْعَثِ | 2 | 4 | 8 |
-| 9,481 | غير معرف | 2 | 7 | 7 |
+| 44,305 | أَبَاهُ | 2 | 4 | 4 |
 | 47,653 | النُّعْمَانِ بْنِ نُعَيْمٍ | 2 | 5 | 7 |
 | 60,137 | مَخْرَمَةَ الْعَبْدِيِّ | 2 | 5 | 5 |
-| 40,741 | وَأَبُو مُسْلِمٍ | 2 | 2 | 2 |
-| 50,437 | السُّمَيْطِ الْبَجَلِيِّ | 2 | 6 | 6 |
 | 40,142 | مُحَمَّدِ بْنِ مَطَرٍ | 1 | 2 | 2 |
 | 61,758 | الأَخْنَسِ بْنِ زُهَيْرٍ | 1 | 7 | 7 |
-| 40,139 | سَعْدِ بْنِ عُثْمَانَ | 1 | 4 | 4 |
-| 45,025 | جَعْفَر بْنِ الْفُرَافِصَةِ الْحَنَفِيِّ | 1 | 4 | 4 |
 | 60,136 | مَنْدُوسٍ | 1 | 6 | 6 |
+| 45,024 | سَعِيدِ بْنِ عَوْسَجَةَ | 1 | 3 | 3 |
+| 45,025 | جَعْفَر بْنِ الْفُرَافِصَةِ الْحَنَفِيِّ | 1 | 4 | 4 |
 | 60,677 | سَنْجَوَيْهِ النَّاهِكِيُّ | 1 | 3 | 3 |
 | 40,260 | قَيْسٌ السَّعِيدِيُّ | 1 | 4 | 4 |
-| 45,024 | سَعِيدِ بْنِ عَوْسَجَةَ | 1 | 3 | 3 |
+| 40,139 | سَعْدِ بْنِ عُثْمَانَ | 1 | 4 | 4 |
 
 Stubs touch 60 chain links. They get ordinal 0 (below every threshold but `all`) and are dropped in `kappa_lower`. Several names are relational (`أبي`, `أبيه`, `أباه`).
 
@@ -330,8 +349,8 @@ Stubs touch 60 chain links. They get ordinal 0 (below every threshold but `all`)
 | companion: لها رؤية | 7 | 7 |
 | companion: مختلف في صحبتها | 4 | 4 |
 | other narrator, rank_no 5 | 2 | 2 |
-| break marker (30000) | 1 | 0 |
 | other narrator, rank_no 10 | 1 | 1 |
+| break marker (30000) | 1 | 0 |
 
 Upstream's 17,811 counts chain ends whose label is not exactly `صحابي`: it **includes** 10,646 chains ending at female companions and 3,879 at `صحابي صغير`, and **excludes** every chain ending at a NULL-rank placeholder (37,538, mostly `موضع إرسال`, the source's own irsal marker). By itibar's companion rule (rank_no 1, minus `لم تثبت له صحبة` / `له إدراك` / `لها إدراك`, plus the young-companion labels at any rank_no) **39,350** marfu'/qudsi chains do not end in a companion; these are kept in their bundles, flagged mursal, and get no PROPHET edge.
 
@@ -648,7 +667,10 @@ Every gold entry whose chains were inspected one by one (`deviation_key` and `kn
 
 Pooled: **14 of 843 in-scope chains (1.66%)** carry a documented misresolution or dropped link; misresolution alone 10 (1.19%).
 
-## 11. Derived grade v2: corroboration, after the PR 5 and PR 6 changes
+
+**From the critics' claims (PR 7, reports/verdicts.md §4).** Of 29,132 chains that break a tafarrud claim (up to 12 listed per failure, 5,408 failures), 614 (2.11%) carry, right below the critic's X, a namesake of the narrator the critic names (same ism and father, or the same name cluster), and 459 (1.58%) join X by a link the continuity rule marks incompatible: misresolution candidates in the sense of the table above. In 239 failures every breaking chain is one; these are where a homonym resolved wrongly may manufacture a second route.
+
+## 11. Derived grade v2: corroboration, after the PR 5, PR 6 and PR 7 changes
 
 Books used by the qarāʾin, the collection classes and the Ṣaḥīḥayn convention, verified: `books.id` 1 = صحيح البخاري; `books.id` 2 = صحيح مسلم.
 
@@ -658,20 +680,20 @@ Agreement with the source's recorded grades is a **reported result, never a gate
 
 Each row reruns the pipeline (`make stages`, `config/stages/`) with the corrections up to that row switched on, in the briefs' order (PR 5's, then PR 6's: the unnamed companion, conditional rulings, the default flips; the hearing check on tier 4 was already in PR 5, §11.11); stage 0 reproduces PR 4, stage 7 PR 5 and the last row equals the defaults. *ours 1 / source 3–5*: groups v2 (`ibn_hajar`) places at code 1 that the source records شديد الضعف, متهم بالوضع or موضوع.
 
-| stage | correction | v1 | v2 ibn_hajar | v2 ibn_al_salah | ours 1 / source 3–5 | upgraded groups | groups changed vs previous |
-|---|---|---|---|---|---|---|---|
-| s0_pr4 | PR 4 as merged (derive v2, structure v3) | 0.7235 | 0.7286 | 0.7237 | 562 | 3,730 |  |
-| s1_attested | + §1 a witness is one attested chain | 0.7235 | 0.7341 | 0.7332 | 457 | 3,310 | 526 |
-| s2_tadlis | + §2 tiered tadlīs, hearing check (group), Ṣaḥīḥayn convention | 0.7235 | 0.7415 | 0.7391 | 437 | 2,943 | 403 |
-| s3_siblings | + §3 shawāhid from sibling groups | 0.7235 | 0.7321 | 0.7261 | 536 | 3,461 | 523 |
-| s4_each_defect | + §4 every light defect covered | 0.7235 | 0.7109 | 0.7201 | 486 | 2,855 | 608 |
-| s5_book_roles | + §5 compiler roles per edge, book transmitters | 0.7235 | 0.7109 | 0.7201 | 486 | 2,855 | 0 |
-| s6_kappa_class | + §6 number class on κ (no effect on grades) | 0.7235 | 0.7109 | 0.7201 | 486 | 2,855 | 0 |
-| s7_named_elsewhere | + §8 unnamed person named elsewhere (= PR 5 defaults) | 0.7235 | 0.7121 | 0.7211 | 488 | 2,877 | 34 |
-| s8_unnamed_companion | + PR 6 §1 the unnamed companion (structure v5) | 0.7267 | 0.7149 | 0.7240 | 488 | 2,861 | 72 |
-| s9_conditional | + PR 6 §2 conditional narrator rulings | 0.7267 | 0.7120 | 0.7191 | 496 | 2,901 | 157 |
-| s10_shahid_group | + PR 6 §4 sibling shawāhid a variant (shahid_scope: group) | 0.7267 | 0.7182 | 0.7302 | 401 | 2,301 | 607 |
-| s11_mudallis_union | + PR 6 §4 the mudallis set the Ṭabaqāt union (= PR 6 defaults) | 0.7267 | 0.7153 | 0.7275 | 382 | 2,312 | 159 |
+| stage | correction | v1 | v2 ibn_hajar | v2 ibn_al_salah | v1 (source map) | v2 ibn_hajar (source map) | v2 ibn_al_salah (source map) | ours 1 / source 3–5 | upgraded groups | groups changed vs previous |
+|---|---|---|---|---|---|---|---|---|---|---|
+| s0_pr4 | PR 4 as merged (derive v2, structure v3) | 0.7235 | 0.7286 | 0.7237 | 0.8348 | 0.7510 | 0.7388 | 562 | 3,730 |  |
+| s1_attested | + §1 a witness is one attested chain | 0.7235 | 0.7341 | 0.7332 | 0.8348 | 0.7572 | 0.7486 | 457 | 3,310 | 526 |
+| s2_tadlis | + §2 tiered tadlīs, hearing check (group), Ṣaḥīḥayn convention | 0.7235 | 0.7415 | 0.7391 | 0.8348 | 0.7656 | 0.7545 | 437 | 2,943 | 403 |
+| s3_siblings | + §3 shawāhid from sibling groups | 0.7235 | 0.7321 | 0.7261 | 0.8348 | 0.7535 | 0.7397 | 536 | 3,461 | 523 |
+| s4_each_defect | + §4 every light defect covered | 0.7235 | 0.7109 | 0.7201 | 0.8348 | 0.7600 | 0.7470 | 486 | 2,855 | 608 |
+| s5_book_roles | + §5 compiler roles per edge, book transmitters | 0.7235 | 0.7109 | 0.7201 | 0.8348 | 0.7600 | 0.7470 | 486 | 2,855 | 0 |
+| s6_kappa_class | + §6 number class on κ (no effect on grades) | 0.7235 | 0.7109 | 0.7201 | 0.8348 | 0.7600 | 0.7470 | 486 | 2,855 | 0 |
+| s7_named_elsewhere | + §8 unnamed person named elsewhere (= PR 5 defaults) | 0.7235 | 0.7121 | 0.7211 | 0.8348 | 0.7612 | 0.7480 | 488 | 2,877 | 34 |
+| s8_unnamed_companion | + PR 6 §1 the unnamed companion (structure v5) | 0.7267 | 0.7149 | 0.7240 | 0.8387 | 0.7646 | 0.7512 | 488 | 2,861 | 72 |
+| s9_conditional | + PR 6 §2 conditional narrator rulings | 0.7267 | 0.7120 | 0.7191 | 0.8387 | 0.7576 | 0.7458 | 496 | 2,901 | 157 |
+| s10_shahid_group | + PR 6 §4 sibling shawāhid a variant (shahid_scope: group) | 0.7267 | 0.7182 | 0.7302 | 0.8387 | 0.7693 | 0.7603 | 401 | 2,301 | 607 |
+| s11_mudallis_union | + PR 6 §4 the mudallis set the Ṭabaqāt union (= PR 6 defaults) | 0.7267 | 0.7153 | 0.7275 | 0.8387 | 0.7655 | 0.7573 | 382 | 2,312 | 159 |
 
 ### 11.2 §1 A witness is one attested chain
 
@@ -700,28 +722,28 @@ PR 4 downgraded 271 groups from v1 code 0 only because of a mudallis's ʿan (its
 
 Chain-level counts in the final run (`ibn_hajar`; a chain counts once per kind): `muanan_accepted_sahihayn_tier_3` 2,998; `muanan_accepted_sahihayn_tier_4` 34; `muanan_accepted_tier_1` 19,495; `muanan_accepted_tier_2` 58,272; `muanan_covered_tasrih_tier_3` 51,825; `muanan_covered_tasrih_tier_4` 5,388; `muanan_covered_tasrih_tier_5` 1,713; still defects: `mudallis_muanan_tier_3` 45,852; `mudallis_muanan_tier_4` 8,102; `mudallis_muanan_tier_5` 5,387.
 
-- variant hearing anywhere in the corpus (`tasrih_corpus`): agreement 0.7317
-- variant the source's flagged narrators only (`mudallis_source_flag`, PR 5's default; PR 6 made the Ṭabaqāt union the default): agreement 0.7182
+- variant hearing anywhere in the corpus (`tasrih_corpus`): agreement 0.7317 (source map 0.7864)
+- variant the source's flagged narrators only (`mudallis_source_flag`, PR 5's default; PR 6 made the Ṭabaqāt union the default): agreement 0.7182 (source map 0.7693)
 
 ### 11.4 §3 Shawāhid from sibling groups
 
 Floor: idf-weighted Dice ≥ 0.32 on lists.normalize tokens, set by reading 50 candidate pairs (reports/shahid_inspection.md, D58). With siblings on (PR 5's defaults, stage s7) 659 of 2,877 upgraded groups had a cross-group witness in their v2 chain; 1,844 chains in all. Of those chains' witnesses, 17.6% came through the same companion as the chain (a mutābaʿa by the *Nuzha*'s definition; classed shāhid because the source files them as another report). PR 6 made sibling shawāhid a variant (§11.12).
 
-| reading | agreement |
-|---|---|
-| in-group witnesses only (default since PR 6, D58 amended) | 0.7153 |
-| with sibling shawāhid (`siblings`, PR 5's default) | 0.7098 |
-| siblings, strict floor 0.38 (`siblings_strict`) | 0.7128 |
+| reading | agreement | agreement (source map) |
+|---|---|---|
+| in-group witnesses only (default since PR 6, D58 amended) | 0.7153 | 0.7655 |
+| with sibling shawāhid (`siblings`, PR 5's default) | 0.7098 | 0.7545 |
+| siblings, strict floor 0.38 (`siblings_strict`) | 0.7128 | 0.7589 |
 
 The sandals dowry (gold `sandals-asim-b-ubaydallah`, group 2031) is repaired under `siblings` by Sahl b. Saʿd's report in group 763 at overlap 0.333: above the floor, below the strict variant's.
 
 ### 11.5 §4 Every light defect covered
 
-| positions to cover | agreement |
-|---|---|
-| each light defect, a witness of its own (`each_defect`, default) | 0.7153 |
-| the weakest light defects, one witness (`weakest`, PR 4) | 0.7404 |
-| every light defect, one witness (`all_light_defects`) | 0.7154 |
+| positions to cover | agreement | agreement (source map) |
+|---|---|---|
+| each light defect, a witness of its own (`each_defect`, default) | 0.7153 | 0.7655 |
+| the weakest light defects, one witness (`weakest`, PR 4) | 0.7404 | 0.7630 |
+| every light defect, one witness (`all_light_defects`) | 0.7154 | 0.7562 |
 
 Groups whose v2 chain needed more than one witness (one per defect): 711 of 2,062 ḥasan li-ghayrihi groups (ḥasan li-ghayrihi chains in all: 209,159).
 
@@ -805,7 +827,7 @@ By the source's recorded grade:
 | mid | 73 | 92 | 0 | 108 | 70 | 38 |
 | top | 53 | 63 | 5 | 37 | 21 | 9 |
 
-Effect: agreement 0.7153 with `unknown_repair: named_elsewhere`, 0.7141 without (`unknown_none`). Chains whose unnamed person is named elsewhere: 2,730.
+Effect: agreement 0.7153 with `unknown_repair: named_elsewhere`, 0.7141 without (`unknown_none`); under the source map 0.7655 and 0.7642. Chains whose unnamed person is named elsewhere: 2,730.
 
 ### 11.9 PR 6 §1 The unnamed companion
 
@@ -1058,29 +1080,30 @@ al-Zuhrī (r7272, tier 3 in the *Ṭabaqāt*, not flagged by the source): chains
 
 ### 11.13 The final grade
 
-**Agreement with `meaning_groups.matn_no`** over the 20,282 groups with chains (variants run on `ibn_hajar` with one switch changed, `derive.variants`):
+**Agreement with `meaning_groups.matn_no`** over the 20,282 groups with chains, under both code maps (`derive.codes`: *classical* = levels 5–9 → 2, the default; *source* = the source's template, levels 4–6 → 1; PR 7). Variants run on `ibn_hajar` with one switch changed (`derive.variants`):
 
-| grade | agreement_with_matn_no |
-|---|---|
-| v1 (best single chain) | 0.7267 |
-| v2 variant all_light_defects | 0.7154 |
-| v2 variant ansar_muhajir_mursal | 0.7147 |
-| v2 variant conditional_off | 0.7181 |
-| v2 variant mudallis_source_flag | 0.7182 |
-| v2 variant mursal_shafii | 0.7109 |
-| v2 variant no_level_8 | 0.7086 |
-| v2 variant siblings | 0.7098 |
-| v2 variant siblings_strict | 0.7128 |
-| v2 variant tasrih_corpus | 0.7317 |
-| v2 variant tasrih_tier_3_only | 0.7155 |
-| v2 variant unknown_none | 0.7141 |
-| v2 variant unnamed_top_mursal | 0.7124 |
-| v2 variant weakest | 0.7404 |
-| v2 variant witness_not_below | 0.7138 |
-| v2 ibn_al_salah | 0.7275 |
-| v2 ibn_hajar | 0.7153 |
+| grade | agreement (classical map) | agreement (source map) |
+|---|---|---|
+| v1 (best single chain) | 0.7267 | 0.8387 |
+| v2 variant all_light_defects | 0.7154 | 0.7562 |
+| v2 variant ansar_muhajir_mursal | 0.7147 | 0.7648 |
+| v2 variant conditional_off | 0.7181 | 0.7725 |
+| v2 variant mudallis_source_flag | 0.7182 | 0.7693 |
+| v2 variant mursal_shafii | 0.7109 | 0.7613 |
+| v2 variant no_level_8 | 0.7086 | 0.7694 |
+| v2 variant siblings | 0.7098 | 0.7545 |
+| v2 variant siblings_strict | 0.7128 | 0.7589 |
+| v2 variant tasrih_corpus | 0.7317 | 0.7864 |
+| v2 variant tasrih_tier_3_only | 0.7155 | 0.7655 |
+| v2 variant unknown_none | 0.7141 | 0.7642 |
+| v2 variant unnamed_top_mursal | 0.7124 | 0.7620 |
+| v2 variant weakest | 0.7404 | 0.7630 |
+| v2 variant witness_not_below | 0.7138 | 0.7675 |
+| v2 ibn_al_salah | 0.7275 | 0.7573 |
+| v2 ibn_hajar | 0.7153 | 0.7655 |
+| source_template (the source's template as a v1 ruleset, §11.14) | 0.8655 |  |
 
-**Disagreement table, `ibn_hajar`**: our v2 code (rows) by the source's code (columns):
+**Disagreement table, `ibn_hajar`, classical map**: our v2 code (rows) by the source's code (columns):
 
 | v2 code | 0 صحيح | 1 حسن | 2 ضعيف | 3 شديد الضعف | 4 متهم بالوضع | 5 موضوع |
 |---|---|---|---|---|---|---|
@@ -1091,7 +1114,18 @@ al-Zuhrī (r7272, tier 3 in the *Ṭabaqāt*, not flagged by the source): chains
 | ours 4 | 1 | 5 | 19 | 0 | 930 | 67 |
 | ours 5 | 0 | 2 | 4 | 2 | 0 | 474 |
 
-**Disagreement table, `ibn_al_salah`**: our v2 code (rows) by the source's code (columns):
+**Disagreement table, `ibn_hajar`, source map**: our v2 code (rows) by the source's code (columns):
+
+| v2 code | 0 صحيح | 1 حسن | 2 ضعيف | 3 شديد الضعف | 4 متهم بالوضع | 5 موضوع |
+|---|---|---|---|---|---|---|
+| ours 0 | 5,367 | 313 | 0 | 0 | 0 | 0 |
+| ours 1 | 373 | 3,616 | 270 | 130 | 162 | 109 |
+| ours 2 | 300 | 688 | 3,638 | 912 | 666 | 401 |
+| ours 3 | 1 | 11 | 42 | 1,500 | 180 | 99 |
+| ours 4 | 1 | 5 | 19 | 0 | 930 | 67 |
+| ours 5 | 0 | 2 | 4 | 2 | 0 | 474 |
+
+**Disagreement table, `ibn_al_salah`, classical map**: our v2 code (rows) by the source's code (columns):
 
 | v2 code | 0 صحيح | 1 حسن | 2 ضعيف | 3 شديد الضعف | 4 متهم بالوضع | 5 موضوع |
 |---|---|---|---|---|---|---|
@@ -1102,7 +1136,18 @@ al-Zuhrī (r7272, tier 3 in the *Ṭabaqāt*, not flagged by the source): chains
 | ours 4 | 1 | 5 | 19 | 0 | 930 | 67 |
 | ours 5 | 0 | 2 | 4 | 2 | 0 | 474 |
 
-**For comparison, v1**:
+**Disagreement table, `ibn_al_salah`, source map**: our v2 code (rows) by the source's code (columns):
+
+| v2 code | 0 صحيح | 1 حسن | 2 ضعيف | 3 شديد الضعف | 4 متهم بالوضع | 5 موضوع |
+|---|---|---|---|---|---|---|
+| ours 0 | 5,397 | 507 | 0 | 0 | 0 | 0 |
+| ours 1 | 343 | 3,422 | 271 | 130 | 162 | 109 |
+| ours 2 | 300 | 688 | 3,637 | 912 | 666 | 401 |
+| ours 3 | 1 | 11 | 42 | 1,500 | 180 | 99 |
+| ours 4 | 1 | 5 | 19 | 0 | 930 | 67 |
+| ours 5 | 0 | 2 | 4 | 2 | 0 | 474 |
+
+**For comparison, v1, classical map**:
 
 | v1 code | 0 صحيح | 1 حسن | 2 ضعيف | 3 شديد الضعف | 4 متهم بالوضع | 5 موضوع |
 |---|---|---|---|---|---|---|
@@ -1112,6 +1157,28 @@ al-Zuhrī (r7272, tier 3 in the *Ṭabaqāt*, not flagged by the source): chains
 | ours 3 | 22 | 28 | 43 | 1,682 | 208 | 126 |
 | ours 4 | 11 | 9 | 19 | 0 | 1,059 | 79 |
 | ours 5 | 2 | 8 | 4 | 2 | 0 | 522 |
+
+**For comparison, v1, source map**:
+
+| v1 code | 0 صحيح | 1 حسن | 2 ضعيف | 3 شديد الضعف | 4 متهم بالوضع | 5 موضوع |
+|---|---|---|---|---|---|---|
+| ours 0 | 5,645 | 110 | 0 | 1 | 1 | 0 |
+| ours 1 | 190 | 4,197 | 2 | 1 | 0 | 1 |
+| ours 2 | 172 | 283 | 3,905 | 858 | 670 | 422 |
+| ours 3 | 22 | 28 | 43 | 1,682 | 208 | 126 |
+| ours 4 | 11 | 9 | 19 | 0 | 1,059 | 79 |
+| ours 5 | 2 | 8 | 4 | 2 | 0 | 522 |
+
+**source_template** (the template code of the group's best chain on itibar's chains):
+
+| template code | 0 صحيح | 1 حسن | 2 ضعيف | 3 شديد الضعف | 4 متهم بالوضع | 5 موضوع |
+|---|---|---|---|---|---|---|
+| ours 0 | 5,942 | 3 | 1 | 2 | 0 | 0 |
+| ours 1 | 61 | 4,530 | 4 | 2 | 3 | 0 |
+| ours 2 | 36 | 81 | 3,900 | 842 | 744 | 481 |
+| ours 3 | 2 | 14 | 45 | 1,696 | 191 | 112 |
+| ours 4 | 1 | 5 | 19 | 0 | 1,000 | 71 |
+| ours 5 | 0 | 2 | 4 | 2 | 0 | 486 |
 
 **Rule that fired for the group's v2 chain (`ibn_hajar`)**:
 
@@ -1134,23 +1201,23 @@ al-Zuhrī (r7272, tier 3 in the *Ṭabaqāt*, not flagged by the source): chains
 | mutabaa_qasira | 297 |
 | wasl | 103 |
 
-**By the weakest narrator's Taqrīb level** in the group's v2 chain (`ibn_hajar`):
+**By the weakest narrator's Taqrīb level** in the group's v2 chain (`ibn_hajar`), under both code maps: the classical map's low agreement at levels 5–6 is the convention (the source codes them 1), not substance:
 
-| weakest_level | groups | agree_v1 | agree_v2_ibn_hajar |
-|---|---|---|---|
-| 1 | 168 | 0.958 | 0.946 |
-| 2 | 1,484 | 0.945 | 0.929 |
-| 3 | 5,024 | 0.933 | 0.875 |
-| 4 | 2,465 | 0.902 | 0.746 |
-| 5 | 1,309 | 0.156 | 0.455 |
-| 6 | 1,374 | 0.127 | 0.389 |
-| 7 | 1,541 | 0.611 | 0.552 |
-| 8 | 2,413 | 0.619 | 0.585 |
-| 9 | 486 | 0.570 | 0.560 |
-| 10 | 1,833 | 0.825 | 0.818 |
-| 11 | 1,022 | 0.915 | 0.910 |
-| 12 | 482 | 0.983 | 0.983 |
-| unknown | 681 | 0.367 | 0.245 |
+| weakest_level | groups | agree_v1 | agree_v2_ibn_hajar | agree_v1 (source map) | agree_v2_ibn_hajar (source map) |
+|---|---|---|---|---|---|
+| 1 | 168 | 0.958 | 0.946 | 0.958 | 0.946 |
+| 2 | 1,484 | 0.945 | 0.929 | 0.959 | 0.929 |
+| 3 | 5,024 | 0.933 | 0.875 | 0.945 | 0.875 |
+| 4 | 2,465 | 0.902 | 0.746 | 0.911 | 0.747 |
+| 5 | 1,309 | 0.156 | 0.455 | 0.934 | 0.771 |
+| 6 | 1,374 | 0.127 | 0.389 | 0.937 | 0.844 |
+| 7 | 1,541 | 0.611 | 0.552 | 0.622 | 0.537 |
+| 8 | 2,413 | 0.619 | 0.585 | 0.627 | 0.584 |
+| 9 | 486 | 0.570 | 0.560 | 0.570 | 0.560 |
+| 10 | 1,833 | 0.825 | 0.818 | 0.825 | 0.818 |
+| 11 | 1,022 | 0.915 | 0.910 | 0.915 | 0.910 |
+| 12 | 482 | 0.983 | 0.983 | 0.983 | 0.983 |
+| unknown | 681 | 0.367 | 0.245 | 0.373 | 0.245 |
 
 **Narrators most often weakest in the disagreeing groups** (`ibn_hajar`):
 
@@ -1171,6 +1238,21 @@ al-Zuhrī (r7272, tier 3 in the *Ṭabaqāt*, not flagged by the source): chains
 | حماد بن سلمة البصري (r2492) | 33 |
 | محمد بن شهاب الزهري (r7272) | 33 |
 | شريك بن عبد الله القاضي (r3792) | 33 |
+
+### 11.14 The source's template as a v1 ruleset (PR 7)
+
+`source_template` (`config/structure.yaml: derive.source_template`, reports/source_grade.md) grades every position including the compiler at pos 0, reads an undescribed narrator as level 7, does not grade the unnamed person, raises one break to 2 and two to 3, and takes the group's lowest chain code. On itibar's chains:
+
+| comparison | agreement |
+|---|---|
+| source_template (on itibar's chains) vs meaning_groups.matn_no | 0.8655 |
+| source_template vs the recorded best chain (min sanads.matn_no) | 0.9913 |
+| recorded best chain vs meaning_groups.matn_no | 0.8677 |
+| v1, source map, vs meaning_groups.matn_no | 0.8387 |
+| v1, classical map, vs meaning_groups.matn_no | 0.7267 |
+
+v1 under the source map and the template differ in 1,277 groups: the compiler at pos 0 (itibar's v1 excludes him), the unnamed person (v1: unknown, ordinal 0), the break rule, and v1's preference for a continuous chain. The residue's three layers (reports/residue.md) are built on these columns.
+
 
 **Downgrades.** 328 groups that v1 grades 0 get a higher v2 code under `ibn_hajar` (317 of them recorded 0 by the source). The defects of their v2 chain: mudallis_muanan_tier_3 223; conditional 31; mursal 17; none 11; conditional,mudallis_muanan_tier_3 11; level_5 9; level_6 7; level_8 5; level_7 3; mudallis_muanan_tier_4 3; mudallis_muanan_tier_3,mudallis_muanan_tier_4 1; conditional,level_8 1.
 
@@ -3027,4 +3109,4 @@ Every designation of an unnamed person at a chain top (normalized, `lists.normal
 | وناسا من اصحاب رسول الله يقولون | companion | 1 |
 
 
-_Audit computed in 20.0s._
+_Audit computed in 21.6s._

@@ -203,38 +203,49 @@ def test_tier_4_an_covered_by_hearing_in_another_chain():
 
 # ---------------------------------------------------------------- 4. residue tags
 
-def test_residue_direction_chain_choice_and_precedence():
+def test_residue_layers_direction_and_precedence():
+    """PR 7 rebased the residue (D89): the recorded group grade against its recorded best chain (aggregation), that
+    chain against the source's template on our chains (chain), the template against v2 (substance)."""
     W = 70
-    a = chain(3, A1, S, T, C1)                       # thiqat: code 0
+    a = chain(3, A1, S, T, C1)                       # thiqat: code 0, recorded 0
     b = chain(4, A2, W, T2, C2)                      # level 9, not repairable: code 2
+    b.matn_no = 2
     out = run([a, b], people() | {W: level(9)}, books(A1, A2), matn_no=2)
     rec = out["record"]
     assert rec["code_v2_ibn_hajar"] == 0 and rec["residue_disagree"] is True
     assert rec["residue_direction"] == "lenient"
-    assert rec["residue_tags"][0] == "chain_choice" and "level_only" in rec["residue_tags"]
-    assert rec["residue_primary"] == "chain_choice"
-    out = run([a], people(), books(A1), matn_no=4)    # nothing else to choose; source 3-5, every level <= 9
-    rec = out["record"]
-    assert rec["residue_tags"] == ["source_severe", "level_only"] and rec["residue_primary"] == "source_severe"
+    assert rec["residue_layer"] == "aggregation" and rec["residue_primary"] == "group_below_best_chain"
+    assert rec["residue_d_aggregation"] + rec["residue_d_chain"] + rec["residue_d_substance"] == 2 - 0
     out = run([a], people(), books(A1), matn_no=0)
     assert out["record"]["residue_disagree"] is False and out["record"]["residue_primary"] is None
-    out = run([b], people() | {W: level(8)}, books(A1, A2), matn_no=1)   # no witness, the source higher (level 8)
+    b2 = chain(4, A2, W, T2, C2)                     # level 8 without a witness, recorded 1 (the template: 2)
+    b2.matn_no = 1
+    out = run([b2], people() | {W: level(8)}, books(A1, A2), matn_no=1)
     rec = out["record"]
-    assert rec["residue_direction"] == "stricter" and rec["residue_primary"] == "corroboration"
-    assert residue.precedence()[0] == "chain_choice"
+    assert rec["residue_direction"] == "stricter" and rec["residue_layer"] == "chain"
+    assert rec["residue_primary"] == "template_vs_record"
+    assert residue.precedence()[0] == "group_below_best_chain"
 
 
-def test_residue_tadlis_and_mursal_only():
+def test_residue_substance_tags():
+    """The substance layer names what v2 counts that the template does not: a mudallis's 'an, the mursal, an
+    unnamed person at the top, and the code map's convention on levels 5-6."""
     D = 60
     a = chain(3, A1, D, T, C1, words={2: MUANAN})
     out = run([a], people() | {D: mud(3)}, books(A1), matn_no=0)
-    assert "tadlis_only" in out["record"]["residue_tags"]
-    m = chain(3, A1, S, T)                            # T is no companion: mursal
+    assert out["record"]["residue_layer"] == "substance" and "tadlis" in out["record"]["residue_tags"]
+    m = chain(3, A1, S, T)                            # T is no companion: mursal; the template sees no break marker
     out = run([m], people(), books(A1), matn_no=0)
-    assert "mursal_only" in out["record"]["residue_tags"]
+    assert out["record"]["residue_layer"] == "substance" and "mursal" in out["record"]["residue_tags"]
     u = utop(chain(3, A1, S, U), "none")
     out = run([u], people(), books(A1), matn_no=0)
     assert "unnamed_top" in out["record"]["residue_tags"]
+    q = chain(3, A1, X, T, C1)                        # a level-6 narrator, no witness; the source codes 1
+    q.matn_no = 1
+    out = run([q], people() | {X: level(6)}, books(A1), matn_no=1)
+    rec = out["record"]
+    assert rec["code_v2_ibn_hajar"] == 2 and rec["code_v2_ibn_hajar_source"] == 1 and rec["code_source_template"] == 1
+    assert rec["residue_primary"] == "code_map"
 
 
 # ---------------------------------------------------------------- 5. the default flips
