@@ -864,7 +864,8 @@ site shows only attributed classical terms). `make hadeethenc-fetch` walks the c
 each English item once at about one request every two seconds (2,328 items), writing
 `translations/source/hadeethenc_en.jsonl`; `make hadeethenc` joins each item to the group whose recorded
 texts share the most idf weight with its Arabic (lists.normalize tokens; at least 60% of the item's weight
-and 15 points clear of the next group), keeping one item per group. sunnah.com's English is the publishers'
+and 15 points clear of the next group), keeping one item per group: of the 2,328 items, 1,281 match clearly,
+and 1,090 reports carry a human translation (a sample of matches read by hand were all the right report). sunnah.com's English is the publishers'
 (Darussalam and others) under copyright and its site is not licensed for scraping; the GitHub repositories
 that re-host those translations carry no licence from the publishers, so neither is used. The alternative
 was machine translation only; human translations, where their terms allow, are better English and carry
@@ -936,8 +937,8 @@ intermediate inputs that `make matn` rebuilds, are no longer copied to Downloads
 files are written with zstd at level 19 (the same rows and columns, a quarter smaller); a report's JSON record
 omits the two fields it repeats (`disjoint_routes_all`, in its structural receipt, and `nass`); the meta
 description is kept on the home, search, browse and glossary pages only. Measured full tree:
-**944,166,427** bytes in 180,351 files (65,603 HTML pages) (reports 552,341,727, narrators 280,014,429, downloads 69,655,332,
-search 18,575,518, browse 23,037,898). The English for the rest of the corpus, filled later, adds
+**948,494,626** bytes in 180,352 files (65,603 HTML pages), with the full HadeethEnc join (reports 552,724,980, narrators 282,707,901, downloads 69,655,332,
+search 18,658,523, browse 24,206,367). The English for the rest of the corpus, filled later, adds
 titles, texts and names in place of Arabic-only pages; comparing the translated fixture's pages with untranslated
 pages of the same size puts the growth at about 7 MB for reports, 6 MB for narrators and some 5–10 MB of search
 index, about 20 MB in all; `make
