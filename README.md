@@ -86,11 +86,40 @@ shāhid overlap floor is [reports/shahid_inspection.md](reports/shahid_inspectio
 
 ## The site
 
-Browse [itibar on GitHub Pages](https://haseeb-crescent.github.io/itibar/). Search Arabic report
-openings and full texts, narrator names, or a book and hadith number. Each report brings together
-its transmission bundle, chains, structural receipts, and both derived and recorded grades.
-Narrator pages trace each person's roles back to the reports. The home page works through
-“Actions are only by intentions,” with the classical scope through ʿUmar beside the full bundle.
+Browse [itibar on GitHub Pages](https://haseeb-crescent.github.io/itibar/). It is written for a reader who knows
+no hadith terminology and wants to know, within a minute, how a report reached the books — with every number
+and receipt one click further down for anyone checking the work ([docs/prompts/site-ux.md](docs/prompts/site-ux.md),
+DECISIONS D97–D105).
+
+* **Search** in English or Arabic: a few words of the hadith, a narrator's name, a book, or a book and number
+  ("Bukhari 1"). Results carry the English title, the Arabic opening, the major collections, the independent
+  lines and the classical term of the best chain; filter by topic, collection, grade and number class.
+  **Browse** by topic, collection, notable narrator, or the famous reports.
+* **A report page** answers first and shows the evidence after: the English title and Arabic opening with the
+  collections that record it; *At a glance* — sentences generated from the record (how many companions, how
+  many independent lines with everyone and with trustworthy narrators only, the bottleneck, where it spreads,
+  the classical grade of its best chain beside the grade the dataset records), each linked to the section that
+  computes it; *How it reached the books* — the transmission tree as generations, named where few and grouped
+  where many, with the independent lines drawn in colour and a filter in words (Everyone · Excluding abandoned
+  narrators · Truthful and above · Trustworthy only) that says what changes; *Why this grade* — the best chain
+  with each narrator's rating, the rule in one sentence, the weak point and the second chain that covers it;
+  the books, every chain, the classical notes, and *For specialists*: κ and κ_lower at each step, the cut
+  vertices, common links, number class and dates, every receipt, the full graph and the record as JSON.
+* **A narrator page** says who he was (English and Arabic names, generation, dates in AH and CE, where he lived),
+  his rating on Ibn Ḥajar's twelve-step scale with its meaning, tadlīs and conditional rulings, his place in
+  transmission, his main teachers and students, and what the critics said about him.
+* **The glossary** defines every term the site uses, in plain English with the Arabic and its source; every
+  term on a page shows its definition on hover or tap.
+* **English.** Titles, texts, names, places and book titles in English come from `translations/` (D102), always
+  beside the Arabic and labelled as machine translation; human translations from HadeethEnc.com take precedence
+  where they match a report (D101). This PR fills the fixture's items; the rest of the corpus is filled into the
+  same files later (`make translate-pending`, `make translate-import`, or the optional `make translate`).
+
+| Report 319 at a glance | The tree, trustworthy narrators only, independent lines drawn | Why this grade (a corroborated chain) |
+|---|---|---|
+| ![](docs/site/02-report-319-glance-1280.png) | ![](docs/site/03-report-319-tree-trustworthy-lines-1280.png) | ![](docs/site/10-report-3487-why-grade-1280.png) |
+| **al-Zuhrī** | **On a phone** | **Search** |
+| ![](docs/site/08-al-zuhri-1280.png) | ![](docs/site/14-report-319-tree-390.png) | ![](docs/site/05-search-whoever-lies-1280.png) |
 
 ```bash
 make data
@@ -99,10 +128,12 @@ make site site-check
 uv run python -m http.server 8000 --directory site/dist
 ```
 
-Open [the local site](http://localhost:8000/). Build fresh Parquet outputs to include the structural
-receipts and bundle threshold masks. `make ci` followed by `make site-fixture` builds and checks the
-site on the committed fixture. The Actions workflow rebuilds and publishes the full corpus from
-`main`. See the [site brief](docs/prompts/site.md) and [representation and size decisions](DECISIONS.md#site).
+Open [the local site](http://localhost:8000/). `make ci` followed by `make site-fixture` builds and checks the
+site on the committed fixture. `make site-check` enforces the 1 GB GitHub Pages cap on the published tree, the
+page budgets, every internal link and anchor, the report sections and story data, and the reading pages' words
+(no internal identifiers, κ only in the specialists' section, no verdict in the site's own voice). The Actions
+workflow rebuilds and publishes the full corpus from `main`. See the [site brief](docs/prompts/site.md), the
+[reading-layer brief](docs/prompts/site-ux.md) and [DECISIONS](DECISIONS.md#site).
 
 ## Reproduce from scratch
 
@@ -113,7 +144,7 @@ make data      # download hadith-kg.db (pinned revision, sha256-checked) -> data
 make audit     # reports/audit.md; regenerates the label listing in config/grades.yaml
 make bundles   # out/words.parquet, out/matn_*.parquet, out/bundles/, out/records.parquet, out/chains.parquet (~2 min)
 make stages    # out/stages/: the PR 5 and PR 6 changes applied cumulatively, for audit §11.1 (~15 min)
-make narrators # out/narrators.parquet, reports/common_links.md, figures/fig4_cl_death_years.*
+make narrators # out/narrators.parquet, out/narrator_links.parquet, reports/common_links.md, figures/fig4_cl_death_years.*
 make lists     # lists/*.yaml from lists/source/, lists/candidates.csv, lists/confirmed.csv, reports/lists.md, fig3
 make mudallisin  # lists/mudallisin.yaml, lists/mudallisin_candidates.csv, lists/mudallisin_confirmed.csv
 make conditional # lists/conditional.yaml, lists/conditional_candidates.csv, lists/conditional_confirmed.csv (PR 6)
@@ -794,6 +825,9 @@ cannot see and issues no verdict on which grade is right.
 | `out/words.parquet` | transmission word per aligned (sanad, teacher pos) |
 | `out/unnamed_tops.parquet` | every chain top that is the unnamed person: mention, designation, method, class, phrase (PR 6 §1) |
 | `out/narrators.parquet` | the narrator census (one row per narrator on any bundle) |
+| `out/narrator_links.parquet` | teacher → student pairs over every bundle's on-route links, counted in reports and chains (the site's teachers and students) |
+| `translations/<kind>.parquet` | the English layer for the site — books, topics, places, critics, narrators, report openings and texts — one row per item with its Arabic source, source hash, producer, model and prompt hash (D102); `translations/checks.parquet` the second-pass check; `translations/hadeethenc.parquet` and `translations/source/hadeethenc_en.jsonl` HadeethEnc's human translations and their join (D101). Nothing computed reads them |
+| `config/glossary.yaml` | the site's glossary, written by hand: terms, the twelve Taqrīb levels, the twelve generations, the tiers of tadlīs (D100) |
 | `out/matn_tokens.parquet`, `out/matn_vocab.parquet` | normalized matn tokens and idf for the shāhid overlap |
 | `out/stages/<stage>/` | records and chains of each cumulative PR 5 and PR 6 stage (`make stages`) |
 | `lists/conditional.yaml`, `lists/conditional_candidates.csv`, `lists/conditional_confirmed.csv` | conditional narrator rulings in force; every proposal with its match evidence; the rows used (`auto` / `needs_review` / `human`) (PR 6 §2) |
