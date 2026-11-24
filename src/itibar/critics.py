@@ -563,8 +563,8 @@ def score(write: bool = True) -> dict[str, pd.DataFrame]:
 
 
 def result_text(row, kind: str) -> str:
-    """One short line on what scoring found, for out/verdicts.parquet `result` (the site's critics panel; the
-    report page has a size budget, D81)."""
+    """One short line on what scoring found, for out/verdicts.parquet `result` (the site requires the column and
+    publishes the file in its Downloads; kept short, since the file counts toward the site's size budget)."""
     def ok(x):
         return x is not None and x == x
     if kind == "tafarrud":

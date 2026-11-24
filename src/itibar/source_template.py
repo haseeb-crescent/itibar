@@ -520,13 +520,16 @@ def group_rule(con=None) -> pd.DataFrame:
     con = con or data.views()
     return con.sql(
         """WITH c AS (SELECT h.group_id g, min(s.matn_no) best, max(s.matn_no) worst, count(*) n,
-                             mode(s.matn_no) modal, count(DISTINCT h.id) n_hadith
+                             count(DISTINCT h.id) n_hadith
                       FROM sanads s JOIN hadiths h ON h.id = s.hadith_id WHERE h.group_id IS NOT NULL GROUP BY 1),
+                k AS (SELECT h.group_id g, s.matn_no code, count(*) k
+                      FROM sanads s JOIN hadiths h ON h.id = s.hadith_id WHERE h.group_id IS NOT NULL GROUP BY 1, 2),
+                m AS (SELECT g, arg_min(code, (-k, code)) modal FROM k GROUP BY 1),  -- ties: the better code
                 hh AS (SELECT group_id g, min(matn_no) FILTER (WHERE matn_no BETWEEN 0 AND 5) hbest
                        FROM hadiths WHERE group_id IS NOT NULL GROUP BY 1)
-           SELECT mg.id AS group_id, mg.matn_no AS group_code, c.best, c.worst, c.modal, c.n AS n_chains, c.n_hadith,
+           SELECT mg.id AS group_id, mg.matn_no AS group_code, c.best, c.worst, m.modal, c.n AS n_chains, c.n_hadith,
                   hh.hbest AS hadith_best
-           FROM meaning_groups mg JOIN c ON c.g = mg.id LEFT JOIN hh ON hh.g = mg.id ORDER BY 1"""
+           FROM meaning_groups mg JOIN c ON c.g = mg.id JOIN m ON m.g = mg.id LEFT JOIN hh ON hh.g = mg.id ORDER BY 1"""
     ).df()
 
 
@@ -805,7 +808,7 @@ def _group_rule(con) -> str:
          f"`meaning_groups.matn_no` equals the lowest recorded chain code of the group in {int(eq.sum()):,} "
          f"(**{_pct(int(eq.sum()), n)}**), lies within the chains' range in {_pct(int(within.sum()), n)}; it equals "
          f"the best hadith grade in {_pct(int((g['group_code'] == g['hadith_best']).sum()), n)}, the modal chain code "
-         f"in {_pct(int((g['group_code'] == g['modal']).sum()), n)}. There is no corroboration across chains: a "
+         f"(ties to the better code) in {_pct(int((g['group_code'] == g['modal']).sum()), n)}. There is no corroboration across chains: a "
          "group of ḍaʿīf chains is never coded ḥasan by the count of its chains. The exceptions:\n"]
     t = pd.crosstab(g["group_code"], g["best"])
     t.index = [f"group {i}" for i in t.index]

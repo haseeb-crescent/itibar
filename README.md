@@ -895,7 +895,8 @@ into 31 formula families: one row per claim in `out/verdicts.parquet` with the q
 hadith's own chain(s) (D71's resolver; unresolved slots keep the reason). Each claim type is scored as stated, relative
 claims as relative (D91–D94); a failed claim is reported with what breaks it, never as the critic being wrong.
 `out/verdicts.parquet` also carries `quote`, `citation` and `result` (one line on what the scoring found, filled by
-`make verdicts`): the site's critics panel on each report page reads them.
+`make verdicts`). The site's *Classical notes* quote each report's remarks with their citation and an English
+summary of the claim; `result` travels with the file in the site's Downloads.
 
 **Tafarrud** («لم يرو هذا الحديث عن X إلا Y», «تفرد به Y», «لا نعلم رواه عن X إلا Y»): every route from X to a book passes
 through Y in the group's bundle. Ibn al-Ṣalāḥ's division of the afrād (ص ٨٨, [22870/85](https://shamela.ws/book/22870/85)):

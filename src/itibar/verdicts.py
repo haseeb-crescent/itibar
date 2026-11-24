@@ -336,7 +336,7 @@ def extract(con=None, books=None, write: bool = True, hadith_ids=None) -> pd.Dat
     if len(df):
         df = df.sort_values(["hadith_id", "span_start", "claim_type"]).reset_index(drop=True)
         df.insert(0, "claim_id", range(1, len(df) + 1))
-        # the columns the site's critics panel reads (src/itibar/site/data.py): the quote, where it is, and the
+        # the columns the site reads (src/itibar/site/data.py, pages.critics_view): the quote, where it is, and the
         # result of scoring it (critics.score fills `result`; until then the claim is not scored)
         bn = dict(con.sql("SELECT id, name FROM books").fetchall())
         df["quote"] = df["span"]

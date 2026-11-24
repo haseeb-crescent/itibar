@@ -818,7 +818,7 @@ narrators and codes (not done; it would edit a recorded value).
 **D85. The group grade is the best recorded chain's, with editors' exceptions.** `hadiths.matn_no` = the lowest chain code
 of the hadith in 99.47% (never better; worse in 0.53%, a hadith coded 3–5 over a best chain of 2–4).
 `meaning_groups.matn_no` = the lowest recorded chain code of the group in 86.77% (within the chains' range 98.25%; the best
-hadith grade 87.09%; the modal chain code 64.97%); worse than the best chain in 2,503 groups (nearly all 3–5 over 2–4),
+hadith grade 87.09%; the modal chain code 66.02%, ties to the better code); worse than the best chain in 2,503 groups (nearly all 3–5 over 2–4),
 better in 181. No field of the dump records why (`takhrij` is an id shared by parallel narrations, without text); no
 corroboration across chains: a group of ḍaʿīf chains is never ḥasan by count. *Alternatives considered and measured:* the
 modal chain, a book class's minimum, the largest takhrīj cluster's minimum (none explains the exceptions).

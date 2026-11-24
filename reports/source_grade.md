@@ -301,7 +301,7 @@ So `sanads.matn_no` and `sanads.hukum` describe a chain of the hadith, not neces
 | hadith 5 | 216 | 84 | 55 |
 | hadith 8 | 0 | 1 | 0 |
 
-**The group grade is its best chain's, with editors' exceptions.** Over the 20,282 groups with chains, `meaning_groups.matn_no` equals the lowest recorded chain code of the group in 17,598 (**86.77%**), lies within the chains' range in 98.25%; it equals the best hadith grade in 87.09%, the modal chain code in 65.04%. There is no corroboration across chains: a group of ḍaʿīf chains is never coded ḥasan by the count of its chains. The exceptions:
+**The group grade is its best chain's, with editors' exceptions.** Over the 20,282 groups with chains, `meaning_groups.matn_no` equals the lowest recorded chain code of the group in 17,598 (**86.77%**), lies within the chains' range in 98.25%; it equals the best hadith grade in 87.09%, the modal chain code (ties to the better code) in 66.02%. There is no corroboration across chains: a group of ḍaʿīf chains is never coded ḥasan by the count of its chains. The exceptions:
 
 |  | best chain 0 | best chain 1 | best chain 2 | best chain 3 | best chain 4 | best chain 5 |
 |---|---|---|---|---|---|---|
