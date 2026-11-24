@@ -202,3 +202,13 @@ def test_checks_flag_internal_identifiers_and_verdicts():
     assert any("sahih_li" in p for p in problems) and any("verdict" in p for p in problems)
     assert any("κ outside" in p for p in problems)
     assert not any("kappa_all" in p for p in problems)   # code is the specialists' notation
+
+
+def test_weak_narrators_are_paired_with_their_own_defects():
+    from types import SimpleNamespace
+    corpus = SimpleNamespace(people={1: {"rank_no": 8, "has_tadlis": 0}, 2: {"rank_no": 6, "has_tadlis": 0},
+                                     3: {"rank_no": 3, "has_tadlis": 1}},
+                             tiers={3: 3})
+    # The receipt lists defects and positions separately and in different orders.
+    pairs = view.pair_defects(["mursal", "level_6", "mudallis_muanan_tier_3", "level_8"], ["r1", "r3", "r2"], corpus)
+    assert pairs == [("level_8", "r1"), ("mudallis_muanan_tier_3", "r3"), ("level_6", "r2"), ("mursal", None)]

@@ -381,8 +381,8 @@ RULE_SENTENCE = {
     "sahih_li_dhatihi": "Every narrator is a companion or rated trustworthy or better, and the chain is unbroken, so the classical rules make this chain {grade}.",
     "hasan_li_dhatihi": "The chain is unbroken, but {weak} rated truthful rather than trustworthy, and no other chain of good grade avoids {them}; so the rules make it {grade}.",
     "sahih_li_ghayrihi": "{weak_cap} rated truthful rather than trustworthy, which on its own would make the chain ḥasan; a second chain of good grade that avoids {them} raises it to {grade}.",
-    "hasan_li_ghayrihi": "The chain has a light weakness — {defects} — and another chain in the report avoids {it}, so the rules raise it to {grade}.",
-    "daif": "The chain has a light weakness — {defects} — and no other chain in the report avoids {it}, so the rules leave it {grade}.",
+    "hasan_li_ghayrihi": "The chain has {a_weakness} — {defects} — and {covered}, so the rules raise it to {grade}.",
+    "daif": "The chain has {a_weakness} — {defects} — and {uncovered}, so the rules leave it {grade}.",
     "not_repairable": "{defects_cap}: a weakness the rules do not let another chain repair, so the chain is {grade}.",
     "fatal": "{defects_cap}: the rules never raise such a chain, so it is {grade}.",
 }
@@ -409,6 +409,34 @@ def defect_words(defect, node, names, people):
     if words:
         return Markup(words)
     return Markup(escape(defect.replace("_", " ")))
+
+
+def pair_defects(defects, nodes, corpus):
+    """The receipt lists a chain's defects and the positions to cover separately; pair each weak narrator
+    with the defect his own record explains (his level, his tier of tadlīs, a conditional ruling), and keep
+    the defects of the chain itself (mursal, a break, an unnamed or undescribed narrator) without a name."""
+    remaining = list(defects)
+    pairs = []
+    for node in nodes:
+        person = corpus.people.get(int(node[1:]), {}) if node and node.startswith("r") else {}
+        level = person.get("rank_no")
+        tier = corpus.tiers.get(int(node[1:])) if node and node.startswith("r") else None
+        found = None
+        for d in remaining:
+            if d.startswith("level_") and level and int(d.split("_")[1].split("+")[0]) == level:
+                found = d
+            elif d.startswith("mudallis_muanan_tier_") and (person.get("has_tadlis") or tier) and (
+                    tier is None or str(tier) == d.rsplit("_", 1)[1]):
+                found = d
+            elif d == "conditional":
+                found = d
+            if found:
+                break
+        if found:
+            remaining.remove(found)
+        pairs.append((found or (f"level_{level}" if level else "undescribed_narrator"), node))
+    pairs.extend((d, None) for d in remaining if not d.startswith(("level_", "mudallis_", "conditional")))
+    return pairs
 
 
 def chain_people(chain, people, names, scale):
@@ -452,8 +480,7 @@ def why_grade(record, chains_by_id, steps, names, corpus):
         blocking = next((s["data"] for s in receipt if s["check"] == "defect"), None)
         witness_step = next((s["data"] for s in receipt if s["check"] == "witnesses"), {})
         weak_nodes = cover.get("nodes", [])
-        defects = cover.get("defects", [])
-        defect_nodes = list(zip(defects, weak_nodes + [None] * (len(defects) - len(weak_nodes))))
+        defect_nodes = pair_defects(cover.get("defects", []), weak_nodes, corpus)
         if blocking:
             defect_nodes = [(blocking["reason"], blocking.get("node"))]
         phrases = [defect_words(d, n, names, corpus.people) for d, n in defect_nodes]
@@ -463,7 +490,11 @@ def why_grade(record, chains_by_id, steps, names, corpus):
         template = RULE_SENTENCE.get(rule, "The rules give {grade}.")
         sentence = Markup(template).format(
             grade=grade, weak=weak + verb, weak_cap=weak + verb, them="him" if len(weak_nodes) <= 1 else "them",
-            it="it" if len(phrases) <= 1 else "each", defects=join(phrases) if phrases else Markup("a light weakness"),
+            it="it" if len(phrases) <= 1 else "each",
+            a_weakness="a light weakness" if len(phrases) <= 1 else "light weaknesses",
+            covered="another chain in the report avoids it" if len(phrases) <= 1 else "other chains in the report avoid each of them",
+            uncovered="no other chain in the report avoids it" if len(phrases) <= 1 else "no set of other chains in the report avoids them all",
+            defects=join(phrases) if phrases else Markup("a light weakness"),
             defects_cap=_cap(join(phrases)) if phrases else Markup("A weakness"))
         witnesses = []
         for w in witness_step.get("witnesses", []) if rule in ("hasan_li_ghayrihi", "sahih_li_ghayrihi") else []:

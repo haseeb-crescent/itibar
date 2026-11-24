@@ -18,7 +18,7 @@
     <span class="label">Recorded in</span>
     <ul class="chips">
       {% for book in head.chips %}<li><a href="#book-{{ book.id }}" title="{{ book.ar }}">{{ book.short }}{% if book.numbers %} <span class="num">{{ book.numbers[0] }}{% if book.numbers|length > 1 %} +{{ book.numbers|length - 1 }}{% endif %}</span>{% endif %}</a></li>{% endfor %}
-      {% if head.more %}<li><a href="#books" class="more">+{{ number(head.more) }} more {{ 'book' if head.more == 1 else 'books' }}</a></li>{% endif %}
+      {% if head.more %}<li><a href="#books" class="more">{% if head.chips %}+{{ number(head.more) }} more{% else %}{{ number(head.more) }}{% endif %} {{ 'book' if head.more == 1 else 'books' }}</a></li>{% endif %}
     </ul>
   </div>
   {% endif %}
