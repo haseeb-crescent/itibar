@@ -1,5 +1,5 @@
-"""`make narrators`: the narrator-level census (out/narrators.parquet) and the
-common-link report (reports/common_links.md, figures/fig4_cl_death_years.*).
+"""`make narrators`: the narrator-level census (out/narrators.parquet), the teacher-student pairs
+(out/narrator_links.parquet) and the common-link report (reports/common_links.md, figures/fig4_cl_death_years.*).
 
 Per narrator, over every meaning group's bundle: groups on path; groups where he
 is a cut vertex at `all` and at `thiqa_up`; groups where he is a common link;
@@ -79,7 +79,20 @@ def build(con=None) -> pd.DataFrame:
     df = d.sql(q).df()
     out = paths.OUT_DIR / "narrators.parquet"
     df.to_parquet(out, index=False)
+    links(d).to_parquet(paths.OUT_DIR / "narrator_links.parquet", index=False)
     return df
+
+
+def links(d) -> pd.DataFrame:
+    """Teacher -> student pairs over every bundle's on-route links between two narrators (the site's
+    "main teachers and students"): the reports and chains each pair carries. Only links in the
+    narrator role count; a compiler's link into his own book is not a pair (out/narrator_links.parquet)."""
+    return d.sql("""
+        SELECT CAST(substr(u, 2) AS BIGINT) AS teacher, CAST(substr(v, 2) AS BIGINT) AS student,
+               count(DISTINCT group_id) AS reports, sum(len(sanad_ids)) AS chains
+        FROM e WHERE on_path AND u LIKE 'r%' AND v LIKE 'r%' AND u <> v
+        GROUP BY ALL ORDER BY teacher, reports DESC, chains DESC, student
+    """).df()
 
 
 def cl_above(rawi_ids: list[int], con=None) -> pd.DataFrame:

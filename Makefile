@@ -9,6 +9,8 @@ PYTEST  := $(UV) run pytest
 FIXTURE := tests/fixture/parquet
 CI_OUT  ?= .ci-out
 
+
+.PHONY: translate translate-pending translate-import translate-status translate-sample translate-checks hadeethenc hadeethenc-fetch
 .PHONY: all setup data book-compilers audit words matn bundles stages narrators lists lists-fetch mudallisin mudallisin-fetch provenance-fetch conditional conditional-fetch residue residue-fetch shahid-inspection chapters pools gold gates test figures fixture ci site site-check site-fixture render-gold clean
 
 all: data conditional bundles stages audit narrators lists chapters pools residue gold figures
@@ -123,6 +125,38 @@ ci:
 	ITIBAR_PARQUET_DIR=$(CURDIR)/$(FIXTURE) ITIBAR_OUT_DIR=$(CURDIR)/$(CI_OUT) $(PY) -m itibar.matn
 	ITIBAR_PARQUET_DIR=$(CURDIR)/$(FIXTURE) ITIBAR_OUT_DIR=$(CURDIR)/$(CI_OUT) $(PY) -m itibar.pipeline
 	ITIBAR_PARQUET_DIR=$(CURDIR)/$(FIXTURE) ITIBAR_OUT_DIR=$(CURDIR)/$(CI_OUT) $(PYTEST) -q
+
+## The English layer (DECISIONS D102). translations/<kind>.parquet is the contract; any producer writes it
+## through `import`, which checks every item against the current Arabic source.
+## make translate-pending OUT=dir [FIXTURE=1]: the missing or stale items as JSONL work sets for a session
+translate-pending:
+	$(PY) -m itibar.translate pending --out $(or $(OUT),translations/pending) $(if $(FIXTURE),--fixture,)
+
+## make translate-import FILES="dir/*.jsonl" PRODUCER=session:YYYY-MM-DD:label [MODEL=...]
+translate-import:
+	$(PY) -m itibar.translate import $(FILES) --producer $(PRODUCER) $(if $(MODEL),--model $(MODEL),) $(if $(FIXTURE),--fixture,)
+
+translate-status:
+	$(PY) -m itibar.translate status $(if $(FIXTURE),--fixture,)
+
+## make translate: the optional Message Batches path (needs `uv sync --extra translate` and API credentials)
+translate:
+	$(UV) run --extra translate python -m itibar.translate api $(if $(FIXTURE),--fixture,)
+
+## make translate-sample / translate-checks: the second pass on 200 random items (translations/checks.parquet)
+translate-sample:
+	$(PY) -m itibar.translate sample --n 200 --out $(or $(OUT),translations/check-sample.jsonl)
+
+translate-checks:
+	$(PY) -m itibar.translate record-checks $(FILE) --checker $(CHECKER)
+
+## make hadeethenc-fetch: HadeethEnc's English items (API v1) -> translations/source/hadeethenc_en.jsonl (slow, polite)
+hadeethenc-fetch:
+	$(PY) -m itibar.hadeethenc fetch
+
+## make hadeethenc: join them to the groups -> translations/hadeethenc.parquet (no network)
+hadeethenc:
+	$(PY) -m itibar.hadeethenc build
 
 ## make site: build the static reader from existing pipeline outputs
 site:

@@ -1,0 +1,595 @@
+# The site's glossary, written by hand (DECISIONS D100). Every term the interface uses links here;
+# the hover/tap definition is `short`, the glossary page shows `short` and `body`. `source` says
+# where the term comes from. The translation prompt (src/itibar/translate.py) includes the terms
+# and their spellings so that machine translations use the same words. Plain English only: a
+# reader who knows no hadith terminology should be able to follow every entry.
+#
+# Spelling: IJMES / EI3 transliteration (ʿ ayn, ʾ hamza, macrons), Arabic beside it.
+
+terms:
+  - id: hadith
+    term: hadith
+    arabic: حديث
+    translit: ḥadīth
+    short: A report of something the Prophet Muḥammad said, did or approved, passed down by named people.
+    body: >-
+      Each hadith has two parts: the chain of people who passed it on (the isnad) and the words
+      they passed on (the matn). The same saying is usually recorded many times, in many books,
+      through different chains. itibar treats all of those records of one saying as one report.
+    source: The general usage of the hadith sciences.
+    see: [isnad, matn, report]
+
+  - id: report
+    term: report
+    arabic: حديث
+    short: All the recorded versions of one saying or event, gathered from every book that has it.
+    body: >-
+      The dataset groups the narrations that carry the same meaning into one report (it calls
+      them meaning groups). A report page brings together every chain of every version in every
+      book. Report numbers on this site are the dataset's group numbers.
+    source: The dataset (hadith-kg), which groups narrations by meaning.
+    see: [hadith, dataset]
+
+  - id: isnad
+    term: isnad
+    arabic: إسناد
+    translit: isnād
+    short: The chain of named people who passed a hadith on, from the compiler of a book back to the Prophet.
+    body: >-
+      A compiler writes "A told us, from B, from C, from the Prophet". That list of names is the
+      isnad. Hadith critics judged a report first by its isnad: whether every link is a person
+      they could identify and trust, and whether each one really heard it from the one before.
+      Overlaying every isnad of one report gives a branching tree from the Prophet to the books,
+      which this site draws.
+    source: Ibn al-Ṣalāḥ, Muqaddima; Ibn Ḥajar, Nuzhat al-Naẓar.
+    see: [chain, matn, transmission-tree]
+
+  - id: chain
+    term: chain
+    arabic: سند / طريق
+    translit: sanad / ṭarīq
+    short: One isnad as written in one book — one path of named people from the Prophet to that book.
+    body: >-
+      A report with 300 chains was written down 300 times with a list of names each time. Chains
+      share people: most chains of a famous report pass through the same few early narrators and
+      then divide among their students.
+    source: The hadith sciences call a chain a sanad and a route a ṭarīq.
+    see: [isnad, independent-lines]
+
+  - id: matn
+    term: matn
+    arabic: متن
+    translit: matn
+    short: The text of the hadith itself — the words the chain passed on.
+    body: >-
+      The versions of one report differ in wording, length and detail. This site shows one full
+      text and the report's opening as the dataset records them.
+    source: Ibn al-Ṣalāḥ, Muqaddima.
+    see: [isnad]
+
+  - id: companion
+    term: companion
+    arabic: صحابي
+    translit: ṣaḥābī
+    short: Someone who met the Prophet as a believer and died a Muslim; the first link in every chain.
+    body: >-
+      The companions are the first generation of narrators. The critics did not rate them as they
+      rated later narrators: they are all treated as trustworthy, so a companion's name is never
+      the weak point of a chain. How many companions narrate a report is the first measure of how
+      widely it was known.
+    source: Ibn Ḥajar's definition, Nuzhat al-Naẓar p. 111.
+    see: [successor, unnamed-companion, generation]
+
+  - id: successor
+    term: Successor
+    arabic: تابعي
+    translit: tābiʿī
+    short: A narrator of the generation after the companions, who met at least one companion.
+    body: >-
+      Successors learned from the companions and taught the next generation, the Followers of the
+      Successors (atbāʿ al-tābiʿīn). In Ibn Ḥajar's scheme they fill generations 2 to 6.
+    source: Ibn Ḥajar, Nuzhat al-Naẓar; Taqrīb al-Tahdhīb, introduction.
+    see: [companion, generation]
+
+  - id: generation
+    term: generation
+    arabic: طبقة
+    translit: ṭabaqa
+    short: A layer of narrators of roughly the same age; Ibn Ḥajar sorts the narrators of the hadith books into twelve.
+    body: >-
+      Ibn Ḥajar's Taqrīb al-Tahdhīb places each narrator in one of twelve generations, from the
+      companions (1) to the teachers of the last compilers of the Six Books (12). The dataset
+      extends the scale to later narrators, about a generation every 25 years, up to 38. The
+      transmission tree draws one row per generation, the Prophet at the top and the books at
+      the bottom.
+    source: Ibn Ḥajar, Taqrīb al-Tahdhīb, introduction; the dataset for generations 13 and later.
+    see: [companion, successor, transmission-tree]
+
+  - id: transmission-tree
+    term: transmission tree
+    arabic: شجرة الإسناد
+    short: Every chain of a report drawn at once, from the Prophet at the top to the books at the bottom.
+    body: >-
+      Specialists call it the isnad bundle. Where a generation holds only a few narrators the
+      tree names them; where it holds many it groups them ("26 students of Yaḥyā b. Saʿīd").
+      The thickness of a link shows how many chains run along it.
+    source: The isnad bundle of Western hadith studies (Schacht, Juynboll); the classical critics
+      did the same thing by hand when they gathered a report's chains (iʿtibār).
+    see: [isnad, independent-lines, corroboration]
+
+  - id: independent-lines
+    term: independent lines
+    arabic: الطرق المستقلة
+    short: The largest number of routes from the Prophet to the books that share no narrator at all.
+    body: >-
+      If every chain passes through one man, the report has one independent line, however many
+      books record it: everything depends on him. If two routes share no one, a mistake or a
+      fabrication by any single narrator could not explain both. itibar counts the largest set of
+      such routes exactly (mathematicians call this number the vertex connectivity, κ, and
+      Menger's theorem guarantees it equals the fewest narrators whose removal would cut every
+      route). It is counted four times: with everyone, and keeping only narrators above three
+      steps of the critics' scale.
+    source: itibar's measure of what the classical critics assessed when they counted a report's
+      routes (ṭuruq).
+    see: [bottleneck, reliability-filter, number-class]
+
+  - id: bottleneck
+    term: bottleneck
+    arabic: تفرد / مدار
+    translit: tafarrud
+    short: A narrator through whom every route passes — remove him and the report could not have reached the books.
+    body: >-
+      The classical term is tafarrud: a narrator "was alone" in narrating it at that point.
+      A report has a bottleneck only when it has a single independent line. Specialists call a
+      bottleneck a cut vertex.
+    source: Ibn Ḥajar, Nuzhat al-Naẓar pp. 42–57 (the gharīb); graph theory for "cut vertex".
+    see: [independent-lines, gharib, common-link]
+
+  - id: common-link
+    term: common link
+    arabic: مدار الإسناد
+    translit: madār al-isnād
+    short: The earliest narrator at which the chains begin to spread to several students who carry it on.
+    body: >-
+      Above the common link the report runs through few people; from him on it spreads. Western
+      scholars (Joseph Schacht, G. H. A. Juynboll) named this point the common link and read his
+      death year as the latest date by which the report was in circulation. The classical
+      critics speak of the pivot of the chains (madār). itibar marks a narrator as a common link
+      when at least two of his students carry the report on into the books, and no earlier
+      narrator does the same.
+    source: Schacht (1950) and Juynboll (2007) for the term; the classical madār.
+    see: [bottleneck, terminus]
+
+  - id: reliability-filter
+    term: reliability filter
+    arabic: مراتب الرواة
+    short: Recount the independent lines keeping only narrators the critics rated at or above a chosen step of their scale.
+    body: >-
+      Everyone keeps every narrator. Excluding abandoned narrators drops those rated abandoned,
+      accused of lying, or liars (levels 10–12). Truthful and above keeps levels 1–4. Trustworthy
+      only keeps levels 1–3. A line that needs a narrator below the step drops out.
+    source: The twelve levels of Ibn Ḥajar's Taqrīb al-Tahdhīb.
+    see: [rating, independent-lines]
+
+  - id: rating
+    term: narrator rating
+    arabic: الجرح والتعديل
+    translit: al-jarḥ wa-l-taʿdīl
+    short: The critics' judgement of a narrator's honesty and accuracy, on Ibn Ḥajar's twelve-step scale.
+    body: >-
+      Generations of critics recorded what they knew of each narrator: whether he was honest,
+      how well he remembered, whether he was known at all. Ibn Ḥajar (d. 852 AH / 1449 CE)
+      condensed their verdicts into twelve levels in his Taqrīb al-Tahdhīb. The labels in this
+      dataset follow the Taqrīb as revised by Taḥrīr al-Taqrīb for the narrators of the Six Books,
+      and the dataset's editors for the rest.
+    source: Ibn Ḥajar, Taqrīb al-Tahdhīb; Taḥrīr Taqrīb al-Tahdhīb (1997).
+    see: [reliability-filter, critics]
+
+  - id: critics
+    term: critics' statements
+    arabic: أقوال النقاد
+    short: What named critics of the early centuries said about a narrator, quoted from the biographical works.
+    body: >-
+      A narrator's rating condenses many statements. Narrator pages list the statements the
+      dataset records, each with the critic's name, in the original Arabic.
+    source: The dataset's aqwāl table (127,863 statements by 1,015 critics).
+    see: [rating]
+
+  - id: number-class
+    term: number class
+    arabic: أقسام الخبر باعتبار عدد طرقه
+    short: The classical sorting of a report by how many routes carry it — gharīb, ʿazīz, mashhūr or mutawātir.
+    body: >-
+      Ibn Ḥajar sorts reports by the number of their routes. itibar reads the class from the
+      independent lines with everyone counted: one line is gharīb, two ʿazīz, three to nine
+      mashhūr, ten or more mutawātir by count. The count alone does not settle mutawātir: the
+      classical definition also asks that so many people could not have agreed on a falsehood,
+      which no count can show.
+    source: Ibn Ḥajar, Nuzhat al-Naẓar pp. 42–57; the ten-companion threshold is al-Suyūṭī's.
+    see: [gharib, aziz, mashhur, mutawatir]
+
+  - id: gharib
+    term: gharīb
+    arabic: غريب
+    translit: gharīb
+    short: Carried at some point by a single narrator — one independent line.
+    body: >-
+      Gharīb muṭlaq ("absolutely singular") when the single narrator is at the root, the
+      companion's end; gharīb nisbī ("relatively singular") when it is further down. A gharīb
+      report can still be ṣaḥīḥ: "Actions are only by intentions" is the classical example.
+    source: Ibn Ḥajar, Nuzhat al-Naẓar.
+    see: [number-class, bottleneck]
+
+  - id: aziz
+    term: ʿazīz
+    arabic: عزيز
+    translit: ʿazīz
+    short: Carried by at least two independent lines at every point, but not three.
+    body: Ibn Ḥajar's definition is that it is never narrated by fewer than two from two.
+    source: Ibn Ḥajar, Nuzhat al-Naẓar p. 50.
+    see: [number-class]
+
+  - id: mashhur
+    term: mashhūr
+    arabic: مشهور
+    translit: mashhūr
+    short: Carried by three or more independent lines, but fewer than the mutawātir threshold.
+    body: Ibn Ḥajar defines it as a report with a limited number of routes, more than two.
+    source: Ibn Ḥajar, Nuzhat al-Naẓar.
+    see: [number-class]
+
+  - id: mutawatir
+    term: mutawātir
+    arabic: متواتر
+    translit: mutawātir
+    short: Narrated by so many independent lines that agreement on a falsehood is ruled out; itibar counts ten or more.
+    body: >-
+      itibar can only count: "mutawātir by count" means ten or more independent lines with
+      everyone counted. The classical lists of mutawātir reports (al-Suyūṭī, al-Kattānī) are
+      compared with the counts in the reports section of the method.
+    source: Ibn Ḥajar, Nuzhat al-Naẓar; al-Suyūṭī; al-Kattānī, Naẓm al-Mutanāthir.
+    see: [number-class]
+
+  - id: grade
+    term: grade
+    arabic: حكم
+    translit: ḥukm
+    short: The classical verdict on a chain — ṣaḥīḥ, ḥasan or ḍaʿīf — read from its narrators' ratings and its continuity.
+    body: >-
+      This site never grades a report itself. It shows two attributed grades side by side. "By
+      the classical rules, from the narrators' ratings" is what Ibn Ḥajar's rules give when they
+      are applied mechanically to the critics' ratings of the narrators in each chain, with the
+      corroboration rules; every step is shown. "Recorded in the dataset" is the grade the
+      dataset's editors attached to the report.
+    source: Ibn al-Ṣalāḥ, Muqaddima; Ibn Ḥajar, Nuzhat al-Naẓar.
+    see: [sahih, hasan, daif, classical-rules, recorded-grade]
+
+  - id: classical-rules
+    term: by the classical rules
+    arabic: بالقواعد
+    short: The grade Ibn Ḥajar's rules give when applied step by step to the narrators' ratings — computed, with a receipt, never a judgement of this site.
+    body: >-
+      A chain of narrators all rated trustworthy or better, unbroken from the Prophet, is ṣaḥīḥ;
+      the weakest narrator otherwise sets the grade, and a second chain can raise a chain with a
+      light weakness (corroboration). Two classical readings differ on one point: Ibn al-Ṣalāḥ
+      counts narrators of level 5 as ḥasan where Ibn Ḥajar does not. Where they disagree, both
+      are shown. The rules do not see everything a critic sees — hidden defects (ʿilal), wording
+      and the context of each narration — so this is the rules' reading of the ratings, not a
+      critic's verdict.
+    source: Ibn Ḥajar, Nuzhat al-Naẓar; Ibn al-Ṣalāḥ, Muqaddima.
+    see: [grade, corroboration, recorded-grade]
+
+  - id: recorded-grade
+    term: recorded in the dataset
+    arabic: حكم المصدر
+    short: The grade the dataset's editors attached to the report; shown as they record it, labelled as theirs.
+    body: >-
+      The source dataset (hadith-kg) records a grade for every report and every chain. It is the
+      dataset's own, not a classical critic's quoted verdict, and not this site's.
+    source: hadith-kg, meaning_groups and sanads.
+    see: [dataset, grade]
+
+  - id: sahih
+    term: ṣaḥīḥ
+    arabic: صحيح
+    translit: ṣaḥīḥ
+    short: Sound — an unbroken chain of trustworthy narrators, free of hidden defects.
+    body: >-
+      Ṣaḥīḥ li-dhātihi ("sound in itself") is a chain that meets the conditions on its own.
+      Ṣaḥīḥ li-ghayrihi ("sound through support") is a ḥasan chain raised to ṣaḥīḥ because
+      another chain of the same report covers its weaker narrators.
+    source: Ibn al-Ṣalāḥ, Muqaddima; Ibn Ḥajar, Nuzhat al-Naẓar p. 66.
+    see: [grade, hasan, corroboration]
+
+  - id: hasan
+    term: ḥasan
+    arabic: حسن
+    translit: ḥasan
+    short: Good — like ṣaḥīḥ, but a narrator's accuracy falls a little short (rated truthful rather than trustworthy).
+    body: >-
+      Ḥasan li-dhātihi ("good in itself") is a chain whose weakest narrator is rated truthful
+      (ṣadūq). Ḥasan li-ghayrihi ("good through support") is a chain with a light weakness — a
+      narrator of poor memory, an unknown of known standing, a missing companion, an unstated
+      hearing — that other chains cover.
+    source: Ibn Ḥajar, Nuzhat al-Naẓar p. 105.
+    see: [grade, sahih, corroboration]
+
+  - id: daif
+    term: ḍaʿīf
+    arabic: ضعيف
+    translit: ḍaʿīf
+    short: Weak by the rules — a chain that falls short of ḥasan and is not raised by another chain.
+    body: >-
+      The rules distinguish weaknesses another chain can repair (poor memory, an unknown of known
+      standing, a missing companion) from those it cannot (an unknown person, a narrator rated
+      abandoned or a liar, a break in the chain). Severely weak chains are called ḍaʿīf jiddan;
+      a chain through a narrator accused of lying gives a matrūk hadith; through a narrator
+      called a liar, mawḍūʿ ("fabricated"). These are the rules' readings of the ratings.
+    source: Ibn Ḥajar, Nuzhat al-Naẓar; Ibn al-Ṣalāḥ, Muqaddima p. 34.
+    see: [grade, corroboration]
+
+  - id: corroboration
+    term: corroboration
+    arabic: الاعتبار / المتابعة / الشاهد
+    translit: iʿtibār
+    short: A second chain that avoids a chain's weak narrator, so that his weakness no longer decides the grade.
+    body: >-
+      Gathering a report's chains to see what supports what is called iʿtibār, the name of this
+      project. A supporting chain is a mutābaʿa ("following") when it reaches the same companion
+      — complete (tāmma) when it meets the weak narrator's own teacher, partial (qāṣira) when it
+      meets the chain higher up — and a shāhid ("witness") when it comes from another companion.
+      Only light weaknesses can be covered.
+    source: Ibn Ḥajar, Nuzhat al-Naẓar pp. 73–75, 105.
+    see: [mutabaa, shahid, hasan]
+
+  - id: mutabaa
+    term: mutābaʿa
+    arabic: متابعة
+    translit: mutābaʿa
+    short: A supporting chain through the same companion — tāmma if it reaches the weak narrator's teacher, qāṣira if it joins higher up.
+    body: See corroboration.
+    source: Ibn Ḥajar, Nuzhat al-Naẓar p. 75.
+    see: [corroboration, shahid]
+
+  - id: shahid
+    term: shāhid
+    arabic: شاهد
+    translit: shāhid
+    short: A supporting chain through another companion, carrying the same meaning.
+    body: See corroboration.
+    source: Ibn Ḥajar, Nuzhat al-Naẓar p. 75.
+    see: [corroboration, mutabaa]
+
+  - id: mursal
+    term: mursal
+    arabic: مرسل
+    translit: mursal
+    short: A chain in which a Successor quotes the Prophet directly, leaving out the companion he heard it from.
+    body: >-
+      Because the missing link is unknown, a mursal chain is weak on its own; Ibn Ḥajar counts it
+      among the weaknesses another chain can cover. A chain carrying a mursal marker is a chain
+      the dataset's editors marked at that point.
+    source: Ibn Ḥajar, Nuzhat al-Naẓar; al-Shāfiʿī, al-Risāla §§1265–1268.
+    see: [break, corroboration]
+
+  - id: break
+    term: break in the chain
+    arabic: انقطاع / تعليق
+    translit: inqiṭāʿ, taʿlīq
+    short: A point where a link is missing — a narrator did not hear from the one named before him, or the compiler omitted the start.
+    body: >-
+      The dataset marks breaks inside a chain (inqiṭāʿ) and chains whose compiler left out the
+      first names (taʿlīq). A broken chain cannot be ṣaḥīḥ, and the rules do not let another chain
+      repair it.
+    source: Ibn al-Ṣalāḥ, Muqaddima; the dataset's markers.
+    see: [mursal]
+
+  - id: tadlis
+    term: tadlīs
+    arabic: تدليس
+    translit: tadlīs
+    short: Concealment — a narrator says "from so-and-so" for something he did not hear from him directly.
+    body: >-
+      A mudallis is a narrator known for it. When such a narrator says "from" (ʿan) instead of
+      "he told us", the critics ask whether he really heard it. Ibn Ḥajar sorts the mudallisūn into
+      five tiers; the tier decides whether his "from" is accepted.
+    source: Ibn Ḥajar, Ṭabaqāt al-Mudallisīn; Nuzhat al-Naẓar p. 85.
+    see: [tadlis-tiers, transmission-words]
+
+  - id: tadlis-tiers
+    term: tiers of tadlīs
+    arabic: طبقات المدلسين
+    short: Ibn Ḥajar's five tiers of narrators known for tadlīs, from "rarely" (1) to "also weak for another reason" (5).
+    body: >-
+      Tiers 1 and 2: their "from" is accepted. Tier 3: accepted only where they state that they
+      heard it; uncovered, it is a light weakness another chain can repair. Tiers 4 and 5: their
+      "from" is not accepted and no other chain repairs it. A "from" in the Ṣaḥīḥayn, or covered
+      by "he told us" in another chain of the same report, is not counted as a weakness.
+    source: Ibn Ḥajar, Ṭabaqāt al-Mudallisīn pp. 13–14; al-Nawawī, Sharḥ Muslim 1/33.
+    see: [tadlis]
+
+  - id: transmission-words
+    term: transmission words
+    arabic: صيغ الأداء
+    translit: ṣiyagh al-adāʾ
+    short: The word each narrator uses for how he received the hadith — "he told us" (ḥaddathanā), "he informed us" (akhbaranā), "from" (ʿan).
+    body: >-
+      "He told us" and "I heard" state a direct hearing. "From" does not, which matters only for
+      narrators known for tadlīs. The chains list shows the word before each name where the text
+      lets it be read.
+    source: Ibn Ḥajar, Nuzhat al-Naẓar p. 125; al-Nawawī, Sharḥ Muslim 1/33.
+    see: [tadlis]
+
+  - id: unnamed-companion
+    term: the unnamed companion
+    arabic: رجل من أصحاب النبي ﷺ
+    short: A Successor's "from a man of the Prophet's companions" — the companion is unnamed, but the chain is not broken.
+    body: >-
+      Because every companion is trusted, not knowing which companion does not weaken the chain.
+      A bare "from a man", not described as a companion, is different: the chain is then mursal.
+    source: Ibn al-Ṣalāḥ, Muqaddima p. 56; al-Khaṭīb, al-Kifāya p. 415; Ibn Ḥajar, Fatḥ al-Bārī 1/300.
+    see: [companion, mursal]
+
+  - id: ikhtilat
+    term: ikhtilāṭ
+    arabic: اختلاط
+    translit: ikhtilāṭ
+    short: A narrator's memory failed late in life; what his students heard before is accepted, what they heard after is not.
+    body: >-
+      The critics record which students heard such a narrator before his memory failed. Where
+      the books name them, itibar applies the narrator's rating on the link: sound through those
+      students, weaker through others.
+    source: Ibn al-Kayyāl, al-Kawākib al-Nayyirāt; al-ʿAlāʾī, al-Mukhtaliṭīn.
+    see: [conditional-rating, rating]
+
+  - id: conditional-rating
+    term: conditional rating
+    arabic: التوثيق المقيد
+    short: A rating that depends on the link — sound from one teacher and weak from another, sound through the people of his own town.
+    body: >-
+      The rating then applies to the link, not to the narrator everywhere. Narrator pages quote
+      each such ruling from its book.
+    source: The Taqrīb and Taḥrīr entries, and the books on ikhtilāṭ.
+    see: [ikhtilat, rating]
+
+  - id: terminus
+    term: date of spread
+    arabic: الوفاة
+    short: The death year of the common link — the latest date by which, on the chains' own evidence, the report was in circulation.
+    body: >-
+      Years are given in the Islamic calendar (AH) with the Common Era equivalent. Where the
+      sources give a range or several dates, the original wording is kept.
+    source: Juynboll's reading of the common link; the dates are the dataset's.
+    see: [common-link]
+
+  - id: sahihayn
+    term: the Ṣaḥīḥayn
+    arabic: الصحيحان
+    translit: al-Ṣaḥīḥayn
+    short: The two Ṣaḥīḥs — the collections of al-Bukhārī (d. 256 AH) and Muslim (d. 261 AH), held in the highest regard.
+    body: Both compilers admitted only chains they judged sound.
+    source: General usage.
+    see: [six-books]
+
+  - id: six-books
+    term: the Six Books
+    arabic: الكتب الستة
+    translit: al-kutub al-sitta
+    short: The Ṣaḥīḥayn and the Sunan of Abū Dāwūd, al-Tirmidhī, al-Nasāʾī and Ibn Mājah — the six standard collections.
+    body: Later scholars wrote their narrator dictionaries, including the Taqrīb, around these six books.
+    source: General usage.
+    see: [sahihayn]
+
+  - id: dataset
+    term: the dataset
+    arabic: hadith-kg
+    short: hadith-kg, the open corpus of 715,790 narrations in 425 books that this site is built from (CC-BY 4.0).
+    body: >-
+      Its narrator identifications, its grouping of narrations into reports, its narrator ratings
+      and its recorded grades are its editors' work. itibar computes on them and says so wherever
+      a number depends on them.
+    source: emadjumaah/hadith-kg on Hugging Face.
+    see: [report, recorded-grade]
+
+  - id: machine-translation
+    term: machine translation
+    arabic: ترجمة آلية
+    short: English produced by a language model from the Arabic, for orientation only; the Arabic beside it is the text.
+    body: >-
+      Report titles and texts, narrator names and book titles in English are machine-made unless
+      marked as a human translation (from HadeethEnc.com). Each item records what produced it.
+      None of it is read by any computation.
+    source: itibar's translation files (translations/).
+    see: [dataset]
+
+  - id: kappa
+    term: κ (kappa)
+    arabic: الاتصالية
+    short: The specialist's name for the number of independent lines (the vertex connectivity between the Prophet and the books).
+    body: >-
+      κ_lower is the smallest κ under three readings of uncertain identifications (namesakes
+      merged, kept apart, and links the narrators' dates make impossible removed).
+    source: Menger's theorem (1927).
+    see: [independent-lines]
+
+# Ibn Ḥajar's twelve levels (Taqrīb al-Tahdhīb, introduction). `meaning` is the plain-English sense;
+# `filter` is the lowest filter step that still keeps the level.
+levels:
+  1:  {badge: "Companion", name: Companion, arabic: صحابي, translit: ṣaḥābī,
+       meaning: "A companion of the Prophet. Companions are not rated; all are accepted."}
+  2:  {badge: "Highly trustworthy", name: "Trustworthy, of the highest rank", arabic: ثقة ثقة / ثقة حافظ, translit: "thiqa thiqa, ḥāfiẓ",
+       meaning: "Praised emphatically — trustworthy with a doubled or strengthened term, or a great memoriser (ḥāfiẓ)."}
+  3:  {badge: "Trustworthy", name: Trustworthy, arabic: ثقة / متقن / ثبت, translit: thiqa,
+       meaning: "Trustworthy: honest and accurate."}
+  4:  {badge: "Truthful", name: Truthful, arabic: صدوق / لا بأس به, translit: ṣadūq,
+       meaning: "Truthful: honest, with accuracy a little short of the trustworthy."}
+  5:  {badge: "Truthful, errs", name: "Truthful, but errs", arabic: صدوق يهم / سيء الحفظ, translit: ṣadūq yahim,
+       meaning: "Honest but makes mistakes, has a poor memory, or changed late in life."}
+  6:  {badge: "Acceptable", name: Acceptable when supported, arabic: مقبول, translit: maqbūl,
+       meaning: "Narrated little and nothing proven against him; accepted when another narrator supports him, otherwise soft (layyin)."}
+  7:  {badge: "Unknown standing", name: Of unknown standing, arabic: مستور / مجهول الحال, translit: mastūr,
+       meaning: "Known by name — more than one person narrated from him — but no critic declared him reliable."}
+  8:  {badge: "Weak", name: Weak, arabic: ضعيف, translit: ḍaʿīf,
+       meaning: "No critic declared him reliable and he was criticised, even if the critic did not say why."}
+  9:  {badge: "Unknown", name: Unknown, arabic: مجهول, translit: majhūl,
+       meaning: "Only one person narrated from him and no critic declared him reliable."}
+  10: {badge: "Abandoned", name: Abandoned, arabic: متروك, translit: matrūk,
+       meaning: "Never declared reliable and criticised with a damaging criticism; his narrations are set aside."}
+  11: {badge: "Accused of lying", name: Accused of lying, arabic: متهم بالكذب, translit: muttaham bi-l-kadhib,
+       meaning: "Accused of lying."}
+  12: {badge: "Liar", name: Liar, arabic: كذاب / وضاع, translit: kadhdhāb,
+       meaning: "Called a liar or a fabricator of hadith."}
+
+# The reliability filter, in words, keyed by the pipeline's threshold names.
+thresholds:
+  all:          {label: Everyone, phrase: "with everyone counted", levels: "every narrator"}
+  above_matruk: {label: Excluding abandoned narrators, phrase: "excluding abandoned narrators",
+                 levels: "levels 1–9: drops narrators rated abandoned, accused of lying or liars"}
+  saduq_up:     {label: Truthful and above, phrase: "with narrators rated truthful and above",
+                 levels: "levels 1–4"}
+  thiqa_up:     {label: Trustworthy only, phrase: "with trustworthy narrators only", levels: "levels 1–3"}
+
+# Ibn Ḥajar's twelve generations (Taqrīb, introduction), with his examples.
+generations:
+  1:  {badge: "Companion", name: Companions, arabic: الصحابة}
+  2:  {badge: "Highly trustworthy", name: Senior Successors, arabic: كبار التابعين, example: "Saʿīd b. al-Musayyab"}
+  3:  {badge: "Trustworthy", name: Middle Successors, arabic: الطبقة الوسطى من التابعين, example: "al-Ḥasan al-Baṣrī and Ibn Sīrīn"}
+  4:  {badge: "Truthful", name: Successors who narrate mostly from the senior Successors, arabic: تلي الوسطى, example: "al-Zuhrī and Qatāda"}
+  5:  {badge: "Truthful, errs", name: Junior Successors, arabic: الطبقة الصغرى من التابعين, example: "al-Aʿmash"}
+  6:  {badge: "Acceptable", name: Contemporaries of the junior Successors who met no companion, arabic: عاصروا الخامسة, example: "Ibn Jurayj"}
+  7:  {badge: "Unknown standing", name: Senior Followers of the Successors, arabic: كبار أتباع التابعين, example: "Mālik and al-Thawrī"}
+  8:  {badge: "Weak", name: Middle Followers of the Successors, arabic: الوسطى من أتباع التابعين, example: "Ibn ʿUyayna and Ibn ʿUlayya"}
+  9:  {badge: "Unknown", name: Junior Followers of the Successors, arabic: الصغرى من أتباع التابعين, example: "Yazīd b. Hārūn, al-Shāfiʿī and ʿAbd al-Razzāq"}
+  10: {badge: "Abandoned", name: Senior students of the Followers, arabic: كبار الآخذين عن تبع الأتباع, example: "Aḥmad b. Ḥanbal"}
+  11: {badge: "Accused of lying", name: Middle students of the Followers, arabic: الوسطى منهم, example: "al-Dhuhlī and al-Bukhārī"}
+  12: {badge: "Liar", name: Junior students of the Followers, arabic: صغار الآخذين عن تبع الأتباع, example: "al-Tirmidhī"}
+
+# Ibn Ḥajar's tiers of tadlīs (Ṭabaqāt al-Mudallisīn pp. 13–14), with what itibar does with each.
+tadlis_tiers:
+  1: {name: "Described with tadlīs only rarely", effect: "His “from” is accepted."}
+  2: {name: "Tolerated by the imams for his standing, or concealed only trustworthy teachers", effect: "His “from” is accepted."}
+  3: {name: "Did it often; accepted only where he states that he heard", effect: "An uncovered “from” is a light weakness another chain can repair."}
+  4: {name: "Did it often from weak and unknown narrators", effect: "An uncovered “from” is a weakness no other chain repairs."}
+  5: {name: "Also weakened for another reason", effect: "An uncovered “from” is a weakness no other chain repairs; his own rating applies besides."}
+
+# The grade classes as the rules name them (corroborate.RULE_CODES) and the source's code scale.
+grades:
+  sahih_li_dhatihi:  {term: ṣaḥīḥ li-dhātihi, arabic: صحيح لذاته, gloss: sound in itself, family: sahih}
+  sahih_li_ghayrihi: {term: ṣaḥīḥ li-ghayrihi, arabic: صحيح لغيره, gloss: sound through support, family: sahih}
+  hasan_li_dhatihi:  {term: ḥasan li-dhātihi, arabic: حسن لذاته, gloss: good in itself, family: hasan}
+  hasan_li_ghayrihi: {term: ḥasan li-ghayrihi, arabic: حسن لغيره, gloss: good through support, family: hasan}
+  daif:              {term: ḍaʿīf, arabic: ضعيف, gloss: weak, family: daif}
+codes:
+  0: {term: ṣaḥīḥ, arabic: صحيح, gloss: sound, family: sahih}
+  1: {term: ḥasan, arabic: حسن, gloss: good, family: hasan}
+  2: {term: ḍaʿīf, arabic: ضعيف, gloss: weak, family: daif}
+  3: {term: ḍaʿīf jiddan, arabic: ضعيف جدا, gloss: very weak, family: daif}
+  4: {term: matrūk, arabic: متروك, gloss: "abandoned — through a narrator accused of lying", family: daif}
+  5: {term: mawḍūʿ, arabic: موضوع, gloss: "fabricated — through a narrator called a liar", family: daif}
+
+number_classes:
+  gharib_mutlaq:   {term: gharīb muṭlaq, arabic: غريب مطلق, gloss: "singular at the root: one companion's line", glossary: gharib}
+  gharib_nisbi:    {term: gharīb nisbī, arabic: غريب نسبي, gloss: "singular further down: one line through a later narrator", glossary: gharib}
+  aziz:            {term: ʿazīz, arabic: عزيز, gloss: "two independent lines", glossary: aziz}
+  mashhur:         {term: mashhūr, arabic: مشهور, gloss: "three to nine independent lines", glossary: mashhur}
+  mutawatir_count: {term: mutawātir by count, arabic: متواتر, gloss: "ten or more independent lines", glossary: mutawatir}
