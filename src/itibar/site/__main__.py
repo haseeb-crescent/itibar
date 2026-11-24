@@ -32,6 +32,11 @@ DOWNLOADS = {
 }
 
 
+def recompress(con, select, target):
+    """The published Parquet: the same rows and columns, zstd at level 19 (D105)."""
+    con.execute(f"COPY ({select}) TO '{target.as_posix()}' (FORMAT parquet, COMPRESSION zstd, COMPRESSION_LEVEL 19)")
+
+
 def downloads(corpus, dest):
     dest.mkdir()
     files = {}
@@ -39,12 +44,12 @@ def downloads(corpus, dest):
         if out.stem in ("nodes", "edges") or out.stem in INTERMEDIATE:
             continue
         target = dest / out.name
-        shutil.copyfile(out, target)
+        recompress(corpus.con, f"SELECT * FROM read_parquet('{out.as_posix()}')", target)
         files[out.stem] = target
     for kind in ("nodes", "edges"):
         target = dest / f"{kind}.parquet"
         columns = "* EXCLUDE (bucket)" if "bucket" in corpus.con.table(kind).columns else "*"
-        corpus.con.sql(f"SELECT {columns} FROM {kind}").write_parquet(str(target), compression="zstd")
+        recompress(corpus.con, f"SELECT {columns} FROM {kind}", target)
         files[kind] = target
     ordered = [key for key in DOWNLOADS if key in files] + sorted(files.keys() - DOWNLOADS.keys())
     return [(files[key].name, f"{files[key].stat().st_size / 1_000_000:.2f} MB",

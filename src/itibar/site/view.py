@@ -792,10 +792,15 @@ def _plain(value):
     return value
 
 
+RECORD_SKIP = ("disjoint_routes_all", "nass")   # the routes are in receipt_structure; the opening is kept
+
+
 def record_json(record):
-    """The whole stored record, with its receipts parsed, for download."""
+    """The whole stored record, with its receipts parsed, for download (records.parquet has every column)."""
     out = {}
     for key, value in record.items():
+        if key in RECORD_SKIP:
+            continue
         if key in ("receipt", "receipt_v2", "receipt_structure") and isinstance(value, str):
             value = json.loads(value)
         out[key] = _plain(value)

@@ -22,7 +22,7 @@
 </header>
 
 <p class="identity">
-  {% if level and level.n == 1 %}A {{ t('companion', 'companion') }} of the Prophet.{% elif generation and generation.n <= 12 %}Of Ibn Ḥajar’s {{ t('generation', 'generation') }} {{ generation.n }}: {{ generation.name }}{% if generation.example %} (with {{ generation.example }}){% endif %}.{% elif generation %}A later transmitter ({{ t('generation', 'generation') }} {{ generation.n }}).{% endif %}
+  {% if level and level.n == 1 %}A {{ t('companion', 'companion') }} of the Prophet.{% elif generation and generation.n <= 12 %}Of Ibn Ḥajar’s {{ t('generation', 'generation') }} {{ generation.n }}: {{ generation.name }}.{% elif generation %}A later transmitter ({{ t('generation', 'generation') }} {{ generation.n }}).{% endif %}
   {% if died %} {{ died|replace('d. ', 'Died ') }}{% if died_at %} at {{ died_at }}{% endif %}.{% endif %}
   {% if lived %} Lived in {{ lived|join(', ') }}.{% endif %}
 </p>
