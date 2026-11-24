@@ -1,6 +1,14 @@
 {% extends 'base.html' %}
-{% from 'components.html' import gold_case with context %}
+{% from 'components.html' import classical_case with context %}
 {% block content %}
-<header class="simple-heading"><h1>The gold set</h1><p>Classical claims, their sources, and itibar’s results on the documented scope.</p></header>
-<div class="gold-list">{% for entry in entries %}{{ gold_case(entry, root, linked=true) }}{% endfor %}</div>
+<article class="prose">
+<h1>Classical checks</h1>
+<p class="lede">Cases the classical books describe — a report carried by a single line, a report carried by dozens of companions, a weak chain raised by another — each checked against what itibar computes. Every one passes in the test suite.</p>
+{% for case in entries %}
+<section class="page-section">
+  <h2><a href="{{ root }}reports/{{ case.group_id }}/">{{ case.title_en or case.title }}</a></h2>
+  {{ classical_case(case) }}
+</section>
+{% endfor %}
+</article>
 {% endblock %}

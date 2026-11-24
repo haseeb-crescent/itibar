@@ -1,62 +1,93 @@
 {% extends 'base.html' %}
-{% from 'components.html' import arab, report_links with context %}
+{% from 'components.html' import arab, t, mt_label with context %}
 {% block head %}{% if more %}<script type="module" src="{{ root }}assets/narrator.js"></script>{% endif %}{% endblock %}
+{% macro report_item(gid) %}
+{% set r = catalog[gid] %}
+<li><a href="{{ root }}reports/{{ gid }}/">{% if r.title_en %}<span class=en>{{ r.title_en }}</span>{% else %}<span lang=ar dir=rtl>{{ (r.opening or 'Report')[:90] }}{% if (r.opening or '')|length > 90 %}…{% endif %}</span>{% endif %}</a></li>
+{% endmacro %}
 {% block content %}
-<article>
-<header class="simple-heading">
-  <div class="eyebrow"><a href="{{ root }}search/">Narrators</a> <span class="middot">/</span> Narrator {{ person.id }}</div>
-  <h1 class="opening" lang="ar" dir="rtl">{{ name }}</h1>
-  {% if person.name and person.name != name %}<p class="other-name" lang="ar" dir="rtl">{{ person.name }}</p>{% endif %}
+<article class="narrator">
+<header class="person-head">
+  <p class="crumb"><a href="{{ root }}browse/#narrators">Narrators</a> <span aria-hidden="true">/</span> {{ person.id }}</p>
+  {% if en %}
+  <h1>{{ short if short and short != en else en }}</h1>
+  {% if short and short != en %}<p class="short">{{ en }}</p>{% endif %}
+  <p class="full-ar" lang="ar" dir="rtl">{{ person.name or ar }}</p>
+  {% if person.nickname and person.nickname != person.name %}<p class="quiet">Listed in the dataset as <bdi lang="ar" dir="rtl">{{ person.nickname }}</bdi>. <span class="provenance">{{ mt_label() }}</span></p>{% else %}<p class="provenance">{{ mt_label() }}</p>{% endif %}
+  {% else %}
+  <h1 lang="ar" dir="rtl">{{ ar }}</h1>
+  {% if person.name and person.name != ar %}<p class="full-ar" lang="ar" dir="rtl">{{ person.name }}</p>{% endif %}
+  <p class="provenance quiet">English name not yet available.</p>
+  {% endif %}
 </header>
-<div class="profile-grid">
-<section class="panel profile">
-  <h2>Narrator record</h2>
-  <dl class="pairs">
-    <dt>Death year</dt><dd>{{ death_date(person.death_year, person.death_year_raw) }}</dd>
-    <dt>Ṭabaqa</dt><dd>{{ person.tabaka or 'Unrecorded' }}</dd>
-    <dt>Taqrīb layer</dt><dd>{% if person.tabaka and person.tabaka <= 12 %}{{ person.tabaka }}{% elif person.tabaka %}Extended layer {{ person.tabaka }}{% else %}Unrecorded{% endif %}</dd>
-    <dt>Taqrīb level</dt><dd>{{ person.rank_no or 'Unrecorded' }}</dd>
-    <dt>Source label</dt><dd>{% if person.rank %}{{ arab(person.rank) }}{% else %}Unrecorded{% endif %}</dd>
-    <dt>Tadlīs tier</dt><dd>
-    {% if tier %}<a href="{{ tier_source }}">Tier {{ tier }} in Ibn Ḥajar</a>
-    {% elif person.has_tadlis %}Source flag · tier unrecorded{% else %}Unrecorded{% endif %}</dd>
-  </dl>
-  <details><summary>Source fields</summary><p>Hadith-kg <code>rawis</code> record {{ person.id }} supplies the names, dates, ṭabaqa and label. The confirmed <i>Ṭabaqāt al-Mudallisīn</i> list supplies any tier shown.</p></details>
-</section>
-<section class="panel profile" id="rulings">
-  <h2>Conditional rulings</h2>
-  {% if rulings %}
-    {% for ruling in rulings %}
-    <div class="ruling">
-      <h3>{{ ruling.kind | replace('_', ' ') | capitalize }}</h3>
-      <blockquote lang="ar" dir="rtl">{{ ruling.quote }}</blockquote>
-      <p><span dir="auto">{{ ruling.source_book }}</span>{% if ruling.link %} · <a href="{{ ruling.link }}">Source page</a>{% endif %}</p>
-      <p class="quiet">{% if ruling.observable %}Recorded effect <code>{{ ruling.effect }}</code>{% else %}Documented condition · Unobservable from the chain{% endif %}</p>
-    </div>
-    {% endfor %}
-  {% else %}<p class="quiet">No conditional rulings recorded in itibar’s list.</p>{% endif %}
-</section>
-</div>
-<section class="section" id="reports"><h2>Reports</h2>
-  <div class="role-grid">
-  {% for key, label in roles.items() %}
-    <section class="panel role-panel" id="{{ key }}">
-      <h3>{{ label }} <span class="count">{{ number(role_counts[key]) }}</span></h3>
-      {% if lists[key] %}{{ report_links(root, lists[key][:teaser], catalog) }}
-        {% if more.get(key) %}
-        <details class="more-reports" data-role="{{ key }}" data-pages="{{ more[key] }}">
-          <summary>More reports</summary><ul class="report-links"></ul>
-          <p class="more-status quiet" role="status"></p>
-          <div class="pagination" hidden><button type="button" data-prev>Previous</button><button type="button" data-next>Next</button></div>
-          <noscript><p>JavaScript is required to browse the remaining reports.</p></noscript>
-        </details>
-        {% endif %}
-      {% else %}<p class="quiet">No reports in this role.</p>{% endif %}
-    </section>
-  {% endfor %}
+
+<p class="identity">
+  {% if level and level.n == 1 %}A {{ t('companion', 'companion') }} of the Prophet.{% elif generation and generation.n <= 12 %}Of Ibn Ḥajar’s {{ t('generation', 'generation') }} {{ generation.n }}: {{ generation.name }}.{% elif generation %}A later transmitter ({{ t('generation', 'generation') }} {{ generation.n }}).{% endif %}
+  {% if died %} {{ died|replace('d. ', 'Died ') }}{% if died_at %} at {{ died_at }}{% endif %}.{% endif %}
+  {% if lived %} Lived in {{ lived|join(', ') }}.{% endif %}
+</p>
+
+<section class="page-section" id="rating">
+  <h2>{{ t('rating', 'Rating') }}</h2>
+  {% if level %}
+  <p><span class="badge lv{{ level.n }}">{{ level.badge }}</span> <strong>Level {{ level.n }} of 12:</strong> {{ level.name }}. {{ level.meaning }}</p>
+  <div class="scale lv{{ level.n }}" style="--lv:{{ level.n }}" role=img aria-label="Level {{ level.n }} on a scale from 1 (companion) to 12 (liar)"></div>
+  <p class=scale-ends><span>1 · companion</span><span>12 · liar</span></p>
+  {% if person.rank %}<p>The label in the dataset: {{ arab(person.rank) }}</p>{% endif %}
+  {% else %}<p class="quiet">The dataset gives no rating.</p>{% endif %}
+  {% if tier_words %}
+  <p>{{ t('tadlis', 'Tadlīs') }}: Ibn Ḥajar places him in <a href="{{ tier_source }}">tier {{ tier }}</a> — {{ tier_words.name|lower }}. {{ tier_words.effect }}</p>
+  {% elif person.has_tadlis %}<p>{{ t('tadlis', 'Tadlīs') }}: the dataset flags him as a mudallis; Ibn Ḥajar’s book does not list him, so he is treated as tier 3.</p>{% endif %}
+  {% for ruling in rulings %}
+  <div class="ruling">
+    <p><strong>{{ t('conditional-rating', ruling.words) }}</strong>: {{ ruling.effect_words }}.</p>
+    <blockquote lang="ar" dir="rtl">{{ ruling.quote }}</blockquote>
+    <p class="quiet"><span dir="auto">{{ ruling.source_book }}</span>{% if ruling.link %} · <a href="{{ ruling.link }}">source page</a>{% endif %}</p>
   </div>
-  <details class="standalone-details"><summary>How the report counts are read</summary>
-    <p>The lists use the narrator’s <code>on_path</code>, <code>cut_vertex</code> and <code>common_link</code> flags in the bundle nodes at the everyone threshold. Each linked report has the matching flag. On-route and cut-vertex counts include book-role occurrences.</p></details>
+  {% endfor %}
+</section>
+
+<section class="page-section" id="role">
+  <h2>His place in transmission</h2>
+  <dl class="role-counts">
+    <div><dt>{{ t('common-link', 'reports spread from him') }}</dt><dd>{{ number(role_counts.common) }}</dd></div>
+    <div><dt>{{ t('bottleneck', 'reports pass only through him') }}</dt><dd>{{ number(role_counts.cut) }}</dd></div>
+    <div><dt>reports he carries on a line</dt><dd>{{ number(role_counts.routes) }}</dd></div>
+  </dl>
+  {% for key, label in roles.items() %}
+  {% if lists[key] %}
+  <h3>{{ label }} <span class=quiet>({{ number(role_counts[key]) }})</span></h3>
+  <ul class=report-list>{% for gid in lists[key][:teaser] %}{{ report_item(gid) }}{% endfor %}</ul>
+  {% if more.get(key) %}
+  <details class="more-reports" data-role="{{ key }}" data-pages="{{ more[key] }}">
+    <summary>More</summary><ul class="report-list"></ul>
+    <p class="more-status quiet" role="status"></p>
+    <div class="pagination" hidden><button type="button" data-prev>Previous</button><button type="button" data-next>Next</button></div>
+  </details>
+  {% endif %}
+  {% endif %}
+  {% endfor %}
+</section>
+
+{% if teachers or students %}
+<section class="page-section" id="people">
+  <h2>Teachers and students</h2>
+  <p class="lede">Those he most often narrates from, and who most often narrate from him, across every report in the dataset (counted in reports).</p>
+  <div class="people-cols">
+    <div><h3>Teachers <span class="quiet">({{ number(n_teachers) }})</span></h3>
+      <ul class=people-list>{% for p in teachers %}<li>{{ p.html }} <span class=quiet>{{ number(p.reports) }}</span></li>{% else %}<li class="quiet">He is the first link in every chain he appears in.</li>{% endfor %}</ul></div>
+    <div><h3>Students <span class="quiet">({{ number(n_students) }})</span></h3>
+      <ul class=people-list>{% for p in students %}<li>{{ p.html }} <span class=quiet>{{ number(p.reports) }}</span></li>{% else %}<li class="quiet">No one narrates from him in these chains; he wrote the reports down himself.</li>{% endfor %}</ul></div>
+  </div>
+</section>
+{% endif %}
+
+<section class="page-section" id="critics">
+  <h2>What the critics said</h2>
+  {% if sayings %}
+  <p class="lede">{{ number(sayings|length) }} {{ 'statement' if sayings|length == 1 else 'statements' }} in the dataset, earliest critic first, quoted in the original Arabic.</p>
+  <ul class=sayings>{% for s in sayings %}<li class=saying><span class=critic-name>{% if s.critic %}{{ s.critic }}{% else %}{{ arab(s.critic_ar) }}{% endif %}</span><blockquote lang=ar dir=rtl>{{ s.text }}</blockquote></li>{% endfor %}</ul>
+  {% else %}<p class="quiet">The dataset records no critic’s statement about him.</p>{% endif %}
 </section>
 </article>
 {% endblock %}

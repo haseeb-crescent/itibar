@@ -19,16 +19,17 @@ for (const details of document.querySelectorAll(".more-reports")) {
     status.textContent = "Loading report links…";
     try {
       if (!cache.has(page)) cache.set(page, await readJson(`./reports/${role}-${page}.json.gz`));
-      const items = cache.get(page).map(([gid, opening]) => {
+      const items = cache.get(page).map(([gid, title, opening]) => {
         const item = el("li");
         const anchor = link(`${root}reports/${gid}/`);
-        anchor.append(opening ? arabic(opening) : el("span", "Report"), el("span", `#${gid}`, "quiet"));
+        if (title) anchor.append(el("span", title, "en"));
+        anchor.append(opening ? arabic(opening) : el("span", `Report ${gid}`));
         item.append(anchor);
         return item;
       });
       list.replaceChildren(...items);
       current = page;
-      status.textContent = `More reports · Page ${current} of ${pages}`;
+      status.textContent = `Page ${current} of ${pages}`;
       pagination.hidden = Number(pages) === 1;
     } catch {
       status.textContent = "The report links could not load. Reopen the list to try again.";

@@ -1,35 +1,39 @@
 {% extends 'base.html' %}
-{% from 'components.html' import lookup with context %}
+{% from 'components.html' import lookup, t with context %}
+{% block description %}<meta name="description" content="How each hadith reached the books, chain by chain: every chain of transmission drawn and explained, with the evidence behind every number.">{% endblock %}
 {% block content %}
-<section class="home-hero">
-  <p class="eyebrow">Hadith transmission atlas</p>
-  <h1>How hadith reached the books</h1>
-  <p class="home-intro">An isnad names the people who passed down a report. itibar brings those chains together so you can trace where a report’s routes converge, where they branch, and how each number was calculated.</p>
-  {{ lookup(root, 'corpus-query', large=true) }}
-  <p class="quiet">Explore {{ number(total) }} meaning groups, including {{ number(chained) }} with recorded chains.</p>
+<section class="hero">
+  <h1>How each hadith reached the books</h1>
+  <p>Every hadith comes with a chain of named people who passed it on. itibar draws all the chains of a report at once — {{ number(chained) }} reports from 425 books — and shows how many independent lines carry it, who it passed through, and what the classical rules make of its chains, with the evidence behind every number.</p>
+  {{ lookup(root, 'home-query', large=true) }}
 </section>
-{% if example %}
-<section class="worked">
-  <div>
-    <p class="eyebrow">Worked example</p>
-    <h2>Actions are only by intentions</h2>
-    <p>In the classical account through ʿUmar, the report passed through a single narrator for four generations before spreading among Yaḥyā ibn Saʿīd’s students.</p>
-    <p>itibar’s scoped gold-set check finds κ = <strong>{{ example.scoped['κ all'] }}</strong> after accounting for the documented deviations. The report page gives that check alongside the full bundle.</p>
-    <a class="button" href="{{ root }}reports/319/">Explore the intentions report</a>
-  </div>
-  <div class="worked-routes" aria-label="Classical route through Umar">
-    <div lang="ar" dir="rtl">النبي ﷺ</div>
-    <div lang="ar" dir="rtl">عمر بن الخطاب</div>
-    <div lang="ar" dir="rtl">علقمة بن وقاص</div>
-    <div lang="ar" dir="rtl">محمد بن إبراهيم التيمي</div>
-    <div lang="ar" dir="rtl">يحيى بن سعيد الأنصاري</div>
-    <div class="branch-ends"><span></span><span></span><span></span><span></span><span></span></div>
-  </div>
+
+{% if walk %}
+<section class="page-section" id="example">
+  <h2>One report in sixty seconds</h2>
+  <p class="lede">“Actions are only by intentions” opens the Ṣaḥīḥ of al-Bukhārī. Here is what its page tells you.</p>
+  <ol class="walk">
+    <li><div><h3>It is recorded {{ number(walk.row.n_chains) }} times</h3><p>The dataset holds {{ number(walk.row.n_chains) }} {{ t('chain', 'chains') }} for it in {{ number(walk.row.n_books) }} books, from al-Bukhārī and Muslim to late collections.</p></div></li>
+    <li><div><h3>Through one man in each early generation</h3>
+      <ul class="mini-chain"><li>the Prophet</li>{% for name in walk.line %}<li>{{ name }}</li>{% endfor %}<li class="fan">his students, and theirs</li></ul>
+      <p>{% if walk.kept %}{{ number(walk.kept) }} of its chains run{% else %}Its chains run{% endif %} through these four, one after another: a {{ t('gharib', 'gharīb') }} report, as Ibn Ḥajar describes it. It spreads only after {{ walk.last }}{% if walk.last_died %}, {{ walk.last_died }}{% endif %}.</p></div></li>
+    <li><div><h3>A few other lines</h3><p>Chains through three other companions also reach the books. Counted together, {{ walk.row.kappa_all }} {{ t('independent-lines', 'independent lines') }} share no narrator; keeping only narrators rated trustworthy, {{ walk.row.kappa_thiqa_up }} remain.</p></div></li>
+    <li><div><h3>Why the rules call it ṣaḥīḥ</h3><p>Its best chain is unbroken and every narrator on it is rated trustworthy or better, so the {{ t('classical-rules', 'classical rules') }} give {{ walk.grade }}.</p></div></li>
+    <li><div><h3>Every number has a receipt</h3><p>Each sentence on the page links to the steps that produced it, down to the individual chains.</p>
+      <p><a class="button primary" href="{{ root }}reports/{{ walk.row.group_id }}/">Open the report</a></p></div></li>
+  </ol>
 </section>
 {% endif %}
-<section class="home-links" aria-label="Explore the corpus">
-  <a href="{{ root }}method/"><h2>Method</h2><p>How the bundles, counts, and derived codes are built.</p></a>
-  <a href="{{ root }}gold/"><h2>Gold set</h2><p>Classical cases checked against the corpus.</p></a>
-  <a href="{{ root }}figures/"><h2>Figures</h2><p>Patterns across the corpus and the data behind them.</p></a>
+
+<section class="page-section" id="explore">
+  <h2>Explore</h2>
+  <div class="entry-points">
+    <a href="{{ root }}browse/#famous"><h3>Famous reports</h3><p>The classical examples: the single lines and the mass-transmitted.</p></a>
+    <a href="{{ root }}browse/#topics"><h3>By topic</h3><p>Faith, prayer, trade, the end of days — the dataset’s subject index.</p></a>
+    <a href="{{ root }}browse/#collections"><h3>By collection</h3><p>Al-Bukhārī, Muslim, the Sunan, the Musnads and 400 more books.</p></a>
+    <a href="{{ root }}browse/#narrators"><h3>By narrator</h3><p>The men and women from whom reports spread.</p></a>
+    <a href="{{ root }}glossary/"><h3>Glossary</h3><p>Every term on the site, in plain English.</p></a>
+    <a href="{{ root }}method/"><h3>Method and data</h3><p>How the numbers are computed, and the files to check them.</p></a>
+  </div>
 </section>
 {% endblock %}

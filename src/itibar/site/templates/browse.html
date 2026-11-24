@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% from 'components.html' import arab, t, report_card with context %}
+{% block description %}<meta name="description" content="How each hadith reached the books, chain by chain: every chain of transmission drawn and explained, with the evidence behind every number.">{% endblock %}
+{% block content %}
+<header class="hero"><h1>Browse</h1><p>Every report sits under a subject, in one or more books, and on the lines of its narrators. Start from any of them.</p></header>
+<nav class="glossary-index" aria-label="On this page"><a href="#famous">Famous reports</a><a href="#topics">Topics</a><a href="#collections">Collections</a><a href="#narrators">Notable narrators</a></nav>
+
+<section class="page-section" id="famous">
+  <h2>Famous reports</h2>
+  <p class="lede">The classical examples itibar checks against the books — the textbook cases of a single line and of mass transmission.</p>
+  <ul class="results">{% for c in famous %}{{ report_card(c) }}{% endfor %}</ul>
+  <h3>Narrated by the most companions</h3>
+  <ul class="results">{% for c in widest %}{{ report_card(c) }}{% endfor %}</ul>
+</section>
+
+<section class="page-section" id="topics">
+  <h2>Topics</h2>
+  <p class="lede">The dataset’s subject index, its top two levels.</p>
+  <ul class="topic-list">
+  {% for root_topic in roots %}
+    <li><strong>{{ root_topic.en or '' }}</strong> {{ arab(root_topic.name) }} <span class="count">{{ number(root_topic.count) }}</span>
+      <ul>{% for child in root_topic.children if child.count %}<li><a href="{{ root }}browse/topics/{{ child.id }}/">{{ child.en or child.name }}</a> <span class="count">{{ number(child.count) }}</span></li>{% endfor %}</ul>
+    </li>
+  {% endfor %}
+  </ul>
+</section>
+
+<section class="page-section" id="collections">
+  <h2>Collections</h2>
+  {% for group in groups %}
+  <h3>{% if group.term %}{{ t(group.term, group.label) }}{% else %}{{ group.label }}{% endif %}</h3>
+  <ul class="book-list">{% for b in group.books %}<li><a class="book-title" href="{{ root }}browse/collections/{{ b.id }}/">{{ b.title or b.ar }}</a> {% if b.title %}{{ arab(b.ar) }}{% endif %} <span class="nums">{{ number(b.count) }} reports</span></li>{% endfor %}</ul>
+  {% endfor %}
+</section>
+
+<section class="page-section" id="narrators">
+  <h2>Notable narrators</h2>
+  <p class="lede">The narrators from whom the most reports begin to spread — the {{ t('common-link', 'common links') }}.</p>
+  <ol class="people-list">{% for n in narrators %}<li><span>{{ n.html }} {% if n.died %}<span class="quiet">{{ n.died }}</span>{% endif %}</span><span class="quiet">{{ number(n.cl) }} reports</span></li>{% endfor %}</ol>
+</section>
+{% endblock %}

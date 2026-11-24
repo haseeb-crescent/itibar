@@ -42,21 +42,50 @@ def test_structure_receipts_certify_threshold_values_and_book_edges():
     assert mask["r3", "c1"] == 0b1111
 
 
+class PageCorpus(SimpleNamespace):
+    """The parts of site.data.Corpus the page builders read, over a hand-made record."""
+
+    def en(self, kind, key, source):
+        return None
+
+    def person(self, rid):
+        p = self.people.get(rid, {})
+        return (None, None, p.get("nickname") or str(rid))
+
+    def book(self, book_id):
+        return ("The Book", "Kitāb", self.books[book_id]["name"], "al-Muḥaddith")
+
+    def place(self, place):
+        return None
+
+    def places(self, rid):
+        return []
+
+    def critic(self, alem_id):
+        return "Ibn Maʿīn"
+
+    def sayings(self, rid):
+        return [{"alem_id": 1, "qawl": "ثقة"}]
+
+
 def test_report_and_narrator_page_builders(tmp_path):
     source = make_corpus({10: {"rank_no": 1}, 20: {"rank_no": 3}}, {1: {"author_no": 1, "compiler_rawi": 20}})
     attested = chain(1, 20, 10)
     result = pipeline.analyse_group(42, [attested], source, {"matn_no": 0})
-    result["chains"][0]["people"] = [{"rawi": 20, "word": None}, {"rawi": 10, "word": "عن"}]
+    result["chains"][0]["people"] = [{"rawi": 20, "word": None, "norm": None}, {"rawi": 10, "word": "عَنْ", "norm": "عن"}]
     result["chains"][0]["no_inbook"] = 1
     result["chains"][0]["recorded_grade"] = "صحيح"
-    book = {"id": 1, "name": "كتاب", "author_name": "محدث", "author_death_year": 120}
+    result["chains"][0]["group_id"] = 42
+    book = {"id": 1, "name": "كتاب", "author_name": "محدث", "author_death_year": 120, "tasnif_no": 1}
     person = {"id": 10, "name": "راو بن راو", "nickname": "راو", "rank_no": 1, "tabaka": 1,
               "rank": "صحابي", "death_year": 50}
-    row = {**result["record"], "opening": "أول الحديث"}
-    corpus = SimpleNamespace(
-        people={10: person}, books={1: book}, authors={1: book}, node=lambda node: "النبي" if node == "P" else str(node),
-        name=lambda rid: str(rid), gold=defaultdict(list), scale=grades.load(), verdicts={},
-        tiers={10: 2}, mudallis_sources={2: "https://shamela.ws/book/1186/9"},
+    row = {**result["record"], "opening": "أول الحديث", "recorded_label": "صحيح"}
+    corpus = PageCorpus(
+        people={10: person, 20: {"id": 20, "nickname": "المصنف", "rank_no": 3, "tabaka": 11}},
+        books={1: book}, authors={1: book}, node=lambda node: "النبي" if node == "P" else str(node),
+        name=lambda rid: str(rid), gold=defaultdict(list), scale=grades.load(), verdicts={}, human={},
+        tiers={10: 2}, mudallis_sources={2: "https://shamela.ws/book/1186/9"}, critics={1: {"known": "ابن معين"}},
+        teachers=defaultdict(list), students=defaultdict(list, {10: [{"teacher": 10, "student": 20, "reports": 1, "chains": 1}]}),
         rulings={10: [{"kind": "from_shaykh", "quote": "قول الناقد", "observable": True,
                        "effect": "level:4", "source_book": "الكتاب",
                        "citation": "[شاهد](https://shamela.ws/book/8609/549)"}]},
@@ -65,15 +94,18 @@ def test_report_and_narrator_page_builders(tmp_path):
                       "sanad_id": attested.sanad_id, "chain_code": 0, "chain_grade": "صحيح", "hukum": "قول المصدر"}
     references = [{"book_id": 1, "no_inbook": 1}]
     pages = Pages(tmp_path)
-    edges = [{**edge, "weight": len(edge["sanad_ids"])} for edge in result["edges"]]
+    edges = [{**edge, "weight": len(edge["sanad_ids"]), "sanad_ids": list(edge["sanad_ids"])} for edge in result["edges"]]
     args = (row, result["nodes"], edges, references, representative, result["chains"], {10})
     pages.report(corpus, *args)
     report_path = tmp_path / "reports/42/index.html"
     html = report_path.read_text()
-    assert "نص الحديث" in html and "قول المصدر" in html
-    assert "Derived by itibar" in html and "Recorded by hadith-kg" in html
-    assert "What the critics said" not in html
-    assert json.loads(gzip.decompress((report_path.parent / "chains.json.gz").read_bytes()))["words"] == [None, "عن"]
+    assert "نص الحديث" in html and "At a glance" in html and "Why this grade" in html
+    assert "By the classical rules, from the narrators’ ratings" in html and "Recorded in the dataset" in html
+    assert "What the critics said" not in html and "@root/" not in html
+    for part in ("story.json.gz", "record.json.gz", "chains.json.gz", "graph.json.gz"):
+        assert (report_path.parent / part).is_file()
+    chains = json.loads(gzip.decompress((report_path.parent / "chains.json.gz").read_bytes()))
+    assert chains["words"] == [None, "عَنْ|from"]
 
     file = tmp_path / "verdicts.parquet"
     assert read_verdicts(file) == {}
@@ -84,30 +116,36 @@ def test_report_and_narrator_page_builders(tmp_path):
     corpus.verdicts = read_verdicts(file)
     pages.report(corpus, *args)
     html = report_path.read_text()
-    assert "What the critics said" in html and "al-Tirmidhī" in html and "Matched" in html
+    assert "What the critics said" in html and "al-Tirmidhī" in html
     assert "قال الناقد &lt;mark&gt;" in html and "Unlinked quote" not in html
 
-    pages.narrator(corpus, 10, [{"group_id": 42, "common_link": False, "cut_vertex": True}], {}, {42: row})
+    catalog = {42: {**row, "title_en": "The opening", "n_chains": 1}}
+    pages.narrator(corpus, 10, [{"group_id": 42, "common_link": False, "cut_vertex": True}], {}, catalog, {10: [], 20: []})
     html = (tmp_path / "narrators/10/index.html").read_text()
-    assert "50 AH" in html and "Tier 2" in html and "قول الناقد" in html
-    assert "https://shamela.ws/book/8609/549" in html and "../../reports/42/" in html
+    assert "50 AH" in html and "tier 2" in html and "قول الناقد" in html and "Ibn Maʿīn" in html
+    assert "https://shamela.ws/book/8609/549" in html and "../../reports/42/" in html and "The opening" in html
 
     pages.report(corpus, {"group_id": 0, "status": "no_chains", "opening": "غير منشور"},
                  [], [], [], {}, [], set())
     html = (tmp_path / "reports/0/index.html").read_text()
-    assert "No chains recorded" in html and "Transmission bundle" not in html
+    assert "no chains" in html and "How it reached the books" not in html
 
 
 def test_search_index_reads_titles_text_names_and_citations(tmp_path):
     index = SearchIndex()
-    index.report(319, "إِنَّـمَا الأَعْمَالُ", "بالنِّيَّات", [{"book_id": 1, "no_inbook": 1}])
-    index.narrator(8272, "يحيى بن سعيد", "يحيى بن سعيد الأنصاري")
-    assert index.postings["انما"] == [319 * 2 + 1]
-    assert index.postings["بالنيات"] == [319 * 2]
-    assert index.postings["الانصاري"] == [-8272 * 2 + 1]
-    assert index.citations["1"] == {(1, 319)}
-    index.write(tmp_path, {1: {"name": "صحيح البخاري", "author_name": "محمد بن إسماعيل البخاري"}})
-    assert "bukhari" in json.loads((tmp_path / "books.json").read_text())["1"][1]
+    index.report(0, 319, [319, "Actions are only by intentions"], [{"book_id": 1, "no_inbook": 1}],
+                 opening="إِنَّـمَا الأَعْمَالُ", variants=["إنما الأعمال بالنية"], text="بالنِّيَّات",
+                 english=["Actions are only by intentions"], english_body=["Each person will have what he intended"])
+    index.narrator(0, 8272, [8272, "Yaḥyā b. Saʿīd"], ("يحيى بن سعيد", "يحيى بن سعيد الأنصاري"), ("Yaḥyā b. Saʿīd al-Anṣārī",))
+    assert index.postings["انما"] == {1} and index.postings["بالنيه"] == {1} and index.postings["بالنيات"] == {0}
+    assert index.postings["intention"] == {1} and index.postings["person"] == {0}
+    assert index.postings["الانصاري"] == {-1 * 2 + 1} and index.postings["ansari"] == {-1}
+    assert index.citations["1"] == {(1, 0)}
+    index.write(tmp_path, {1: {"name": "صحيح البخاري", "author_name": "محمد بن إسماعيل البخاري",
+                               "english": ["Ṣaḥīḥ al-Bukhārī"], "title": "Ṣaḥīḥ al-Bukhārī"}})
+    books = json.loads((tmp_path / "books.json").read_text())
+    assert "bukhari" in books["1"][1] and "sahih al bukhari" in books["1"][1]
+    assert json.loads((tmp_path / "meta.json").read_text())["reports"] == 1
 
 
 @pytest.mark.skipif(shutil.which("node") is None, reason="Node is required for browser normalization parity")

@@ -780,3 +780,171 @@ queries covering opening, full text, name, and Arabic and English citations retu
 819–826 ms on a 390-pixel Chrome viewport with 4× CPU throttling, 100 ms latency, and 4 Mbit/s
 download. The alternative was a single browser search index that loads all text and titles
 up front.
+
+## The reading layer (`docs/prompts/site-ux.md`; D97–D105)
+
+The critics' check (PR 7, built in parallel) takes D83–D96; these entries start at D97.
+
+**D97. Information architecture: an answer first, evidence after.** A report page reads top to bottom as
+the brief orders it: the English title, the Arabic opening and the major collections as chips; *At a glance*
+(four tiles and three to six sentences); *How it reached the books* (the story view); *Why this grade*;
+*Where it is recorded* (books in four groups, only the first open); *All chains*; *Classical notes*; *For
+specialists*. Each sentence of *At a glance* ends in a link to the section that computes it, and every
+number in it is a stored value restated. Hierarchy comes from type and rules between sections, not panels.
+Narrator pages follow the same order — who he was, his rating on the twelve-step scale, his place in
+transmission, teachers and students, the critics' statements. Browse (topics, collections, notable
+narrators, famous reports) is a page of its own, and every topic and collection has a list page.
+The alternative was to keep PR 7's single scroll and add a summary panel above it; the long book list and
+the specialists' tables would still stand between a reader and the chains. Tabs were rejected too: they
+hide the order of the argument and break find-in-page.
+
+**D98. The story view.** A report's bundle is drawn as rows of generations (`src/itibar/site/story.py`):
+compiler nodes contracted so that chains run from their last narrator into the book; a row of at most six
+narrators named in full; a wider row names its marked narrators (cut vertices at any threshold, common
+links) and anyone carrying a quarter of the row's chains, and groups the rest by the item above them that
+most of their chains come through ("8 students of Yaḥyā b. Saʿīd"); once two successive rows have been
+grouped, everything below is folded into one band per anchor ("Yaḥyā b. Saʿīd's line: 501 narrators,
+generations 7–30"); then the books, the nine major collections by name. Links carry the chain count
+(drawn as thickness) and their threshold mask. The independent lines are the receipts' stored maximum sets
+of vertex-disjoint routes at each threshold (`receipt_structure.<threshold>[0].data.routes`, persisted
+since PR 7, D80), mapped onto the items they pass through and drawn in colour; nothing is recomputed.
+The filter sentence restates κ at the step, names the minimum cut when it is small (Menger: every
+remaining line passes through one of them), and lists the companions whose chains no longer reach a book
+at that step (reachability over the stored edge masks) with the first narrator on their heaviest path
+who falls below it. Where a gold check scopes a report (319 through ʿUmar), the scoped cut vertices are
+marked "single line" with the scope in the tooltip, and *At a glance* says the scoped count beside the
+whole count (D99). The browser lays chips out with CSS and draws the links in an SVG behind them, so names
+never overlap and rows wrap on a phone. The full canvas graph (PR 7) stays in *For specialists*, loaded
+when opened. Alternatives: a Sankey layout (flows merge and split cleanly but cannot name 500 narrators or
+show skipped generations), and the full graph with labels on demand (PR 7's view: correct, unreadable).
+
+**D99. Sentences by template; scoped numbers in words; grades attributed.** `src/itibar/site/view.py`
+writes every sentence from the record with fixed templates — no model, the same output on every build.
+A gold check's scoped result is stated next to the whole count: for 319, "The classical account counts only
+the chains through ʿUmar. Counting those 335 chains less 14 documented deviations, itibar finds 1
+independent line, through ʿUmar, ʿAlqama, al-Taymī and Yaḥyā b. Saʿīd one after another. The other 21
+chains through other companions are outside that account." Grades are always the classical term, its
+Arabic, a gloss and an attribution: "By the classical rules, from the narrators' ratings: ṣaḥīḥ li-dhātihi
+(sound in itself)" and "Recorded in the dataset: ṣaḥīḥ (sound) — the grade the dataset's editors attached
+to the report" (worded so that PR 7's finding, that the recorded grade is produced from narrator ratings
+by the dataset's editors, can be added as one more sentence). *Why this grade* draws the ruleset's best
+chain from the Prophet to the book with a rating badge per narrator, marks the positions the receipt names
+as weak, says the rule in one sentence per rule class (`RULE_SENTENCE`), and draws each witness chain the
+same way with its divergence class glossed; the two readings appear separately only when Ibn Ḥajar's and
+Ibn al-Ṣalāḥ's differ in rule, code or chain. CI rejects any page whose text says "this hadith/report is
+…" with a grade word. The alternative — generated prose summaries — was ruled out by the brief and by the
+standing rule: a template can be audited against the record, a model's paraphrase cannot.
+
+**D100. The glossary is hand-written; the interface shows no internal identifier.** `config/glossary.yaml`
+holds 43 terms (term, Arabic, transliteration, a one-sentence definition, a paragraph, where it comes
+from, related terms), the twelve Taqrīb levels (a short badge name, the level name, the Arabic terms, the
+meaning in plain English), Ibn Ḥajar's twelve generations with his examples, the five tiers of tadlīs with
+what itibar does with each, the four filter steps, and the grade and number-class terms. The glossary page
+renders it; every term in the interface links to its entry and shows the definition on hover, focus or a
+first tap (`assets/glossary.js`, from `assets/glossary.json`). The translation prompt includes the terms'
+spellings. `make site-check` scans the visible text of report, narrator, browse, home, search, glossary
+and classical-check pages for identifiers (`sahih_li…`, `_v2`, `v1`, `ordinal`, `kappa_`, rule and class
+keys, "None recorded"), for κ before the specialists' section, and for verdicts in the site's voice; a test
+asserts that every glossary id the templates and `view.py` link to exists. The method, residue, figures and
+downloads pages document the data and keep its column names. The alternative was definitions inline in
+the page text, which repeats the same paragraph on 20,000 pages and still leaves terms undefined where they
+recur.
+
+**D101. Human translations: HadeethEnc, joined; not sunnah.com or re-hosted publishers' text.**
+HadeethEnc's "Terms and Policies" (https://hadeethenc.com/en/home, the download section) allow the
+translations to be "downloaded and republished" provided the content is not modified, added to or deleted
+from, the publisher and source (HadeethEnc.com) are named, the version is stated, and no inappropriate
+advertisement is shown. itibar shows a matched item's English text verbatim, as a separate block headed
+"A human translation of this report", with "From HadeethEnc.com … reproduced unmodified; retrieved
+<date>" and a link to the item; its title, where it exists, is the report's English title (credited the
+same way). The API (v1) carries no per-item version number, so the retrieval date and the API version
+stand in for it; `make hadeethenc-fetch` re-reads the source when they update, as their terms ask. The site
+has no advertisements. HadeethEnc's own grade and explanation are not shown (they are its verdicts, and the
+site shows only attributed classical terms). `make hadeethenc-fetch` walks the category list and fetches
+each English item once at about one request every two seconds (2,328 items), writing
+`translations/source/hadeethenc_en.jsonl`; `make hadeethenc` joins each item to the group whose recorded
+texts share the most idf weight with its Arabic (lists.normalize tokens; at least 60% of the item's weight
+and 15 points clear of the next group), keeping one item per group: of the 2,328 items, 1,281 match clearly,
+and 1,090 reports carry a human translation (a sample of matches read by hand were all the right report). sunnah.com's English is the publishers'
+(Darussalam and others) under copyright and its site is not licensed for scraping; the GitHub repositories
+that re-host those translations carry no licence from the publishers, so neither is used. The alternative
+was machine translation only; human translations, where their terms allow, are better English and carry
+their own accountability.
+
+**D102. The translation files are the contract; a session or an API run may produce them.** (Amended in
+the session: there is no API key.) `translations/<kind>.parquet` — kinds `book`, `topic`, `place`,
+`critic`, `narrator`, `opening`, `text` — holds one row per item: `key`, the Arabic `source` exactly as
+read, `source_sha` (sha256, 16 hex), `en`, `extra` (JSON: short name, transliterated title, author),
+`producer` (`session:<date>:<label>` or `api-batch:<batch id>`), `model`, `prompt_sha` (the fixed prompt,
+the kind's instruction and the glossary's spellings) and `created`. Every producer writes through
+`python -m itibar.translate import`, which accepts an item only if its key exists for the current outputs,
+its `source_sha` matches the current Arabic and its kind's fields are non-empty; an item whose source
+later changes is stale and never shown. `translate pending` writes the missing items as JSONL work sets
+with the prompt (`PROMPTS.md`) for a session; `make translate` is the optional Message Batches path
+(structured JSON output, the system prompt cached, `uv sync --extra translate`); nothing else imports the
+`anthropic` package and nothing computed reads the files — only the site does, labelled "Machine
+translation · the Arabic is the text", always beside the Arabic. Which text is translated per report is
+the page's representative text (the hadith carrying the best single chain, else the first by book and
+number), keyed `group:hadith`. This PR fills the fixture's items in a Claude session
+(`producer = session:2026-11-23:itibar-site-ux`, model `claude-opus-5-5`): 425 books, 375 level-1 and
+level-2 topics, 743 places, 871 critics, the 11,476 narrators on a route in the fixture's reports, and the
+351 openings and 348 representative texts of its reports. The second pass (`make translate-sample`, `make
+translate-checks`) drew 200 items at random from the 14,589 (160 narrators, 13 critics, 8 texts, 6 openings,
+6 places, 5 books, 2 topics) and had a separate session, which had not produced them, check each against the
+Arabic and the source records: 195 correct, 5 minor (two village vowellings, a critic's common name, a critic's
+nisba, an opening cut short), none wrong; the five were corrected (producer `session:2026-11-23:itibar-site-ux-check`)
+and the verdicts are in `translations/checks.parquet`. The translators also listed the items they were unsure
+of — mostly corrupt or rare spellings in the source names — and kept "en" as written where the source and the
+narrator's fuller record disagree. A later session fills the rest of the corpus
+into the same files. The alternative — translating at build time — would make the site depend on a model
+and a key, and would change the English between builds.
+
+**D103. Search over English and Arabic, ordered by spread.** One box (`src/itibar/site/search.py`,
+`assets/search.js`). Arabic: `lists.normalize`, every query word must match, as in PR 7, now over each
+report's 30 most frequent distinct openings as its books record them (`hadiths.taraf_nass`) as well as the
+representative text, so «من كذب علي متعمدا» finds report 1 though its listed opening is «لا تكذبوا علي».
+English: lower case, accents and ʿ/ʾ removed, a short stop list and light suffix stripping (version 1,
+mirrored in `normalizer.mjs`, parity tested), over the English titles and texts (machine and HadeethEnc),
+the transliterated narrator names and the book titles; a document must contain most of the query's words
+(all of one or two). Documents are numbered by spread — reports by their number of chains, narrators by
+the number of reports they are on a line of — and matches are ranked by the number of query words found
+(Arabic: then words in an opening), then by that number, so among equally good matches the famous report
+comes first and the best results sit in the first document shards. Result cards carry the English title,
+the Arabic opening, the major collections, the independent lines (with the trustworthy-only count), the
+classical term of the best chain and the number class; filters for topic, collection, grade and number
+class apply to the best 600 matches in the browser. A query naming a book links its collection page.
+The alternative, a client-side full-text library (lunr, MiniSearch) over a single index, loads the whole
+index before the first result.
+
+**D104. Teachers and students.** `make narrators` also writes `out/narrator_links.parquet`: every
+on-route link between two narrators over all bundles, counted in reports and chains (274,889 pairs).
+Narrator pages list the eight teachers and eight students carrying the most reports. A compiler's link
+into his own book is not a pair.
+
+**D105. The size budget after the redesign.** The first full build of the new pages measured 1.27 GB, over
+GitHub Pages' 1 GB: report HTML had grown from 14 to 24 KB a page and narrator pages from 4.6 to 6.7 KB, and
+each report gained a story file. What brought it back, without dropping a page or a number: the receipts'
+list, the full-graph controls and the tree's filter controls are built by the script that needs them (they do
+nothing without it); the text outline of the tree is rendered from the story file in the browser (screen
+readers run scripts; without one, *At a glance* and *For specialists* state the same numbers); a small
+minifier collapses indentation and unquotes simple attribute values on every page (`pages.minify`, `<pre>`
+untouched); a shorter shared header and footer (65,000 pages carry them); name tooltips only where a name
+stands alone; narrator pages list three reports per role and five teachers and students, the rest paged as
+before; group members described in the story file capped at twelve and drawn lines at eight; the full graph of a
+report that has routes holds its on-route nodes only (the off-route view stays for the reports with no route,
+where it is the only drawing); `out/matn_tokens.parquet` and `out/matn_vocab.parquet`, the shāhid overlap's
+intermediate inputs that `make matn` rebuilds, are no longer copied to Downloads, and the published Parquet
+files are written with zstd at level 19 (the same rows and columns, a quarter smaller); a report's JSON record
+omits the two fields it repeats (`disjoint_routes_all`, in its structural receipt, and `nass`); the meta
+description is kept on the home, search, browse and glossary pages only. Measured full tree:
+**948,494,626** bytes in 180,352 files (65,603 HTML pages), with the full HadeethEnc join (reports 552,724,980, narrators 282,707,901, downloads 69,655,332,
+search 18,658,523, browse 24,206,367). The English for the rest of the corpus, filled later, adds
+titles, texts and names in place of Arabic-only pages; comparing the translated fixture's pages with untranslated
+pages of the same size puts the growth at about 7 MB for reports, 6 MB for narrators and some 5–10 MB of search
+index, about 20 MB in all; `make
+site-check` fails the build before it can exceed the cap, and the remaining levers are listed here in order of
+size: the per-report full graph (60 MB), record JSON (77 MB), Downloads (84 MB). When PR 7's verdicts land,
+each report's critics' panel shows at most six remarks (about 10 MB in all). The page budgets are unchanged
+except that a report's initial load is now its HTML and its story file (the full graph loads when opened).
+The alternative — publishing fewer narrator pages, or moving Downloads to a release — changes what the site
+offers; the cuts above change only how it is written.

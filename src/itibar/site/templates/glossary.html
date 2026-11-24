@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block description %}<meta name="description" content="How each hadith reached the books, chain by chain: every chain of transmission drawn and explained, with the evidence behind every number.">{% endblock %}
+{% block content %}
+<article class="prose glossary">
+<h1>Glossary</h1>
+<p class="lede">The words this site uses, in plain English, with the Arabic and where each comes from. Every term on the site links here; hover or tap it for the short definition.</p>
+<nav class="glossary-index" aria-label="Terms">{% for term in terms %}<a href="#{{ term.id }}">{{ term.term }}</a>{% endfor %}<a href="#levels">the twelve levels</a><a href="#generations">the twelve generations</a><a href="#tiers">tiers of tadlīs</a></nav>
+<dl class="terms">
+{% for term in terms %}
+<div class="entry" id="{{ term.id }}">
+  <dt>{{ term.term }}{% if term.arabic %} <bdi lang="ar" dir="rtl">{{ term.arabic }}</bdi>{% endif %}{% if term.translit and term.translit != term.term %} <span class="quiet">{{ term.translit }}</span>{% endif %}</dt>
+  <dd><p><strong>{{ term.short }}</strong></p>{% if term.body and not term.body.startswith('See ') %}<p>{{ term.body }}</p>{% endif %}
+  <p class="source">From: {{ term.source }}</p>
+  {% if term.see %}<p class="see-also">See also: {% for id in term.see %}<a href="#{{ id }}">{{ (terms | selectattr('id', 'equalto', id) | first).term }}</a>{% if not loop.last %}, {% endif %}{% endfor %}</p>{% endif %}</dd>
+</div>
+{% endfor %}
+</dl>
+<h2 id="levels">The twelve levels of narrator rating</h2>
+<p>Ibn Ḥajar’s scale in <cite>Taqrīb al-Tahdhīb</cite>, from the companions (1) to liars (12). A narrator’s level is the critics’ verdict on him as the dataset records it.</p>
+<table class="levels">
+<thead><tr><th scope="col">Level</th><th scope="col">In English</th><th scope="col">The Arabic terms</th><th scope="col">What it means</th></tr></thead>
+<tbody>{% for n, level in levels.items() %}<tr><td class="n">{{ n }}</td><td><span class="badge lv{{ n }}">{{ level.name }}</span></td><td><bdi lang="ar" dir="rtl">{{ level.arabic }}</bdi> <span class="quiet">{{ level.translit }}</span></td><td>{{ level.meaning }}</td></tr>{% endfor %}</tbody>
+</table>
+<p>The filter in each report’s tree counts lines with <strong>everyone</strong>; <strong>excluding abandoned narrators</strong> (levels 1–9); <strong>truthful and above</strong> (levels 1–4); or <strong>trustworthy only</strong> (levels 1–3).</p>
+<h2 id="generations">The twelve generations</h2>
+<p>Ibn Ḥajar’s generations (<i>ṭabaqāt</i>), with his examples. The dataset continues the count for later narrators, roughly one generation every 25 years.</p>
+<ol class="generations">{% for n, g in generations.items() %}<li value="{{ n }}"><strong>{{ g.name }}</strong> <bdi lang="ar" dir="rtl">{{ g.arabic }}</bdi>{% if g.example %} <span class="quiet">— e.g. {{ g.example }}</span>{% endif %}</li>{% endfor %}</ol>
+<h2 id="tiers">The tiers of tadlīs</h2>
+<p>Ibn Ḥajar, <cite>Ṭabaqāt al-Mudallisīn</cite>: narrators known for saying “from” of what they did not hear directly, in five tiers.</p>
+<ol class="tiers">{% for n, tier in tiers.items() %}<li value="{{ n }}"><strong>{{ tier.name }}.</strong> {{ tier.effect }}</li>{% endfor %}</ol>
+</article>
+{% endblock %}

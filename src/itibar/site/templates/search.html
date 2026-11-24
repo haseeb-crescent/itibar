@@ -1,13 +1,22 @@
 {% extends 'base.html' %}
 {% from 'components.html' import lookup with context %}
 {% block head %}<script type="module" src="{{ root }}assets/search.js"></script>{% endblock %}
+{% block description %}<meta name="description" content="How each hadith reached the books, chain by chain: every chain of transmission drawn and explained, with the evidence behind every number.">{% endblock %}
 {% block content %}
-<header class="simple-heading"><h1>Search the corpus</h1>{{ lookup(root, 'query', large=true) }}</header>
+<header class="hero"><h1>Search</h1>
+<p>Type a few words of a hadith in English or Arabic, a narrator’s name, a book title, or a book and number (“Bukhari 1”).</p>
+{{ lookup(root, 'query') }}</header>
 <div id="search-results">
-  <p id="search-status" class="quiet" aria-live="polite">Try a few words, a name, or a citation.</p>
-  <ul class="search-examples"><li><a href="?q=إنما+الأعمال">إنما الأعمال</a></li><li><a href="?q=يحيى+بن+سعيد">يحيى بن سعيد</a></li><li><a href="?q=Bukhari+1">Bukhari 1</a></li></ul>
-  <ul class="search-list"></ul>
-  <div class="pagination" hidden><button type="button" data-prev>Previous</button><span></span><button type="button" data-next>Next</button></div>
-  <noscript><p>Search requires JavaScript. You can browse reports from the <a href="{{ root }}gold/">gold set</a>.</p></noscript>
+  <div class="search-filters" hidden>
+    <label>Show <select data-filter="kind"><option value="reports">Reports</option><option value="narrators">Narrators</option></select></label>
+    <label>Topic <select data-filter="topic"><option value="">Any</option></select></label>
+    <label>Collection <select data-filter="book"><option value="">Any</option></select></label>
+    <label>Grade of the best chain <select data-filter="grade"><option value="">Any</option><option value="sahih">ṣaḥīḥ</option><option value="hasan">ḥasan</option><option value="daif">ḍaʿīf and below</option></select></label>
+    <label>Number class <select data-filter="class"><option value="">Any</option></select></label>
+  </div>
+  <p id="search-status" class="quiet" aria-live="polite">Try: <a href="?q=actions+are+judged+by+intentions">actions are judged by intentions</a> · <a href="?q=من+كذب+علي+متعمدا">من كذب علي متعمدا</a> · <a href="?q=al-Zuhri">al-Zuhrī</a> · <a href="?q=Bukhari+1">Bukhari 1</a></p>
+  <ul class="results search-list"></ul>
+  <div class="pagination" hidden><button type="button" data-prev>Previous</button> <span></span> <button type="button" data-next>Next</button></div>
+  <noscript><p>Search needs JavaScript. <a href="{{ root }}browse/">Browse</a> works without it.</p></noscript>
 </div>
 {% endblock %}

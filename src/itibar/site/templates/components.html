@@ -1,9 +1,10 @@
-{% macro arab(value, class='') %}<bdi lang="ar" dir="rtl" class="{{ class }}">{{ value }}</bdi>{% endmacro %}
+{% macro arab(value, class='') %}<bdi lang=ar dir=rtl{% if class %} class="{{ class }}"{% endif %}>{{ value }}</bdi>{% endmacro %}
 {% macro lookup(root, input_id, value='', large=false) %}
 <form class="lookup{% if large %} lookup-large{% endif %}" action="{{ root }}search/" role="search">
-  <label for="{{ input_id }}">Search by Arabic text, narrator, or book and hadith number</label>
-  <div><input id="{{ input_id }}" type="search" name="q" dir="auto" autocomplete="off" maxlength="180"
-              placeholder="إنما الأعمال · البخاري ١" value="{{ value }}" required><button>Search</button></div>
+  <label for="{{ input_id }}">Search in English or Arabic</label>
+  <input id="{{ input_id }}" type="search" name="q" dir="auto" autocomplete="off" maxlength="180"
+         placeholder="actions are by intentions · إنما الأعمال · al-Zuhrī" value="{{ value }}" required>
+  <button>Search</button>
 </form>
 {% endmacro %}
 {% macro chain_link(root, id, other=none) -%}
@@ -54,4 +55,43 @@
 <li><a href="{{ root }}reports/{{ gid }}/">{{ arab(catalog[gid].opening or 'Report') }}<span class="quiet">#{{ gid }}</span></a></li>
 {% endfor %}
 </ul>
+{% endmacro %}
+{% macro t(id, text) -%}
+<a class=term href="{{ root }}glossary/#{{ id }}">{{ text }}</a>
+{%- endmacro %}
+{% macro mt_label() -%}
+<span class="mt">{{ t('machine-translation', 'Machine translation') }} · the Arabic is the text</span>
+{%- endmacro %}
+{% macro rating(level, label=none) -%}
+{% if level %}<span class="badge lv{{ level.n }}"{% if label %} title="{{ label }}"{% endif %}>{{ level.badge }}</span>{% endif %}
+{%- endmacro %}
+{% macro chain_strip(chain, weak) %}
+<ol class="chain-strip" aria-label="Chain {{ chain.sanad }} from the Prophet to the book">
+  <li class=link-prophet>the Prophet</li>
+  {% for p in chain.people %}<li{% if p.node in weak %} class=weak{% endif %}>{{ p.html }} {% if p.role == 'book' %}<span class="badge compiler">compiler</span>{% elif p.role != 'gap' %}{{ rating(p.level, p.label) }}{% endif %}{% if p.node in weak %} <span class=weak-mark>weak point</span>{% endif %}</li>
+  {% endfor %}
+  <li class=link-book>{{ chain.book }}{% if chain.number %} <span class=quiet>no. {{ chain.number }}</span>{% endif %}</li>
+</ol>
+{% endmacro %}
+{% macro classical_case(case) %}
+<div class="case" id="{{ case.id }}">
+  {% for source in case.source %}
+  <p class="case-claim"><span class="who">{{ source.author }}, <cite>{{ source.work }}</cite>:</span> {{ source.claim }}{% if source.url and clean_url(source.url) %} <a href="{{ source.url }}">Source text</a>{% endif %}</p>
+  {% endfor %}
+  <p class="case-result"><strong>What itibar finds:</strong>
+  {% if case.scoped['κ all'] %}{{ case.scoped['κ all'] }} {{ 'independent line' if case.scoped['κ all'] == '1' else 'independent lines' }} with everyone counted and {{ case.scoped['κ thiqa+'] }} with trustworthy narrators only{% if case.scope and case.scope.companion %}, counting only the chains through the companion the account names{% endif %}{% if case.scoped['scope chains (kept)'] %} ({{ case.scoped['scope chains (kept)'] }} chains){% endif %}.{% endif %}
+  {% if case.scoped.pass == 'yes' %}This matches the classical account.{% else %}This does not match the classical account.{% endif %}</p>
+  {% if case.known_deviations %}
+  <details><summary>{{ case.known_deviations|length }} documented {{ 'deviation' if case.known_deviations|length == 1 else 'deviations' }}</summary>
+    <ul>{% for item in case.known_deviations %}<li>{{ item.reason }} <span class="quiet">(chains {{ item.sanad_ids|join(', ') }})</span></li>{% endfor %}</ul>
+  </details>
+  {% endif %}
+</div>
+{% endmacro %}
+{% macro report_card(c) %}
+<li class="result">
+  <h3><a href="{{ root }}reports/{{ c.gid }}/">{% if c.title %}{{ c.title }}{% else %}<span lang="ar" dir="rtl">{{ c.opening or ('Report ' ~ c.gid) }}</span>{% endif %}</a></h3>
+  {% if c.title and c.opening %}<p class="ar" lang="ar" dir="rtl">{{ c.opening[:160] }}{% if c.opening|length > 160 %}…{% endif %}</p>{% endif %}
+  <p class="meta">{% if c.number %}<span>no. <b>{{ c.number }}</b></span>{% endif %}<span><b>{{ c.k or 0 }}</b> {{ 'independent line' if c.k == 1 else 'independent lines' }}</span>{% if c.grade %}<span>best chain <b>{{ c.grade }}</b> by the classical rules</span>{% endif %}{% if c.chains %}<span>{{ number(c.chains) }} chains</span>{% endif %}</p>
+</li>
 {% endmacro %}

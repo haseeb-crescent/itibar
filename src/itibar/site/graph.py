@@ -81,6 +81,12 @@ def graph_data(corpus, record, node_rows, edge_rows, route_narrators, receipt):
         for node in record["cut_vertices" if threshold == "all" else f"cut_vertices_{threshold}"]:
             cut[node] |= 1 << i
 
+    # A report with routes is drawn from its on-route nodes only; the off-route view is kept for the reports
+    # where no route reaches the Prophet, the only drawing they have (DECISIONS D105).
+    if any(n["on_path"] for n in node_rows):
+        node_rows = [n for n in node_rows if n["on_path"]]
+        keep = {n["node"] for n in node_rows}
+        edge_rows = [e for e in edge_rows if e["u"] in keep and e["v"] in keep]
     nodes, by_id = [], {}
     for n in node_rows:
         key, rid = n["node"], n["rawi_id"]
